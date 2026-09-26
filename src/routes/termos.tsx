@@ -34,7 +34,10 @@ function TermosPage() {
           conteúdo falso, fraudulento ou ilegal.
         </p>
       </div>
-      <Link to="/perfil" className="mt-8 inline-flex items-center gap-1 text-sm font-semibold text-gold hover:underline">
+      <Link
+        to="/perfil"
+        className="mt-8 inline-flex items-center gap-1 text-sm font-semibold text-gold hover:underline"
+      >
         <ArrowLeft className="h-4 w-4" /> Voltar
       </Link>
     </div>

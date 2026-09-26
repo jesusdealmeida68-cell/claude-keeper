@@ -75,7 +75,9 @@ function AdminAnalisePage() {
         .eq("id", id);
       if (error) throw error;
       await queryClient.invalidateQueries();
-      toast.success(status === "approved" ? "Comprovativo aprovado." : "Comprovativo não aprovado.");
+      toast.success(
+        status === "approved" ? "Comprovativo aprovado." : "Comprovativo não aprovado.",
+      );
       navigate({ to: "/admin" });
     } catch {
       toast.error("Não foi possível guardar a análise.");
@@ -101,7 +103,10 @@ function AdminAnalisePage() {
       </header>
 
       <main className="px-5 pt-5">
-        <Link to="/admin" className="inline-flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground">
+        <Link
+          to="/admin"
+          className="inline-flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground"
+        >
           <ArrowLeft className="h-4 w-4" /> Voltar
         </Link>
 
@@ -114,7 +119,9 @@ function AdminAnalisePage() {
             {rows.map(([label, value]) =>
               value ? (
                 <div key={label}>
-                  <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{label}</dt>
+                  <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                    {label}
+                  </dt>
                   <dd className="mt-0.5 text-sm font-medium">{value}</dd>
                 </div>
               ) : null,
@@ -131,7 +138,9 @@ function AdminAnalisePage() {
               <p className="mt-3 text-sm font-medium">{s.file_name ?? "Comprovativo"}</p>
               {signedUrl ? (
                 <Button asChild variant="outline" className="mt-4 rounded-xl">
-                  <a href={signedUrl} target="_blank" rel="noreferrer">Abrir ficheiro</a>
+                  <a href={signedUrl} target="_blank" rel="noreferrer">
+                    Abrir ficheiro
+                  </a>
                 </Button>
               ) : null}
             </div>
@@ -152,7 +161,13 @@ function AdminAnalisePage() {
             onClick={() => review("approved")}
             className="h-12 rounded-xl bg-success font-semibold text-white hover:bg-success/90"
           >
-            {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <><Check className="mr-1.5 h-5 w-5" /> Aprovar</>}
+            {loading ? (
+              <Loader2 className="h-5 w-5 animate-spin" />
+            ) : (
+              <>
+                <Check className="mr-1.5 h-5 w-5" /> Aprovar
+              </>
+            )}
           </Button>
           <Button
             disabled={loading}

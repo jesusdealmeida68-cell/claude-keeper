@@ -25,7 +25,10 @@ export const statusMeta: Record<
 };
 
 export function StatusBadge({ status, className }: { status: string; className?: string }) {
-  const meta = statusMeta[(status as SubmissionStatus) in statusMeta ? (status as SubmissionStatus) : "pending"];
+  const meta =
+    statusMeta[
+      (status as SubmissionStatus) in statusMeta ? (status as SubmissionStatus) : "pending"
+    ];
   const Icon = meta.icon;
   return (
     <span

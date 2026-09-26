@@ -16,11 +16,7 @@ function EnvioDetalhePage() {
   const { data: s, isLoading } = useQuery({
     queryKey: ["submission", id],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("submissions")
-        .select("*")
-        .eq("id", id)
-        .single();
+      const { data, error } = await supabase.from("submissions").select("*").eq("id", id).single();
       if (error) throw error;
       return data;
     },
@@ -49,7 +45,10 @@ function EnvioDetalhePage() {
   const rows: Array<[string, string | null | undefined]> = [
     ["Serviço", s.service],
     ["Referência", s.reference],
-    ["Data do serviço", s.service_date ? new Date(s.service_date).toLocaleDateString("pt-AO") : null],
+    [
+      "Data do serviço",
+      s.service_date ? new Date(s.service_date).toLocaleDateString("pt-AO") : null,
+    ],
     ["Data de envio", new Date(s.created_at).toLocaleDateString("pt-AO")],
     ["Comprovativo", s.file_name],
     ["Observação", s.note],
@@ -57,7 +56,10 @@ function EnvioDetalhePage() {
 
   return (
     <AppShell title="Detalhes do envio">
-      <Link to="/envios" className="inline-flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground">
+      <Link
+        to="/envios"
+        className="inline-flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground"
+      >
         <ArrowLeft className="h-4 w-4" /> Voltar
       </Link>
 
@@ -71,7 +73,9 @@ function EnvioDetalhePage() {
           {rows.map(([label, value]) =>
             value ? (
               <div key={label}>
-                <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{label}</dt>
+                <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  {label}
+                </dt>
                 <dd className="mt-0.5 text-sm font-medium">{value}</dd>
               </div>
             ) : null,

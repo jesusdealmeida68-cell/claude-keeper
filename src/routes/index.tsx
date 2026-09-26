@@ -9,7 +9,10 @@ export const Route = createFileRoute("/")({
       { title: "KYG — Gestão simples de serviços" },
       { name: "description", content: "Envie e acompanhe comprovativos de serviços com o KYG." },
       { property: "og:title", content: "KYG — Gestão simples de serviços" },
-      { property: "og:description", content: "Envie e acompanhe comprovativos de serviços com o KYG." },
+      {
+        property: "og:description",
+        content: "Envie e acompanhe comprovativos de serviços com o KYG.",
+      },
     ],
   }),
   component: Splash,

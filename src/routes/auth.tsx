@@ -12,9 +12,15 @@ export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
       { title: "Entrar — KYG" },
-      { name: "description", content: "Entre na sua conta KYG para acompanhar os seus comprovativos." },
+      {
+        name: "description",
+        content: "Entre na sua conta KYG para acompanhar os seus comprovativos.",
+      },
       { property: "og:title", content: "Entrar — KYG" },
-      { property: "og:description", content: "Entre na sua conta KYG para acompanhar os seus comprovativos." },
+      {
+        property: "og:description",
+        content: "Entre na sua conta KYG para acompanhar os seus comprovativos.",
+      },
     ],
   }),
   component: AuthPage,
@@ -25,11 +31,7 @@ function AuthPage() {
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-md flex-col bg-background pb-10">
       <div className="relative h-56 w-full overflow-hidden rounded-b-3xl bg-primary shadow-card-lg animate-fade-in">
-        <img
-          src="/belluci-banner.png"
-          alt=""
-          className="h-full w-full object-cover object-top"
-        />
+        <img src="/belluci-banner.png" alt="" className="h-full w-full object-cover object-top" />
         <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/10 to-transparent" />
         <div className="absolute -bottom-8 left-1/2 -translate-x-1/2">
           <KygLogo size="md" className="ring-4 ring-background" />
@@ -112,7 +114,11 @@ function LoginForm({ onSwitch }: { onSwitch: () => void }) {
 
       <p className="text-center text-sm text-muted-foreground">
         Ainda não tens conta?{" "}
-        <button type="button" onClick={onSwitch} className="font-semibold text-gold hover:underline">
+        <button
+          type="button"
+          onClick={onSwitch}
+          className="font-semibold text-gold hover:underline"
+        >
           Criar uma conta
         </button>
       </p>
@@ -144,9 +150,10 @@ function SignupForm({ onSwitch }: { onSwitch: () => void }) {
       toast.success("Conta criada com sucesso!");
       navigate({ to: "/inicio", replace: true });
     } catch (err) {
-      const msg = err instanceof Error && err.message.includes("already")
-        ? "Este número já está registado. Tenta entrar."
-        : "Não foi possível criar a conta. Tenta novamente.";
+      const msg =
+        err instanceof Error && err.message.includes("already")
+          ? "Este número já está registado. Tenta entrar."
+          : "Não foi possível criar a conta. Tenta novamente.";
       toast.error(msg);
     } finally {
       setLoading(false);
@@ -227,7 +234,11 @@ function SignupForm({ onSwitch }: { onSwitch: () => void }) {
 
       <p className="text-center text-sm text-muted-foreground">
         Já tens uma conta?{" "}
-        <button type="button" onClick={onSwitch} className="font-semibold text-gold hover:underline">
+        <button
+          type="button"
+          onClick={onSwitch}
+          className="font-semibold text-gold hover:underline"
+        >
           Entrar
         </button>
       </p>

@@ -83,7 +83,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { title: "KYG — Gestão simples de serviços" },
       { name: "description", content: "Envie e acompanhe comprovativos de serviços com o KYG." },
       { property: "og:title", content: "KYG — Gestão simples de serviços" },
-      { property: "og:description", content: "Envie e acompanhe comprovativos de serviços com o KYG." },
+      {
+        property: "og:description",
+        content: "Envie e acompanhe comprovativos de serviços com o KYG.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "theme-color", content: "#1a2a4a" },

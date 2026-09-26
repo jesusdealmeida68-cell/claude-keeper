@@ -9,9 +9,24 @@ export const Route = createFileRoute("/_authenticated/notificacoes")({
 });
 
 const meta = {
-  pending: { icon: Clock, title: "Comprovativo em análise", desc: "O seu comprovativo está em análise.", cls: "bg-warning-soft text-warning" },
-  approved: { icon: CheckCircle2, title: "Comprovativo aprovado", desc: "O seu comprovativo foi aprovado.", cls: "bg-success-soft text-success" },
-  rejected: { icon: XCircle, title: "Comprovativo não aprovado", desc: "O seu comprovativo não foi aprovado.", cls: "bg-destructive-soft text-destructive" },
+  pending: {
+    icon: Clock,
+    title: "Comprovativo em análise",
+    desc: "O seu comprovativo está em análise.",
+    cls: "bg-warning-soft text-warning",
+  },
+  approved: {
+    icon: CheckCircle2,
+    title: "Comprovativo aprovado",
+    desc: "O seu comprovativo foi aprovado.",
+    cls: "bg-success-soft text-success",
+  },
+  rejected: {
+    icon: XCircle,
+    title: "Comprovativo não aprovado",
+    desc: "O seu comprovativo não foi aprovado.",
+    cls: "bg-destructive-soft text-destructive",
+  },
 } as const;
 
 function NotificacoesPage() {
@@ -44,7 +59,12 @@ function NotificacoesPage() {
       ) : (
         <div className="space-y-3">
           {submissions.map((s, i) => {
-            const m = meta[(s.status as keyof typeof meta) in meta ? (s.status as keyof typeof meta) : "pending"];
+            const m =
+              meta[
+                (s.status as keyof typeof meta) in meta
+                  ? (s.status as keyof typeof meta)
+                  : "pending"
+              ];
             const Icon = m.icon;
             return (
               <div
@@ -52,7 +72,9 @@ function NotificacoesPage() {
                 className="flex items-start gap-3 rounded-2xl bg-card p-4 shadow-card animate-fade-up"
                 style={{ animationDelay: `${i * 60}ms` }}
               >
-                <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${m.cls}`}>
+                <div
+                  className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${m.cls}`}
+                >
                   <Icon className="h-5 w-5" />
                 </div>
                 <div className="min-w-0 flex-1">

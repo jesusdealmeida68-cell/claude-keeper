@@ -34,9 +34,7 @@ function EnviarPage() {
     try {
       const ext = file.name.split(".").pop() ?? "bin";
       const path = `${user.id}/${crypto.randomUUID()}.${ext}`;
-      const { error: upErr } = await supabase.storage
-        .from("comprovativos")
-        .upload(path, file);
+      const { error: upErr } = await supabase.storage.from("comprovativos").upload(path, file);
       if (upErr) throw upErr;
 
       const { error } = await supabase.from("submissions").insert({
@@ -72,7 +70,9 @@ function EnviarPage() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="ref">Referência <span className="text-muted-foreground">(opcional)</span></Label>
+          <Label htmlFor="ref">
+            Referência <span className="text-muted-foreground">(opcional)</span>
+          </Label>
           <Input
             id="ref"
             placeholder="Nº de referência"
@@ -125,7 +125,9 @@ function EnviarPage() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="note">Observação <span className="text-muted-foreground">(opcional)</span></Label>
+          <Label htmlFor="note">
+            Observação <span className="text-muted-foreground">(opcional)</span>
+          </Label>
           <Textarea
             id="note"
             placeholder="Alguma nota sobre este serviço?"
