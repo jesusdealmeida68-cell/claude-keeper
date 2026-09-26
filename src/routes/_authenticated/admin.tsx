@@ -23,6 +23,7 @@ import {
   FileText,
   Files,
   LogOut,
+  Bell,
   Megaphone,
   MoreVertical,
   Search,
@@ -209,6 +210,12 @@ function AdminPage() {
               <Link to="/admin/anuncios">
                 <Megaphone className="h-4 w-4 text-muted-foreground" />
                 Anúncios
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild className="cursor-pointer gap-3 px-4 py-2.5">
+              <Link to="/admin/notificacoes">
+                <Bell className="h-4 w-4 text-muted-foreground" />
+                Notificações
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />

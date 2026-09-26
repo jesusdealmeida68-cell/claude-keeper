@@ -53,6 +53,42 @@ export type Database = {
         };
         Relationships: [];
       };
+      notifications: {
+        Row: {
+          id: string;
+          user_id: string | null;
+          submission_id: string | null;
+          source: string;
+          kind: string;
+          title: string;
+          message: string;
+          created_by: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id?: string | null;
+          submission_id?: string | null;
+          source?: string;
+          kind?: string;
+          title: string;
+          message: string;
+          created_by?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string | null;
+          submission_id?: string | null;
+          source?: string;
+          kind?: string;
+          title?: string;
+          message?: string;
+          created_by?: string | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
       profiles: {
         Row: {
           created_at: string;
