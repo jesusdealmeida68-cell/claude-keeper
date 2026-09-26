@@ -23,15 +23,26 @@ export const Route = createFileRoute("/auth")({
 function AuthPage() {
   const [mode, setMode] = useState<"login" | "signup">("login");
   return (
-    <div className="mx-auto flex min-h-screen w-full max-w-md flex-col bg-background px-6 pb-10 pt-14">
-      <div className="flex flex-col items-center animate-fade-in">
-        <KygLogo size="md" />
+    <div className="mx-auto flex min-h-screen w-full max-w-md flex-col bg-background pb-10">
+      <div className="relative h-56 w-full overflow-hidden rounded-b-3xl bg-primary shadow-card-lg animate-fade-in">
+        <img
+          src="/hero-warriors.jpg"
+          alt=""
+          className="h-full w-full object-cover object-top"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/10 to-transparent" />
+        <div className="absolute -bottom-8 left-1/2 -translate-x-1/2">
+          <KygLogo size="md" className="ring-4 ring-background" />
+        </div>
       </div>
-      {mode === "login" ? (
-        <LoginForm onSwitch={() => setMode("signup")} />
-      ) : (
-        <SignupForm onSwitch={() => setMode("login")} />
-      )}
+
+      <div className="px-6 pt-14">
+        {mode === "login" ? (
+          <LoginForm onSwitch={() => setMode("signup")} />
+        ) : (
+          <SignupForm onSwitch={() => setMode("login")} />
+        )}
+      </div>
     </div>
   );
 }
