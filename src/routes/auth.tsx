@@ -26,7 +26,7 @@ function AuthPage() {
     <div className="mx-auto flex min-h-screen w-full max-w-md flex-col bg-background pb-10">
       <div className="relative h-56 w-full overflow-hidden rounded-b-3xl bg-primary shadow-card-lg animate-fade-in">
         <img
-          src="/hero-warriors.jpg"
+          src="/belluci-banner.png"
           alt=""
           className="h-full w-full object-cover object-top"
         />

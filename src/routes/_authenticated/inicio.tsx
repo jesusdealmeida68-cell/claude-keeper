@@ -2,7 +2,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { AppShell } from "@/components/kyg/AppShell";
 import { StatusBadge } from "@/components/kyg/StatusBadge";
-import { PromoBanners } from "@/components/kyg/PromoBanners";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { getMyProfile } from "@/lib/auth";
@@ -41,10 +40,6 @@ function InicioPage() {
       <div className="animate-fade-up">
         <h1 className="text-2xl font-bold tracking-tight">Olá, {firstName || "Utilizador"}</h1>
         <p className="mt-1 text-sm text-muted-foreground">Acompanhe os seus serviços</p>
-      </div>
-
-      <div className="mt-5 animate-fade-up [animation-delay:50ms]">
-        <PromoBanners />
       </div>
 
       <div className="mt-6 rounded-3xl bg-primary p-6 text-primary-foreground shadow-card-lg animate-fade-up [animation-delay:100ms]">
