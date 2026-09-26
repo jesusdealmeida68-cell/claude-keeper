@@ -9,6 +9,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { getMyProfile, getMyRoles } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
   CheckCircle2,
   ChevronRight,
   Clock,
@@ -16,6 +24,7 @@ import {
   Files,
   LogOut,
   Megaphone,
+  MoreVertical,
   Search,
   ShieldCheck,
   XCircle,
@@ -173,12 +182,45 @@ function AdminPage() {
           <KygLogo size="sm" className="bg-card text-primary" />
           <h1 className="text-lg font-semibold text-primary-foreground">KYG Admin</h1>
         </div>
-        <button
-          onClick={handleSignOut}
-          className="flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-sm font-medium text-primary-foreground/70 transition-colors hover:bg-white/10 hover:text-primary-foreground"
-        >
-          <LogOut className="h-4 w-4" /> Sair
-        </button>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button
+              aria-label="Mais opções"
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-primary-foreground/80 transition-colors hover:bg-white/10 hover:text-primary-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+            >
+              <MoreVertical className="h-5 w-5" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" sideOffset={10} className="w-64 p-0 overflow-hidden">
+            <DropdownMenuLabel className="flex items-center gap-3 px-4 py-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gold text-sm font-bold text-gold-foreground">
+                {initialsOf(adminName)}
+              </div>
+              <div className="min-w-0">
+                <p className="truncate text-sm font-semibold leading-tight">{adminName}</p>
+                <p className="truncate text-xs font-normal text-muted-foreground">
+                  Administrador · KYG
+                </p>
+              </div>
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild className="cursor-pointer gap-3 px-4 py-2.5">
+              <Link to="/admin/anuncios">
+                <Megaphone className="h-4 w-4 text-muted-foreground" />
+                Anúncios
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onSelect={handleSignOut}
+              className="cursor-pointer gap-3 px-4 py-2.5 text-destructive focus:bg-destructive-soft focus:text-destructive"
+            >
+              <LogOut className="h-4 w-4" />
+              Sair
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </header>
 
       <main className="px-5 pt-5">
@@ -194,20 +236,6 @@ function AdminPage() {
             <p className="text-xs text-primary-foreground/70">Painel de administração · KYG</p>
           </div>
         </div>
-
-        <Link
-          to="/admin/anuncios"
-          className="mt-3 flex items-center gap-3 rounded-2xl bg-card p-4 shadow-card animate-fade-up"
-        >
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gold-soft text-gold">
-            <Megaphone className="h-4.5 w-4.5" />
-          </div>
-          <div className="flex-1">
-            <p className="text-sm font-semibold">Anúncios</p>
-            <p className="text-xs text-muted-foreground">Gerir patrocínios mostrados no início</p>
-          </div>
-          <ChevronRight className="h-4 w-4 text-muted-foreground/50" />
-        </Link>
 
         {/* Estatísticas */}
         <div className="mt-4 grid grid-cols-2 gap-3 animate-fade-up">
