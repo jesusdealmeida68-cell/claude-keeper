@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { AppShell } from "@/components/kyg/AppShell";
+import { AnnouncementsCarousel } from "@/components/kyg/AnnouncementsCarousel";
 import { StatusBadge } from "@/components/kyg/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -57,6 +58,8 @@ function InicioPage() {
           <Link to="/enviar">Enviar comprovativo</Link>
         </Button>
       </div>
+
+      <AnnouncementsCarousel />
 
       <div className="mt-8 animate-fade-up [animation-delay:200ms]">
         <div className="flex items-center justify-between">

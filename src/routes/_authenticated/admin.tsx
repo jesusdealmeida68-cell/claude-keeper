@@ -15,6 +15,7 @@ import {
   FileText,
   Files,
   LogOut,
+  Megaphone,
   Search,
   ShieldCheck,
   XCircle,
@@ -193,6 +194,20 @@ function AdminPage() {
             <p className="text-xs text-primary-foreground/70">Painel de administração · KYG</p>
           </div>
         </div>
+
+        <Link
+          to="/admin/anuncios"
+          className="mt-3 flex items-center gap-3 rounded-2xl bg-card p-4 shadow-card animate-fade-up"
+        >
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gold-soft text-gold">
+            <Megaphone className="h-4.5 w-4.5" />
+          </div>
+          <div className="flex-1">
+            <p className="text-sm font-semibold">Anúncios</p>
+            <p className="text-xs text-muted-foreground">Gerir patrocínios mostrados no início</p>
+          </div>
+          <ChevronRight className="h-4 w-4 text-muted-foreground/50" />
+        </Link>
 
         {/* Estatísticas */}
         <div className="mt-4 grid grid-cols-2 gap-3 animate-fade-up">

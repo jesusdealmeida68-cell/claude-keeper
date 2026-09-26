@@ -22,6 +22,7 @@ import { Route as AuthenticatedInicioRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedNotificacoesRouteImport } from './routes/_authenticated/notificacoes'
 import { Route as AuthenticatedPerfilRouteImport } from './routes/_authenticated/perfil'
 import { Route as AuthenticatedAdminIdRouteImport } from './routes/_authenticated/admin.$id'
+import { Route as AuthenticatedAdminAnunciosRouteImport } from './routes/_authenticated/admin.anuncios'
 import { Route as AuthenticatedEnviosIdRouteImport } from './routes/_authenticated/envios.$id'
 import { Route as AuthenticatedPerfilEditarRouteImport } from './routes/_authenticated/perfil.editar'
 import { Route as AuthenticatedPerfilSenhaRouteImport } from './routes/_authenticated/perfil.senha'
@@ -91,6 +92,12 @@ const AuthenticatedAdminIdRoute = AuthenticatedAdminIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
+const AuthenticatedAdminAnunciosRoute =
+  AuthenticatedAdminAnunciosRouteImport.update({
+    id: '/anuncios',
+    path: '/anuncios',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedEnviosIdRoute = AuthenticatedEnviosIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -122,6 +129,7 @@ export interface FileRoutesByFullPath {
   '/notificacoes': typeof AuthenticatedNotificacoesRoute
   '/perfil': typeof AuthenticatedPerfilRouteWithChildren
   '/admin/$id': typeof AuthenticatedAdminIdRoute
+  '/admin/anuncios': typeof AuthenticatedAdminAnunciosRoute
   '/envios/$id': typeof AuthenticatedEnviosIdRoute
   '/perfil/editar': typeof AuthenticatedPerfilEditarRoute
   '/perfil/senha': typeof AuthenticatedPerfilSenhaRoute
@@ -139,6 +147,7 @@ export interface FileRoutesByTo {
   '/notificacoes': typeof AuthenticatedNotificacoesRoute
   '/perfil': typeof AuthenticatedPerfilRouteWithChildren
   '/admin/$id': typeof AuthenticatedAdminIdRoute
+  '/admin/anuncios': typeof AuthenticatedAdminAnunciosRoute
   '/envios/$id': typeof AuthenticatedEnviosIdRoute
   '/perfil/editar': typeof AuthenticatedPerfilEditarRoute
   '/perfil/senha': typeof AuthenticatedPerfilSenhaRoute
@@ -158,6 +167,7 @@ export interface FileRoutesById {
   '/_authenticated/notificacoes': typeof AuthenticatedNotificacoesRoute
   '/_authenticated/perfil': typeof AuthenticatedPerfilRouteWithChildren
   '/_authenticated/admin/$id': typeof AuthenticatedAdminIdRoute
+  '/_authenticated/admin/anuncios': typeof AuthenticatedAdminAnunciosRoute
   '/_authenticated/envios/$id': typeof AuthenticatedEnviosIdRoute
   '/_authenticated/perfil/editar': typeof AuthenticatedPerfilEditarRoute
   '/_authenticated/perfil/senha': typeof AuthenticatedPerfilSenhaRoute
@@ -177,6 +187,7 @@ export interface FileRouteTypes {
     | '/notificacoes'
     | '/perfil'
     | '/admin/$id'
+    | '/admin/anuncios'
     | '/envios/$id'
     | '/perfil/editar'
     | '/perfil/senha'
@@ -194,6 +205,7 @@ export interface FileRouteTypes {
     | '/notificacoes'
     | '/perfil'
     | '/admin/$id'
+    | '/admin/anuncios'
     | '/envios/$id'
     | '/perfil/editar'
     | '/perfil/senha'
@@ -212,6 +224,7 @@ export interface FileRouteTypes {
     | '/_authenticated/notificacoes'
     | '/_authenticated/perfil'
     | '/_authenticated/admin/$id'
+    | '/_authenticated/admin/anuncios'
     | '/_authenticated/envios/$id'
     | '/_authenticated/perfil/editar'
     | '/_authenticated/perfil/senha'
@@ -318,6 +331,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminIdRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/anuncios': {
+      id: '/_authenticated/admin/anuncios'
+      path: '/anuncios'
+      fullPath: '/admin/anuncios'
+      preLoaderRoute: typeof AuthenticatedAdminAnunciosRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/envios/$id': {
       id: '/_authenticated/envios/$id'
       path: '/$id'
@@ -344,10 +364,12 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminIdRoute: typeof AuthenticatedAdminIdRoute
+  AuthenticatedAdminAnunciosRoute: typeof AuthenticatedAdminAnunciosRoute
 }
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminIdRoute: AuthenticatedAdminIdRoute,
+  AuthenticatedAdminAnunciosRoute: AuthenticatedAdminAnunciosRoute,
 }
 
 const AuthenticatedAdminRouteWithChildren =

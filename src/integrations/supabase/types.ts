@@ -14,6 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      announcements: {
+        Row: {
+          active: boolean
+          button2_label: string | null
+          button2_url: string | null
+          button_label: string | null
+          button_url: string | null
+          created_at: string
+          description: string
+          id: string
+          image_url: string
+          sort_order: number
+          sponsor_name: string
+        }
+        Insert: {
+          active?: boolean
+          button2_label?: string | null
+          button2_url?: string | null
+          button_label?: string | null
+          button_url?: string | null
+          created_at?: string
+          description: string
+          id?: string
+          image_url: string
+          sort_order?: number
+          sponsor_name: string
+        }
+        Update: {
+          active?: boolean
+          button2_label?: string | null
+          button2_url?: string | null
+          button_label?: string | null
+          button_url?: string | null
+          created_at?: string
+          description?: string
+          id?: string
+          image_url?: string
+          sort_order?: number
+          sponsor_name?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
