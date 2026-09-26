@@ -6,7 +6,8 @@ import { StatusBadge } from "@/components/kyg/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { getMyProfile } from "@/lib/auth";
-import { FileText, Send, Inbox } from "lucide-react";
+import { getAppSettings } from "@/lib/wallet";
+import { FileText, Send, Inbox, Ban } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/inicio")({
   component: InicioPage,
@@ -19,6 +20,12 @@ function InicioPage() {
     queryKey: ["profile", user.id],
     queryFn: () => getMyProfile(user.id),
   });
+
+  const { data: settings } = useQuery({
+    queryKey: ["app-settings"],
+    queryFn: getAppSettings,
+  });
+  const blocked = settings?.submissions_blocked ?? false;
 
   const { data: submissions } = useQuery({
     queryKey: ["submissions", user.id],
@@ -43,17 +50,34 @@ function InicioPage() {
         <p className="mt-1 text-sm text-muted-foreground">Acompanhe os seus serviços</p>
       </div>
 
-      <div className="mt-6 rounded-3xl bg-primary p-6 text-primary-foreground shadow-card-lg animate-fade-up [animation-delay:100ms]">
-        <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gold/20">
-          <Send className="h-5 w-5 text-gold" />
-        </div>
-        <h2 className="mt-4 text-lg font-semibold">Enviar comprovativo</h2>
-        <p className="mt-1 text-sm text-primary-foreground/70">
-          Envie o comprovativo de um serviço realizado para análise.
+      <div className="mt-6 rounded-3xl bg-primary p-6 text-primary-foreground shadow-card-lg animate-fade-up [animation-delay:50ms]">
+        <p className="text-sm text-primary-foreground/70">Saldo disponível</p>
+        <p className="mt-1 text-3xl font-bold tracking-tight text-gold">
+          {(profile?.balance ?? 0).toLocaleString("pt-AO", { minimumFractionDigits: 2 })} Kz
         </p>
         <Button
           asChild
-          className="mt-5 h-11 w-full rounded-xl bg-gold font-semibold text-gold-foreground hover:bg-gold/90"
+          variant="secondary"
+          className="mt-4 h-11 w-full rounded-xl bg-white/10 font-semibold text-primary-foreground hover:bg-white/20"
+        >
+          <Link to="/perfil">Retirar saldo</Link>
+        </Button>
+      </div>
+
+      <div className="mt-6 rounded-3xl bg-primary p-6 text-primary-foreground shadow-card-lg animate-fade-up [animation-delay:100ms]">
+        <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gold/20">
+          {blocked ? <Ban className="h-5 w-5 text-gold" /> : <Send className="h-5 w-5 text-gold" />}
+        </div>
+        <h2 className="mt-4 text-lg font-semibold">Enviar comprovativo</h2>
+        <p className="mt-1 text-sm text-primary-foreground/70">
+          {blocked
+            ? "Os envios estão temporariamente bloqueados."
+            : "Envie o comprovativo de um serviço realizado para análise."}
+        </p>
+        <Button
+          asChild
+          disabled={blocked}
+          className="mt-5 h-11 w-full rounded-xl bg-gold font-semibold text-gold-foreground hover:bg-gold/90 disabled:pointer-events-none disabled:opacity-50"
         >
           <Link to="/enviar">Enviar comprovativo</Link>
         </Button>

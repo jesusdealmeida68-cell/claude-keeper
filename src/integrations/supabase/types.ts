@@ -91,6 +91,7 @@ export type Database = {
       };
       profiles: {
         Row: {
+          balance: number;
           created_at: string;
           full_name: string;
           id: string;
@@ -100,6 +101,7 @@ export type Database = {
           verified: boolean;
         };
         Insert: {
+          balance?: number;
           created_at?: string;
           full_name: string;
           id?: string;
@@ -109,6 +111,7 @@ export type Database = {
           verified?: boolean;
         };
         Update: {
+          balance?: number;
           created_at?: string;
           full_name?: string;
           id?: string;
@@ -179,6 +182,48 @@ export type Database = {
         };
         Relationships: [];
       };
+      app_settings: {
+        Row: {
+          id: boolean;
+          submissions_blocked: boolean;
+          updated_at: string;
+        };
+        Insert: {
+          id?: boolean;
+          submissions_blocked?: boolean;
+          updated_at?: string;
+        };
+        Update: {
+          id?: boolean;
+          submissions_blocked?: boolean;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      withdrawals: {
+        Row: {
+          amount: number;
+          created_at: string;
+          id: string;
+          status: string;
+          user_id: string;
+        };
+        Insert: {
+          amount: number;
+          created_at?: string;
+          id?: string;
+          status?: string;
+          user_id: string;
+        };
+        Update: {
+          amount?: number;
+          created_at?: string;
+          id?: string;
+          status?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: {
       [_ in never]: never;
@@ -190,6 +235,19 @@ export type Database = {
           _user_id: string;
         };
         Returns: boolean;
+      };
+      approve_submission_with_payment: {
+        Args: {
+          _amount: number;
+          _submission_id: string;
+        };
+        Returns: undefined;
+      };
+      request_withdrawal: {
+        Args: {
+          _amount: number;
+        };
+        Returns: string;
       };
     };
     Enums: {

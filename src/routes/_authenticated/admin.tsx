@@ -1,12 +1,14 @@
 import { createFileRoute, Link, Outlet, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
+import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { StatusBadge } from "@/components/kyg/StatusBadge";
 import { KygLogo } from "@/components/kyg/KygLogo";
 import { supabase } from "@/integrations/supabase/client";
 import { getMyProfile, getMyRoles } from "@/lib/auth";
+import { getAppSettings, setSubmissionsBlocked } from "@/lib/wallet";
 import { cn } from "@/lib/utils";
 import {
   DropdownMenu,
@@ -17,6 +19,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
+  Ban,
   CheckCircle2,
   ChevronRight,
   Clock,
@@ -28,6 +31,7 @@ import {
   MoreVertical,
   Search,
   ShieldCheck,
+  Wallet,
   XCircle,
 } from "lucide-react";
 
@@ -88,6 +92,23 @@ function AdminPage() {
   });
 
   const isAdmin = roles?.includes("admin");
+
+  const { data: settings } = useQuery({
+    queryKey: ["app-settings"],
+    enabled: !!isAdmin,
+    queryFn: getAppSettings,
+  });
+  const blocked = settings?.submissions_blocked ?? false;
+
+  async function handleToggleBlock() {
+    try {
+      await setSubmissionsBlocked(!blocked);
+      await queryClient.invalidateQueries({ queryKey: ["app-settings"] });
+      toast.success(!blocked ? "Site bloqueado: envios desativados." : "Site desbloqueado.");
+    } catch {
+      toast.error("Não foi possível alterar o bloqueio.");
+    }
+  }
 
   const { data: submissions, isLoading: submissionsLoading } = useQuery({
     queryKey: ["admin-submissions"],
@@ -223,6 +244,23 @@ function AdminPage() {
                 <Bell className="h-4 w-4 text-muted-foreground" />
                 Notificações
               </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild className="cursor-pointer gap-3 px-4 py-2.5">
+              <Link to="/admin/retiradas">
+                <Wallet className="h-4 w-4 text-muted-foreground" />
+                Retiradas
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onSelect={handleToggleBlock}
+              className={cn(
+                "cursor-pointer gap-3 px-4 py-2.5",
+                blocked && "text-destructive focus:bg-destructive-soft focus:text-destructive",
+              )}
+            >
+              <Ban className="h-4 w-4" />
+              {blocked ? "Desbloquear site" : "Bloquear site"}
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem

@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { StatusBadge } from "@/components/kyg/StatusBadge";
 import { KygLogo } from "@/components/kyg/KygLogo";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Dialog,
   DialogContent,
@@ -15,6 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
+import { approveSubmissionWithPayment } from "@/lib/wallet";
 import { ArrowLeft, Check, FileText, Loader2, MessageCircle, X } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin/$id")({
@@ -27,6 +29,8 @@ function AdminAnalisePage() {
   const queryClient = useQueryClient();
   const [rejectOpen, setRejectOpen] = useState(false);
   const [whatsOpen, setWhatsOpen] = useState(false);
+  const [payOpen, setPayOpen] = useState(false);
+  const [payAmount, setPayAmount] = useState("");
   const [reason, setReason] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -66,21 +70,38 @@ function AdminAnalisePage() {
   const profile = s.profiles as { full_name: string; phone: string } | null;
   const isPdf = s.file_name?.toLowerCase().endsWith(".pdf");
 
-  async function review(status: "approved" | "rejected", reviewNote?: string) {
+  async function reject(reviewNote: string) {
     setLoading(true);
     try {
       const { error } = await supabase
         .from("submissions")
-        .update({ status, review_note: reviewNote ?? null })
+        .update({ status: "rejected", review_note: reviewNote })
         .eq("id", id);
       if (error) throw error;
       await queryClient.invalidateQueries();
-      toast.success(
-        status === "approved" ? "Comprovativo aprovado." : "Comprovativo não aprovado.",
-      );
+      toast.success("Comprovativo não aprovado.");
       navigate({ to: "/admin" });
     } catch {
       toast.error("Não foi possível guardar a análise.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function approveWithPayment() {
+    const amount = Number(payAmount.replace(",", "."));
+    if (!amount || amount < 0) {
+      toast.error("Indica um valor válido.");
+      return;
+    }
+    setLoading(true);
+    try {
+      await approveSubmissionWithPayment(id, amount);
+      await queryClient.invalidateQueries();
+      toast.success(`Aprovado e ${amount.toLocaleString("pt-AO")} Kz depositados no saldo.`);
+      navigate({ to: "/admin" });
+    } catch {
+      toast.error("Não foi possível aprovar e pagar.");
     } finally {
       setLoading(false);
     }
@@ -158,7 +179,7 @@ function AdminAnalisePage() {
         <div className="mt-4 grid grid-cols-2 gap-3">
           <Button
             disabled={loading}
-            onClick={() => review("approved")}
+            onClick={() => setPayOpen(true)}
             className="h-12 rounded-xl bg-success font-semibold text-white hover:bg-success/90"
           >
             {loading ? (
@@ -197,7 +218,7 @@ function AdminAnalisePage() {
             </Button>
             <Button
               disabled={loading || !reason.trim()}
-              onClick={() => review("rejected", reason.trim())}
+              onClick={() => reject(reason.trim())}
               className="rounded-xl bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               Confirmar
@@ -226,6 +247,36 @@ function AdminAnalisePage() {
               }}
             >
               <MessageCircle className="mr-2 h-5 w-5" /> Continuar para WhatsApp
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={payOpen} onOpenChange={setPayOpen}>
+        <DialogContent className="rounded-3xl">
+          <DialogHeader>
+            <DialogTitle>Aprovar comprovativo</DialogTitle>
+            <DialogDescription>Quanto pagas a {profile?.full_name ?? "este utilizador"}?</DialogDescription>
+          </DialogHeader>
+          <Input
+            type="number"
+            inputMode="decimal"
+            placeholder="Valor a pagar (Kz)"
+            value={payAmount}
+            onChange={(e) => setPayAmount(e.target.value)}
+            className="h-12 rounded-xl"
+            autoFocus
+          />
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setPayOpen(false)} className="rounded-xl">
+              Cancelar
+            </Button>
+            <Button
+              disabled={loading || !payAmount}
+              onClick={approveWithPayment}
+              className="rounded-xl bg-success font-semibold text-white hover:bg-success/90"
+            >
+              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Aprovar e pagar"}
             </Button>
           </DialogFooter>
         </DialogContent>

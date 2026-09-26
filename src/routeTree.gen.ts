@@ -24,6 +24,7 @@ import { Route as AuthenticatedPerfilRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedAdminIdRouteImport } from './routes/_authenticated/admin.$id'
 import { Route as AuthenticatedAdminAnunciosRouteImport } from './routes/_authenticated/admin.anuncios'
 import { Route as AuthenticatedAdminNotificacoesRouteImport } from './routes/_authenticated/admin.notificacoes'
+import { Route as AuthenticatedAdminRetiradasRouteImport } from './routes/_authenticated/admin.retiradas'
 import { Route as AuthenticatedEnviosIdRouteImport } from './routes/_authenticated/envios.$id'
 import { Route as AuthenticatedPerfilEditarRouteImport } from './routes/_authenticated/perfil.editar'
 import { Route as AuthenticatedPerfilSenhaRouteImport } from './routes/_authenticated/perfil.senha'
@@ -105,6 +106,12 @@ const AuthenticatedAdminNotificacoesRoute =
     path: '/notificacoes',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminRetiradasRoute =
+  AuthenticatedAdminRetiradasRouteImport.update({
+    id: '/retiradas',
+    path: '/retiradas',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedEnviosIdRoute = AuthenticatedEnviosIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -138,6 +145,7 @@ export interface FileRoutesByFullPath {
   '/admin/$id': typeof AuthenticatedAdminIdRoute
   '/admin/anuncios': typeof AuthenticatedAdminAnunciosRoute
   '/admin/notificacoes': typeof AuthenticatedAdminNotificacoesRoute
+  '/admin/retiradas': typeof AuthenticatedAdminRetiradasRoute
   '/envios/$id': typeof AuthenticatedEnviosIdRoute
   '/perfil/editar': typeof AuthenticatedPerfilEditarRoute
   '/perfil/senha': typeof AuthenticatedPerfilSenhaRoute
@@ -157,6 +165,7 @@ export interface FileRoutesByTo {
   '/admin/$id': typeof AuthenticatedAdminIdRoute
   '/admin/anuncios': typeof AuthenticatedAdminAnunciosRoute
   '/admin/notificacoes': typeof AuthenticatedAdminNotificacoesRoute
+  '/admin/retiradas': typeof AuthenticatedAdminRetiradasRoute
   '/envios/$id': typeof AuthenticatedEnviosIdRoute
   '/perfil/editar': typeof AuthenticatedPerfilEditarRoute
   '/perfil/senha': typeof AuthenticatedPerfilSenhaRoute
@@ -178,6 +187,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/$id': typeof AuthenticatedAdminIdRoute
   '/_authenticated/admin/anuncios': typeof AuthenticatedAdminAnunciosRoute
   '/_authenticated/admin/notificacoes': typeof AuthenticatedAdminNotificacoesRoute
+  '/_authenticated/admin/retiradas': typeof AuthenticatedAdminRetiradasRoute
   '/_authenticated/envios/$id': typeof AuthenticatedEnviosIdRoute
   '/_authenticated/perfil/editar': typeof AuthenticatedPerfilEditarRoute
   '/_authenticated/perfil/senha': typeof AuthenticatedPerfilSenhaRoute
@@ -199,6 +209,7 @@ export interface FileRouteTypes {
     | '/admin/$id'
     | '/admin/anuncios'
     | '/admin/notificacoes'
+    | '/admin/retiradas'
     | '/envios/$id'
     | '/perfil/editar'
     | '/perfil/senha'
@@ -218,6 +229,7 @@ export interface FileRouteTypes {
     | '/admin/$id'
     | '/admin/anuncios'
     | '/admin/notificacoes'
+    | '/admin/retiradas'
     | '/envios/$id'
     | '/perfil/editar'
     | '/perfil/senha'
@@ -238,6 +250,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/$id'
     | '/_authenticated/admin/anuncios'
     | '/_authenticated/admin/notificacoes'
+    | '/_authenticated/admin/retiradas'
     | '/_authenticated/envios/$id'
     | '/_authenticated/perfil/editar'
     | '/_authenticated/perfil/senha'
@@ -358,6 +371,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminNotificacoesRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/retiradas': {
+      id: '/_authenticated/admin/retiradas'
+      path: '/retiradas'
+      fullPath: '/admin/retiradas'
+      preLoaderRoute: typeof AuthenticatedAdminRetiradasRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/envios/$id': {
       id: '/_authenticated/envios/$id'
       path: '/$id'
@@ -386,12 +406,14 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminIdRoute: typeof AuthenticatedAdminIdRoute
   AuthenticatedAdminAnunciosRoute: typeof AuthenticatedAdminAnunciosRoute
   AuthenticatedAdminNotificacoesRoute: typeof AuthenticatedAdminNotificacoesRoute
+  AuthenticatedAdminRetiradasRoute: typeof AuthenticatedAdminRetiradasRoute
 }
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminIdRoute: AuthenticatedAdminIdRoute,
   AuthenticatedAdminAnunciosRoute: AuthenticatedAdminAnunciosRoute,
   AuthenticatedAdminNotificacoesRoute: AuthenticatedAdminNotificacoesRoute,
+  AuthenticatedAdminRetiradasRoute: AuthenticatedAdminRetiradasRoute,
 }
 
 const AuthenticatedAdminRouteWithChildren =

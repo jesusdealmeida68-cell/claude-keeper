@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useRef, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { AppShell } from "@/components/kyg/AppShell";
 import { Button } from "@/components/ui/button";
@@ -7,7 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
-import { CloudUpload, Loader2, FileCheck2 } from "lucide-react";
+import { getAppSettings } from "@/lib/wallet";
+import { CloudUpload, Loader2, FileCheck2, Ban } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/enviar")({
   component: EnviarPage,
@@ -24,8 +26,18 @@ function EnviarPage() {
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
 
+  const { data: settings, isLoading: settingsLoading } = useQuery({
+    queryKey: ["app-settings"],
+    queryFn: getAppSettings,
+  });
+  const blocked = settings?.submissions_blocked ?? false;
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (blocked) {
+      toast.error("Os envios estão temporariamente bloqueados.");
+      return;
+    }
     if (!file) {
       toast.error("Adiciona o comprovativo (JPG, PNG ou PDF).");
       return;
@@ -57,6 +69,17 @@ function EnviarPage() {
 
   return (
     <AppShell title="Novo comprovativo">
+      {settingsLoading ? null : blocked ? (
+        <div className="mt-4 flex flex-col items-center rounded-3xl border border-dashed bg-card px-6 py-12 text-center animate-fade-up">
+          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-destructive-soft text-destructive">
+            <Ban className="h-7 w-7" />
+          </div>
+          <p className="mt-4 text-base font-semibold">Envios temporariamente bloqueados</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Não é possível enviar comprovativos neste momento. Tenta novamente mais tarde.
+          </p>
+        </div>
+      ) : (
       <form onSubmit={handleSubmit} className="space-y-5 animate-fade-up">
         <div className="space-y-2">
           <Label htmlFor="service">Serviço</Label>
@@ -145,6 +168,7 @@ function EnviarPage() {
           {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : "Enviar para análise"}
         </Button>
       </form>
+      )}
     </AppShell>
   );
 }
