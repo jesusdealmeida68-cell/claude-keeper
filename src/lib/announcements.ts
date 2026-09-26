@@ -1,7 +1,10 @@
 import { supabase } from "@/integrations/supabase/client";
 
+export type AnnouncementType = "anuncio" | "noticia";
+
 export type Announcement = {
   id: string;
+  type: AnnouncementType;
   sponsor_name: string;
   image_url: string;
   description: string;
@@ -15,6 +18,7 @@ export type Announcement = {
 };
 
 export type AnnouncementInput = {
+  type: AnnouncementType;
   sponsor_name: string;
   image_url: string;
   description: string;
@@ -56,6 +60,11 @@ export async function uploadAnnouncementImage(file: File) {
 
 export async function createAnnouncement(input: AnnouncementInput) {
   const { error } = await supabase.from("announcements").insert(input);
+  if (error) throw error;
+}
+
+export async function updateAnnouncement(id: string, input: Partial<AnnouncementInput>) {
+  const { error } = await supabase.from("announcements").update(input).eq("id", id);
   if (error) throw error;
 }
 

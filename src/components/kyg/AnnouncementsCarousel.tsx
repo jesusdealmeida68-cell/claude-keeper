@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import { Bell } from "lucide-react";
+import { Bell, Newspaper } from "lucide-react";
 import { getActiveAnnouncements } from "@/lib/announcements";
+import { cn } from "@/lib/utils";
 
 export function AnnouncementsCarousel() {
   const { data: announcements, isLoading } = useQuery({
@@ -22,42 +23,60 @@ export function AnnouncementsCarousel() {
           ? Array.from({ length: 2 }).map((_, i) => (
               <div key={i} className="h-48 w-72 shrink-0 animate-pulse rounded-3xl bg-secondary" />
             ))
-          : announcements!.map((a) => (
-              <div
-                key={a.id}
-                className="w-72 shrink-0 snap-start overflow-hidden rounded-3xl bg-card shadow-card"
-              >
-                <img src={a.image_url} alt={a.sponsor_name} className="h-32 w-full object-cover" />
-                <div className="p-4">
-                  <p className="text-[11px] font-bold uppercase tracking-wide text-gold">
-                    Patrocinado · {a.sponsor_name}
-                  </p>
-                  <p className="mt-1 line-clamp-2 text-sm text-foreground">{a.description}</p>
-                  {a.button_label && a.button_url ? (
-                    <div className="mt-3 flex gap-2">
-                      <a
-                        href={a.button_url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="flex-1 rounded-xl bg-primary px-3 py-2 text-center text-xs font-semibold text-primary-foreground"
-                      >
-                        {a.button_label}
-                      </a>
-                      {a.button2_label && a.button2_url ? (
+          : announcements!.map((a) => {
+              const isNews = a.type === "noticia";
+              return (
+                <div
+                  key={a.id}
+                  className="w-72 shrink-0 snap-start overflow-hidden rounded-3xl bg-card shadow-card"
+                >
+                  <div className="relative">
+                    <img
+                      src={a.image_url}
+                      alt={a.sponsor_name}
+                      className="h-32 w-full object-cover"
+                    />
+                    <span
+                      className={cn(
+                        "absolute left-3 top-3 flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide shadow-card",
+                        isNews ? "bg-card text-primary" : "bg-gold text-gold-foreground",
+                      )}
+                    >
+                      {isNews ? <Newspaper className="h-3 w-3" /> : null}
+                      {isNews ? "Notícia" : "Patrocinado"}
+                    </span>
+                  </div>
+                  <div className="p-4">
+                    <p className="text-xs font-semibold text-foreground">{a.sponsor_name}</p>
+                    <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
+                      {a.description}
+                    </p>
+                    {a.button_label && a.button_url ? (
+                      <div className="mt-3 flex gap-2">
                         <a
-                          href={a.button2_url}
+                          href={a.button_url}
                           target="_blank"
                           rel="noreferrer"
-                          className="flex-1 rounded-xl border border-primary/30 px-3 py-2 text-center text-xs font-semibold text-primary"
+                          className="flex-1 rounded-xl bg-primary px-3 py-2 text-center text-xs font-semibold text-primary-foreground"
                         >
-                          {a.button2_label}
+                          {a.button_label}
                         </a>
-                      ) : null}
-                    </div>
-                  ) : null}
+                        {a.button2_label && a.button2_url ? (
+                          <a
+                            href={a.button2_url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="flex-1 rounded-xl border border-primary/30 px-3 py-2 text-center text-xs font-semibold text-primary"
+                          >
+                            {a.button2_label}
+                          </a>
+                        ) : null}
+                      </div>
+                    ) : null}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
       </div>
     </div>
   );
