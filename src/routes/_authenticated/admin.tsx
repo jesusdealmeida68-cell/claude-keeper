@@ -45,12 +45,17 @@ function AdminPage() {
     queryKey: ["admin-submissions"],
     enabled: !!isAdmin,
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data: subs, error } = await supabase
         .from("submissions")
-        .select("*, profiles!submissions_user_id_fkey(full_name, phone)")
+        .select("*")
         .order("created_at", { ascending: false });
       if (error) throw error;
-      return data;
+      const { data: profiles } = await supabase.from("profiles").select("user_id, full_name, phone");
+      const byUser = new Map((profiles ?? []).map((p) => [p.user_id, p]));
+      return (subs ?? []).map((s) => ({
+        ...s,
+        profile: byUser.get(s.user_id) as { full_name: string; phone: string } | undefined,
+      }));
     },
   });
 
@@ -151,7 +156,7 @@ function AdminPage() {
             </div>
           ) : (
             filtered.map((s) => {
-              const profile = s.profiles as { full_name: string; phone: string } | null;
+              const profile = s.profile;
               return (
                 <div key={s.id} className="flex items-center gap-3 rounded-2xl bg-card p-4 shadow-card">
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-secondary">
