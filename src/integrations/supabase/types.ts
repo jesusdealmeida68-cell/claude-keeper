@@ -19,22 +19,28 @@ export type Database = {
           created_at: string
           full_name: string
           id: string
+          kyg_code: string
           phone: string
           user_id: string
+          verified: boolean
         }
         Insert: {
           created_at?: string
           full_name: string
           id?: string
+          kyg_code?: string
           phone: string
           user_id: string
+          verified?: boolean
         }
         Update: {
           created_at?: string
           full_name?: string
           id?: string
+          kyg_code?: string
           phone?: string
           user_id?: string
+          verified?: boolean
         }
         Relationships: []
       }

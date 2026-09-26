@@ -9,6 +9,7 @@ import {
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 import { Toaster } from "@/components/ui/sonner";
+import { InstallPwaBanner } from "@/components/kyg/InstallPwaBanner";
 import { supabase } from "@/integrations/supabase/client";
 
 import appCss from "../styles.css?url";
@@ -151,6 +152,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <Outlet />
+      <InstallPwaBanner />
       <Toaster richColors position="top-center" />
     </QueryClientProvider>
   );
