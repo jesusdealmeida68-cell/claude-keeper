@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
@@ -72,6 +72,8 @@ function AdminPage() {
   const { user } = Route.useRouteContext();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const isIndex = pathname === "/admin";
   const [tab, setTab] = useState<(typeof tabs)[number]["key"]>("all");
   const [query, setQuery] = useState("");
 
@@ -175,6 +177,10 @@ function AdminPage() {
 
   const adminName = profile?.full_name ?? "Administrador";
   const loading = rolesLoading || submissionsLoading;
+
+  if (!isIndex) {
+    return <Outlet />;
+  }
 
   return (
     <div className="mx-auto min-h-screen w-full max-w-2xl bg-background pb-24">
