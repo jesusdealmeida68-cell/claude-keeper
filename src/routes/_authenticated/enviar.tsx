@@ -17,9 +17,9 @@ function EnviarPage() {
   const { user } = Route.useRouteContext();
   const navigate = useNavigate();
   const fileRef = useRef<HTMLInputElement>(null);
-  const [service, setService] = useState("");
+  const service = "Verificação KYG";
   const [reference, setReference] = useState("");
-  const [date, setDate] = useState("");
+  const date = new Date().toISOString().slice(0, 10);
   const [note, setNote] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
@@ -64,10 +64,9 @@ function EnviarPage() {
           <Label htmlFor="service">Serviço</Label>
           <Input
             id="service"
-            placeholder="Serviço realizado"
             value={service}
-            onChange={(e) => setService(e.target.value)}
-            required
+            readOnly
+            disabled
             className="h-12 rounded-xl bg-card"
           />
         </div>
@@ -89,7 +88,8 @@ function EnviarPage() {
             id="date"
             type="date"
             value={date}
-            onChange={(e) => setDate(e.target.value)}
+            readOnly
+            disabled
             className="h-12 rounded-xl bg-card"
           />
         </div>
