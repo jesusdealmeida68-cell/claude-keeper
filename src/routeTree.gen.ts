@@ -10,33 +10,219 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as PrivacidadeRouteImport } from './routes/privacidade'
+import { Route as TermosRouteImport } from './routes/termos'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedEnviadoRouteImport } from './routes/_authenticated/enviado'
+import { Route as AuthenticatedEnviarRouteImport } from './routes/_authenticated/enviar'
+import { Route as AuthenticatedEnviosRouteImport } from './routes/_authenticated/envios'
+import { Route as AuthenticatedInicioRouteImport } from './routes/_authenticated/inicio'
+import { Route as AuthenticatedNotificacoesRouteImport } from './routes/_authenticated/notificacoes'
+import { Route as AuthenticatedPerfilRouteImport } from './routes/_authenticated/perfil'
+import { Route as AuthenticatedAdminIdRouteImport } from './routes/_authenticated/admin.$id'
+import { Route as AuthenticatedEnviosIdRouteImport } from './routes/_authenticated/envios.$id'
+import { Route as AuthenticatedPerfilEditarRouteImport } from './routes/_authenticated/perfil.editar'
+import { Route as AuthenticatedPerfilSenhaRouteImport } from './routes/_authenticated/perfil.senha'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacidadeRoute = PrivacidadeRouteImport.update({
+  id: '/privacidade',
+  path: '/privacidade',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermosRoute = TermosRouteImport.update({
+  id: '/termos',
+  path: '/termos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedEnviadoRoute = AuthenticatedEnviadoRouteImport.update({
+  id: '/enviado',
+  path: '/enviado',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedEnviarRoute = AuthenticatedEnviarRouteImport.update({
+  id: '/enviar',
+  path: '/enviar',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedEnviosRoute = AuthenticatedEnviosRouteImport.update({
+  id: '/envios',
+  path: '/envios',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedInicioRoute = AuthenticatedInicioRouteImport.update({
+  id: '/inicio',
+  path: '/inicio',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedNotificacoesRoute =
+  AuthenticatedNotificacoesRouteImport.update({
+    id: '/notificacoes',
+    path: '/notificacoes',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPerfilRoute = AuthenticatedPerfilRouteImport.update({
+  id: '/perfil',
+  path: '/perfil',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAdminIdRoute = AuthenticatedAdminIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
+const AuthenticatedEnviosIdRoute = AuthenticatedEnviosIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AuthenticatedEnviosRoute,
+} as any)
+const AuthenticatedPerfilEditarRoute =
+  AuthenticatedPerfilEditarRouteImport.update({
+    id: '/editar',
+    path: '/editar',
+    getParentRoute: () => AuthenticatedPerfilRoute,
+  } as any)
+const AuthenticatedPerfilSenhaRoute =
+  AuthenticatedPerfilSenhaRouteImport.update({
+    id: '/senha',
+    path: '/senha',
+    getParentRoute: () => AuthenticatedPerfilRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/privacidade': typeof PrivacidadeRoute
+  '/termos': typeof TermosRoute
+  '/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/enviado': typeof AuthenticatedEnviadoRoute
+  '/enviar': typeof AuthenticatedEnviarRoute
+  '/envios': typeof AuthenticatedEnviosRouteWithChildren
+  '/inicio': typeof AuthenticatedInicioRoute
+  '/notificacoes': typeof AuthenticatedNotificacoesRoute
+  '/perfil': typeof AuthenticatedPerfilRouteWithChildren
+  '/admin/$id': typeof AuthenticatedAdminIdRoute
+  '/envios/$id': typeof AuthenticatedEnviosIdRoute
+  '/perfil/editar': typeof AuthenticatedPerfilEditarRoute
+  '/perfil/senha': typeof AuthenticatedPerfilSenhaRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/privacidade': typeof PrivacidadeRoute
+  '/termos': typeof TermosRoute
+  '/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/enviado': typeof AuthenticatedEnviadoRoute
+  '/enviar': typeof AuthenticatedEnviarRoute
+  '/envios': typeof AuthenticatedEnviosRouteWithChildren
+  '/inicio': typeof AuthenticatedInicioRoute
+  '/notificacoes': typeof AuthenticatedNotificacoesRoute
+  '/perfil': typeof AuthenticatedPerfilRouteWithChildren
+  '/admin/$id': typeof AuthenticatedAdminIdRoute
+  '/envios/$id': typeof AuthenticatedEnviosIdRoute
+  '/perfil/editar': typeof AuthenticatedPerfilEditarRoute
+  '/perfil/senha': typeof AuthenticatedPerfilSenhaRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/privacidade': typeof PrivacidadeRoute
+  '/termos': typeof TermosRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/_authenticated/enviado': typeof AuthenticatedEnviadoRoute
+  '/_authenticated/enviar': typeof AuthenticatedEnviarRoute
+  '/_authenticated/envios': typeof AuthenticatedEnviosRouteWithChildren
+  '/_authenticated/inicio': typeof AuthenticatedInicioRoute
+  '/_authenticated/notificacoes': typeof AuthenticatedNotificacoesRoute
+  '/_authenticated/perfil': typeof AuthenticatedPerfilRouteWithChildren
+  '/_authenticated/admin/$id': typeof AuthenticatedAdminIdRoute
+  '/_authenticated/envios/$id': typeof AuthenticatedEnviosIdRoute
+  '/_authenticated/perfil/editar': typeof AuthenticatedPerfilEditarRoute
+  '/_authenticated/perfil/senha': typeof AuthenticatedPerfilSenhaRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/privacidade'
+    | '/termos'
+    | '/admin'
+    | '/enviado'
+    | '/enviar'
+    | '/envios'
+    | '/inicio'
+    | '/notificacoes'
+    | '/perfil'
+    | '/admin/$id'
+    | '/envios/$id'
+    | '/perfil/editar'
+    | '/perfil/senha'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/auth'
+    | '/privacidade'
+    | '/termos'
+    | '/admin'
+    | '/enviado'
+    | '/enviar'
+    | '/envios'
+    | '/inicio'
+    | '/notificacoes'
+    | '/perfil'
+    | '/admin/$id'
+    | '/envios/$id'
+    | '/perfil/editar'
+    | '/perfil/senha'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/privacidade'
+    | '/termos'
+    | '/_authenticated/admin'
+    | '/_authenticated/enviado'
+    | '/_authenticated/enviar'
+    | '/_authenticated/envios'
+    | '/_authenticated/inicio'
+    | '/_authenticated/notificacoes'
+    | '/_authenticated/perfil'
+    | '/_authenticated/admin/$id'
+    | '/_authenticated/envios/$id'
+    | '/_authenticated/perfil/editar'
+    | '/_authenticated/perfil/senha'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
+  PrivacidadeRoute: typeof PrivacidadeRoute
+  TermosRoute: typeof TermosRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +234,178 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacidade': {
+      id: '/privacidade'
+      path: '/privacidade'
+      fullPath: '/privacidade'
+      preLoaderRoute: typeof PrivacidadeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/termos': {
+      id: '/termos'
+      path: '/termos'
+      fullPath: '/termos'
+      preLoaderRoute: typeof TermosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/enviado': {
+      id: '/_authenticated/enviado'
+      path: '/enviado'
+      fullPath: '/enviado'
+      preLoaderRoute: typeof AuthenticatedEnviadoRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/enviar': {
+      id: '/_authenticated/enviar'
+      path: '/enviar'
+      fullPath: '/enviar'
+      preLoaderRoute: typeof AuthenticatedEnviarRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/envios': {
+      id: '/_authenticated/envios'
+      path: '/envios'
+      fullPath: '/envios'
+      preLoaderRoute: typeof AuthenticatedEnviosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/inicio': {
+      id: '/_authenticated/inicio'
+      path: '/inicio'
+      fullPath: '/inicio'
+      preLoaderRoute: typeof AuthenticatedInicioRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/notificacoes': {
+      id: '/_authenticated/notificacoes'
+      path: '/notificacoes'
+      fullPath: '/notificacoes'
+      preLoaderRoute: typeof AuthenticatedNotificacoesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/perfil': {
+      id: '/_authenticated/perfil'
+      path: '/perfil'
+      fullPath: '/perfil'
+      preLoaderRoute: typeof AuthenticatedPerfilRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/$id': {
+      id: '/_authenticated/admin/$id'
+      path: '/$id'
+      fullPath: '/admin/$id'
+      preLoaderRoute: typeof AuthenticatedAdminIdRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/envios/$id': {
+      id: '/_authenticated/envios/$id'
+      path: '/$id'
+      fullPath: '/envios/$id'
+      preLoaderRoute: typeof AuthenticatedEnviosIdRouteImport
+      parentRoute: typeof AuthenticatedEnviosRoute
+    }
+    '/_authenticated/perfil/editar': {
+      id: '/_authenticated/perfil/editar'
+      path: '/editar'
+      fullPath: '/perfil/editar'
+      preLoaderRoute: typeof AuthenticatedPerfilEditarRouteImport
+      parentRoute: typeof AuthenticatedPerfilRoute
+    }
+    '/_authenticated/perfil/senha': {
+      id: '/_authenticated/perfil/senha'
+      path: '/senha'
+      fullPath: '/perfil/senha'
+      preLoaderRoute: typeof AuthenticatedPerfilSenhaRouteImport
+      parentRoute: typeof AuthenticatedPerfilRoute
+    }
   }
 }
 
+interface AuthenticatedAdminRouteChildren {
+  AuthenticatedAdminIdRoute: typeof AuthenticatedAdminIdRoute
+}
+
+const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
+  AuthenticatedAdminIdRoute: AuthenticatedAdminIdRoute,
+}
+
+const AuthenticatedAdminRouteWithChildren =
+  AuthenticatedAdminRoute._addFileChildren(AuthenticatedAdminRouteChildren)
+
+interface AuthenticatedEnviosRouteChildren {
+  AuthenticatedEnviosIdRoute: typeof AuthenticatedEnviosIdRoute
+}
+
+const AuthenticatedEnviosRouteChildren: AuthenticatedEnviosRouteChildren = {
+  AuthenticatedEnviosIdRoute: AuthenticatedEnviosIdRoute,
+}
+
+const AuthenticatedEnviosRouteWithChildren =
+  AuthenticatedEnviosRoute._addFileChildren(AuthenticatedEnviosRouteChildren)
+
+interface AuthenticatedPerfilRouteChildren {
+  AuthenticatedPerfilEditarRoute: typeof AuthenticatedPerfilEditarRoute
+  AuthenticatedPerfilSenhaRoute: typeof AuthenticatedPerfilSenhaRoute
+}
+
+const AuthenticatedPerfilRouteChildren: AuthenticatedPerfilRouteChildren = {
+  AuthenticatedPerfilEditarRoute: AuthenticatedPerfilEditarRoute,
+  AuthenticatedPerfilSenhaRoute: AuthenticatedPerfilSenhaRoute,
+}
+
+const AuthenticatedPerfilRouteWithChildren =
+  AuthenticatedPerfilRoute._addFileChildren(AuthenticatedPerfilRouteChildren)
+
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
+  AuthenticatedEnviadoRoute: typeof AuthenticatedEnviadoRoute
+  AuthenticatedEnviarRoute: typeof AuthenticatedEnviarRoute
+  AuthenticatedEnviosRoute: typeof AuthenticatedEnviosRouteWithChildren
+  AuthenticatedInicioRoute: typeof AuthenticatedInicioRoute
+  AuthenticatedNotificacoesRoute: typeof AuthenticatedNotificacoesRoute
+  AuthenticatedPerfilRoute: typeof AuthenticatedPerfilRouteWithChildren
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
+  AuthenticatedEnviadoRoute: AuthenticatedEnviadoRoute,
+  AuthenticatedEnviarRoute: AuthenticatedEnviarRoute,
+  AuthenticatedEnviosRoute: AuthenticatedEnviosRouteWithChildren,
+  AuthenticatedInicioRoute: AuthenticatedInicioRoute,
+  AuthenticatedNotificacoesRoute: AuthenticatedNotificacoesRoute,
+  AuthenticatedPerfilRoute: AuthenticatedPerfilRouteWithChildren,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
+  PrivacidadeRoute: PrivacidadeRoute,
+  TermosRoute: TermosRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
