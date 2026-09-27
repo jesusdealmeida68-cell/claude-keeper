@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { AppShell } from "@/components/kyg/AppShell";
@@ -25,6 +26,10 @@ function NotificacoesPage() {
     queryKey: ["notifications", user.id],
     queryFn: () => getMyNotifications(user.id),
   });
+
+  useEffect(() => {
+    localStorage.setItem(`kyg_notif_seen_${user.id}`, new Date().toISOString());
+  }, [user.id]);
 
   return (
     <AppShell title="Notificações">

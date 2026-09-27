@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import { Home, Send, FileText, User } from "lucide-react";
 import type { ReactNode } from "react";
 import { KygLogo } from "./KygLogo";
+import { NotificationBell } from "./NotificationBell";
 
 const navItems = [
   { to: "/inicio", label: "Início", icon: Home },
@@ -19,6 +20,7 @@ export function AppShell({ children, title }: { children: ReactNode; title?: str
       <header className="sticky top-0 z-10 flex items-center gap-3 border-b bg-card/90 px-5 py-3 backdrop-blur">
         <KygLogo size="sm" />
         {title ? <h1 className="text-lg font-semibold tracking-tight">{title}</h1> : null}
+        <NotificationBell />
       </header>
 
       <main className="flex-1 px-5 pb-28 pt-5">{children}</main>
