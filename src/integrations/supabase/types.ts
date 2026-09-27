@@ -212,21 +212,27 @@ export type Database = {
         Row: {
           amount: number
           created_at: string
+          destination: string | null
           id: string
+          method: string
           status: string
           user_id: string
         }
         Insert: {
           amount: number
           created_at?: string
+          destination?: string | null
           id?: string
+          method?: string
           status?: string
           user_id: string
         }
         Update: {
           amount?: number
           created_at?: string
+          destination?: string | null
           id?: string
+          method?: string
           status?: string
           user_id?: string
         }
@@ -248,7 +254,12 @@ export type Database = {
         }
         Returns: boolean
       }
-      request_withdrawal: { Args: { _amount: number }; Returns: string }
+      request_withdrawal:
+        | { Args: { _amount: number }; Returns: string }
+        | {
+            Args: { _amount: number; _destination?: string; _method?: string }
+            Returns: string
+          }
     }
     Enums: {
       app_role: "admin" | "user"
