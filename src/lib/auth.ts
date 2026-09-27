@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { adminSignUp } from "@/lib/signup.functions";
 
 /** Converte um número de telefone angolano num email sintético para autenticação. */
 export function phoneToEmail(phone: string): string {
@@ -7,13 +8,11 @@ export function phoneToEmail(phone: string): string {
 }
 
 export async function signUpWithPhone(fullName: string, phone: string, password: string) {
-  const email = phoneToEmail(phone);
-  const { data, error } = await supabase.auth.signUp({
-    email,
+  await adminSignUp({ data: { fullName, phone, password } });
+  // A conta já foi criada confirmada no servidor; agora iniciamos sessão normalmente.
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email: phoneToEmail(phone),
     password,
-    options: {
-      data: { full_name: fullName, phone: phone.replace(/\D/g, "") },
-    },
   });
   if (error) throw error;
   return data;
