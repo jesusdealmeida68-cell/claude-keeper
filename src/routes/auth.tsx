@@ -150,11 +150,11 @@ function SignupForm({ onSwitch }: { onSwitch: () => void }) {
       toast.success("Conta criada com sucesso!");
       navigate({ to: "/inicio", replace: true });
     } catch (err) {
-      const msg =
-        err instanceof Error && err.message.includes("already")
-          ? "Este número já está registado. Tenta entrar."
-          : "Não foi possível criar a conta. Tenta novamente.";
-      toast.error(msg);
+      const raw = err instanceof Error ? err.message : String(err);
+      const msg = raw.includes("already")
+        ? "Este número já está registado. Tenta entrar."
+        : `Não foi possível criar a conta: ${raw}`;
+      toast.error(msg, { duration: 10000 });
     } finally {
       setLoading(false);
     }

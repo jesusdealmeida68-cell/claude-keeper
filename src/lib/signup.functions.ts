@@ -18,7 +18,14 @@ type AdminSignUpInput = {
 export const adminSignUp = createServerFn({ method: "POST" })
   .validator((data: AdminSignUpInput) => data)
   .handler(async ({ data }) => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    let supabaseAdmin: (typeof import("@/integrations/supabase/client.server"))["supabaseAdmin"];
+    try {
+      ({ supabaseAdmin } = await import("@/integrations/supabase/client.server"));
+    } catch (e) {
+      console.error("[adminSignUp] Falha ao criar cliente admin:", e);
+      throw new Error(`config_error: ${e instanceof Error ? e.message : String(e)}`);
+    }
+
     const email = phoneToEmail(data.phone);
     const digits = data.phone.replace(/\D/g, "");
 
@@ -30,11 +37,12 @@ export const adminSignUp = createServerFn({ method: "POST" })
     });
 
     if (error) {
+      console.error("[adminSignUp] Erro do Supabase ao criar utilizador:", error);
       const msg = (error.message ?? "").toLowerCase();
       if (msg.includes("already") || msg.includes("registered") || error.status === 422) {
         throw new Error("already_registered");
       }
-      throw new Error("signup_failed");
+      throw new Error(`signup_failed: ${error.message ?? "erro desconhecido"}`);
     }
 
     return { email };
