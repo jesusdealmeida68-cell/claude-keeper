@@ -31,6 +31,7 @@ import {
   MoreVertical,
   Search,
   ShieldCheck,
+  Users,
   Wallet,
   XCircle,
 } from "lucide-react";
@@ -233,6 +234,12 @@ function AdminPage() {
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
+            <DropdownMenuItem asChild className="cursor-pointer gap-3 px-4 py-2.5">
+              <Link to="/admin/usuarios">
+                <Users className="h-4 w-4 text-muted-foreground" />
+                Usuários
+              </Link>
+            </DropdownMenuItem>
             <DropdownMenuItem asChild className="cursor-pointer gap-3 px-4 py-2.5">
               <Link to="/admin/anuncios">
                 <Megaphone className="h-4 w-4 text-muted-foreground" />

@@ -29,6 +29,7 @@ import {
   Shield,
   ShieldCheck,
   SquarePlus,
+  Star,
   Wallet,
 } from "lucide-react";
 
@@ -142,7 +143,10 @@ function PerfilPage() {
         <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary text-2xl font-bold text-gold shadow-card-lg">
           {initials}
         </div>
-        <h2 className="mt-4 text-xl font-bold tracking-tight">{profile?.full_name ?? "…"}</h2>
+        <h2 className="mt-4 flex items-center gap-1.5 text-xl font-bold tracking-tight">
+          {profile?.full_name ?? "…"}
+          {profile?.starred ? <Star className="h-4.5 w-4.5 fill-gold text-gold" /> : null}
+        </h2>
         <p className="mt-0.5 text-sm text-muted-foreground">{profile?.phone ?? ""}</p>
       </div>
 

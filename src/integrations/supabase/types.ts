@@ -128,6 +128,7 @@ export type Database = {
           full_name: string
           id: string
           phone: string
+          starred: boolean
           user_id: string
         }
         Insert: {
@@ -136,6 +137,7 @@ export type Database = {
           full_name: string
           id?: string
           phone: string
+          starred?: boolean
           user_id: string
         }
         Update: {
@@ -144,6 +146,7 @@ export type Database = {
           full_name?: string
           id?: string
           phone?: string
+          starred?: boolean
           user_id?: string
         }
         Relationships: []
