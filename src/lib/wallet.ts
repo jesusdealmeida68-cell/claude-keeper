@@ -1,10 +1,14 @@
 import { supabase } from "@/integrations/supabase/client";
 
+export type WithdrawalMethod = "phone" | "iban";
+
 export type Withdrawal = {
   id: string;
   user_id: string;
   amount: number;
   status: string;
+  method: WithdrawalMethod;
+  destination: string | null;
   created_at: string;
 };
 
@@ -40,9 +44,13 @@ export async function approveSubmissionWithPayment(submissionId: string, amount:
   if (error) throw error;
 }
 
-/** Utilizador pede para retirar um valor do seu saldo. */
-export async function requestWithdrawal(amount: number) {
-  const { error } = await supabase.rpc("request_withdrawal", { _amount: amount });
+/** Utilizador pede para retirar um valor do seu saldo (por telefone ou IBAN). */
+export async function requestWithdrawal(amount: number, method: WithdrawalMethod, destination: string) {
+  const { error } = await supabase.rpc("request_withdrawal", {
+    _amount: amount,
+    _method: method,
+    _destination: destination,
+  });
   if (error) throw error;
 }
 
