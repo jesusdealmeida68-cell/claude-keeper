@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { KygLogo } from "@/components/kyg/KygLogo";
+import { Button } from "@/components/ui/button";
 import { getMyRoles } from "@/lib/auth";
 import { getAllWithdrawals, markWithdrawalPaid, type WithdrawalWithProfile } from "@/lib/wallet";
 import { cn } from "@/lib/utils";
@@ -17,12 +18,27 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ArrowLeft, CheckCircle2, Clock, Loader2, MoreVertical, Wallet } from "lucide-react";
+import {
+  ArrowLeft,
+  CheckCircle2,
+  Clock,
+  Landmark,
+  Loader2,
+  MoreVertical,
+  Phone,
+  Wallet,
+} from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin/retiradas")({
   component: AdminRetiradasPage,
@@ -50,6 +66,7 @@ function AdminRetiradasPage() {
   const queryClient = useQueryClient();
   const [tab, setTab] = useState<(typeof tabs)[number]["key"]>("pending");
   const [toPay, setToPay] = useState<WithdrawalWithProfile | null>(null);
+  const [viewing, setViewing] = useState<WithdrawalWithProfile | null>(null);
   const [paying, setPaying] = useState(false);
 
   const { data: roles, isLoading: rolesLoading } = useQuery({
@@ -179,9 +196,10 @@ function AdminRetiradasPage() {
             </div>
           ) : (
             filtered.map((w) => (
-              <div
+              <button
                 key={w.id}
-                className="flex items-center gap-3 rounded-2xl bg-card p-4 shadow-card"
+                onClick={() => setViewing(w)}
+                className="flex w-full items-center gap-3 rounded-2xl bg-card p-4 text-left shadow-card transition-colors hover:bg-secondary/60"
               >
                 <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gold-soft text-sm font-bold text-gold-foreground">
                   {initialsOf(w.profile?.full_name ?? "?")}
@@ -201,14 +219,20 @@ function AdminRetiradasPage() {
                 {w.status === "pending" ? (
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <button
+                      <span
+                        role="button"
                         aria-label="Ações"
+                        onClick={(e) => e.stopPropagation()}
                         className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-muted-foreground hover:bg-secondary"
                       >
                         <MoreVertical className="h-4.5 w-4.5" />
-                      </button>
+                      </span>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="rounded-xl">
+                    <DropdownMenuContent
+                      align="end"
+                      onClick={(e) => e.stopPropagation()}
+                      className="rounded-xl"
+                    >
                       <DropdownMenuItem onClick={() => setToPay(w)} className="gap-2">
                         <CheckCircle2 className="h-4 w-4 text-success" /> Marcar como pago
                       </DropdownMenuItem>
@@ -217,7 +241,7 @@ function AdminRetiradasPage() {
                 ) : (
                   <CheckCircle2 className="h-5 w-5 shrink-0 text-success" />
                 )}
-              </div>
+              </button>
             ))
           )}
         </div>
@@ -251,6 +275,95 @@ function AdminRetiradasPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <Dialog open={!!viewing} onOpenChange={(open) => !open && setViewing(null)}>
+        <DialogContent className="rounded-3xl">
+          <DialogHeader>
+            <DialogTitle>Detalhes da retirada</DialogTitle>
+          </DialogHeader>
+          {viewing ? (
+            <div className="space-y-4">
+              <div className="flex items-center gap-3 rounded-2xl bg-secondary/60 p-4">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gold-soft text-sm font-bold text-gold-foreground">
+                  {initialsOf(viewing.profile?.full_name ?? "?")}
+                </div>
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-semibold">
+                    {viewing.profile?.full_name ?? "Utilizador"}
+                  </p>
+                  <p className="truncate text-xs text-muted-foreground">
+                    {viewing.profile?.phone ?? "—"}
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-3 rounded-2xl border p-4">
+                <div className="flex items-center gap-3">
+                  <Wallet className="h-4 w-4 shrink-0 text-muted-foreground" />
+                  <div className="min-w-0">
+                    <p className="text-xs text-muted-foreground">Valor a pagar</p>
+                    <p className="text-base font-bold">
+                      {Number(viewing.amount).toLocaleString("pt-AO", {
+                        minimumFractionDigits: 2,
+                      })}{" "}
+                      Kz
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  {viewing.method === "iban" ? (
+                    <Landmark className="h-4 w-4 shrink-0 text-muted-foreground" />
+                  ) : (
+                    <Phone className="h-4 w-4 shrink-0 text-muted-foreground" />
+                  )}
+                  <div className="min-w-0">
+                    <p className="text-xs text-muted-foreground">
+                      {viewing.method === "iban" ? "IBAN de destino" : "Telefone de destino"}
+                    </p>
+                    <p className="truncate text-sm font-semibold">{viewing.destination ?? "—"}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <Clock className="h-4 w-4 shrink-0 text-muted-foreground" />
+                  <div className="min-w-0">
+                    <p className="text-xs text-muted-foreground">Pedido em</p>
+                    <p className="text-sm font-semibold">
+                      {new Date(viewing.created_at).toLocaleString("pt-AO")}
+                    </p>
+                  </div>
+                </div>
+
+                {viewing.status === "paid" && viewing.paid_at ? (
+                  <div className="flex items-center gap-3">
+                    <CheckCircle2 className="h-4 w-4 shrink-0 text-success" />
+                    <div className="min-w-0">
+                      <p className="text-xs text-muted-foreground">Pago em</p>
+                      <p className="text-sm font-semibold">
+                        {new Date(viewing.paid_at).toLocaleString("pt-AO")}
+                      </p>
+                    </div>
+                  </div>
+                ) : null}
+              </div>
+
+              {viewing.status === "pending" ? (
+                <Button
+                  disabled={paying}
+                  onClick={() => {
+                    setToPay(viewing);
+                    setViewing(null);
+                  }}
+                  className="h-11 w-full rounded-xl bg-success font-semibold text-white hover:bg-success/90"
+                >
+                  <CheckCircle2 className="mr-1.5 h-4 w-4" /> Marcar como pago
+                </Button>
+              ) : null}
+            </div>
+          ) : null}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
