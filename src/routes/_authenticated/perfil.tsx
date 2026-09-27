@@ -15,16 +15,20 @@ import {
 } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { getMyProfile, getMyRoles } from "@/lib/auth";
+import { useInstallPrompt } from "@/hooks/use-install-prompt";
 import { requestWithdrawal, type WithdrawalMethod } from "@/lib/wallet";
 import {
   ChevronRight,
+  Download,
   KeyRound,
   Loader2,
   LogOut,
   Pencil,
+  Share,
   ScrollText,
   Shield,
   ShieldCheck,
+  SquarePlus,
   Wallet,
 } from "lucide-react";
 
@@ -41,6 +45,8 @@ function PerfilPage() {
   const [method, setMethod] = useState<WithdrawalMethod>("phone");
   const [destination, setDestination] = useState("");
   const [withdrawing, setWithdrawing] = useState(false);
+  const [iosInstallOpen, setIosInstallOpen] = useState(false);
+  const { canInstall, isIos, isStandalone, promptInstall } = useInstallPrompt();
 
   const { data: profile } = useQuery({
     queryKey: ["profile", user.id],
@@ -61,6 +67,20 @@ function PerfilPage() {
     navigate({ to: "/auth", replace: true });
   }
 
+  async function handleInstallClick() {
+    if (canInstall) {
+      await promptInstall();
+      return;
+    }
+    if (isIos) {
+      setIosInstallOpen(true);
+      return;
+    }
+    toast.info(
+      'Abre o menu do teu navegador e escolhe "Instalar aplicativo" ou "Adicionar ao ecrã principal".',
+    );
+  }
+
   async function handleWithdraw() {
     const value = Number(amount.replace(",", "."));
     if (!value || value <= 0) {
@@ -76,13 +96,20 @@ function PerfilPage() {
       toast.error("Indica um número de telefone válido.");
       return;
     }
-    if (method === "iban" && !/^[A-Za-z]{2}\d{2}[A-Za-z0-9]{10,30}$/.test(dest.replace(/\s/g, ""))) {
+    if (
+      method === "iban" &&
+      !/^[A-Za-z]{2}\d{2}[A-Za-z0-9]{10,30}$/.test(dest.replace(/\s/g, ""))
+    ) {
       toast.error("Indica um IBAN válido.");
       return;
     }
     setWithdrawing(true);
     try {
-      await requestWithdrawal(value, method, method === "iban" ? dest.replace(/\s/g, "").toUpperCase() : dest);
+      await requestWithdrawal(
+        value,
+        method,
+        method === "iban" ? dest.replace(/\s/g, "").toUpperCase() : dest,
+      );
       await queryClient.invalidateQueries({ queryKey: ["profile", user.id] });
       toast.success("Pedido de retirada enviado.");
       setWithdrawOpen(false);
@@ -140,10 +167,31 @@ function PerfilPage() {
             {(profile?.balance ?? 0).toLocaleString("pt-AO", { minimumFractionDigits: 2 })} Kz
           </p>
         </div>
-        <Button onClick={() => setWithdrawOpen(true)} className="h-10 shrink-0 rounded-xl bg-primary font-semibold">
+        <Button
+          onClick={() => setWithdrawOpen(true)}
+          className="h-10 shrink-0 rounded-xl bg-primary font-semibold"
+        >
           Retirar
         </Button>
       </div>
+
+      {!isStandalone ? (
+        <button
+          onClick={handleInstallClick}
+          className="mt-6 flex w-full items-center gap-3 rounded-3xl bg-card p-5 text-left shadow-card animate-fade-up"
+        >
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gold-soft text-gold-foreground">
+            <Download className="h-5 w-5" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-semibold">Instalar aplicativo</p>
+            <p className="truncate text-xs text-muted-foreground">
+              Acesso mais rápido, direto do ecrã principal
+            </p>
+          </div>
+          <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground/50" />
+        </button>
+      ) : null}
 
       <div className="mt-6 overflow-hidden rounded-3xl bg-card shadow-card animate-fade-up [animation-delay:100ms]">
         {options.map((opt, i) => {
@@ -174,7 +222,8 @@ function PerfilPage() {
           <DialogHeader>
             <DialogTitle>Retirar saldo</DialogTitle>
             <DialogDescription>
-              Saldo disponível: {(profile?.balance ?? 0).toLocaleString("pt-AO", { minimumFractionDigits: 2 })} Kz
+              Saldo disponível:{" "}
+              {(profile?.balance ?? 0).toLocaleString("pt-AO", { minimumFractionDigits: 2 })} Kz
             </DialogDescription>
           </DialogHeader>
           <Input
@@ -207,7 +256,11 @@ function PerfilPage() {
             ))}
           </div>
           <Input
-            placeholder={method === "phone" ? "Número de telefone para receber" : "IBAN para receber (ex.: AO06...)"}
+            placeholder={
+              method === "phone"
+                ? "Número de telefone para receber"
+                : "IBAN para receber (ex.: AO06...)"
+            }
             value={destination}
             onChange={(e) => setDestination(e.target.value)}
             className="h-12 rounded-xl"
@@ -223,6 +276,43 @@ function PerfilPage() {
               className="rounded-xl bg-primary font-semibold"
             >
               {withdrawing ? <Loader2 className="h-4 w-4 animate-spin" /> : "Confirmar retirada"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={iosInstallOpen} onOpenChange={setIosInstallOpen}>
+        <DialogContent className="rounded-3xl">
+          <DialogHeader>
+            <DialogTitle>Instalar aplicativo</DialogTitle>
+            <DialogDescription>
+              No iPhone/iPad, a instalação é feita pelo Safari em 2 passos:
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div className="flex items-center gap-3 rounded-2xl bg-secondary/60 p-3">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-card text-primary shadow-card">
+                <Share className="h-4.5 w-4.5" />
+              </div>
+              <p className="text-sm">
+                Toca no botão <span className="font-semibold">Partilhar</span> na barra do Safari
+              </p>
+            </div>
+            <div className="flex items-center gap-3 rounded-2xl bg-secondary/60 p-3">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-card text-primary shadow-card">
+                <SquarePlus className="h-4.5 w-4.5" />
+              </div>
+              <p className="text-sm">
+                Escolhe <span className="font-semibold">Adicionar ao Ecrã Principal</span>
+              </p>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              onClick={() => setIosInstallOpen(false)}
+              className="rounded-xl bg-primary font-semibold"
+            >
+              Entendi
             </Button>
           </DialogFooter>
         </DialogContent>
