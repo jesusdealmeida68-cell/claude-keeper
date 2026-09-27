@@ -6,7 +6,13 @@ import { KygLogo } from "@/components/kyg/KygLogo";
 import { getMyRoles } from "@/lib/auth";
 import { getAllUsers, setUserStarred } from "@/lib/users";
 import { cn } from "@/lib/utils";
-import { ArrowLeft, Search, Star, Users } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { ArrowLeft, MoreVertical, Phone, Search, Star, Users, Wallet } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin/usuarios")({
   component: AdminUsuariosPage,
@@ -71,6 +77,8 @@ function AdminUsuariosPage() {
     );
   }, [users, query]);
 
+  const totalBalance = (users ?? []).reduce((sum, u) => sum + (u.balance ?? 0), 0);
+
   if (!rolesLoading && !isAdmin) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-background px-6 text-center">
@@ -98,6 +106,15 @@ function AdminUsuariosPage() {
     }
   }
 
+  async function copyPhone(phone: string) {
+    try {
+      await navigator.clipboard.writeText(phone);
+      toast.success("Telefone copiado.");
+    } catch {
+      toast.error("Não foi possível copiar.");
+    }
+  }
+
   return (
     <div className="mx-auto min-h-screen w-full max-w-2xl bg-background pb-10">
       <header className="sticky top-0 z-10 flex items-center gap-3 border-b bg-primary px-5 py-3">
@@ -112,6 +129,25 @@ function AdminUsuariosPage() {
         >
           <ArrowLeft className="h-4 w-4" /> Voltar
         </Link>
+
+        <div className="mt-4 grid grid-cols-2 gap-3 animate-fade-up">
+          <div className="rounded-3xl bg-card p-4 shadow-card">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
+              <Users className="h-4.5 w-4.5" />
+            </div>
+            <p className="mt-3 text-xl font-bold tracking-tight">{users?.length ?? 0}</p>
+            <p className="text-xs font-medium text-muted-foreground">Utilizadores</p>
+          </div>
+          <div className="rounded-3xl bg-card p-4 shadow-card">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gold-soft text-gold-foreground">
+              <Wallet className="h-4.5 w-4.5" />
+            </div>
+            <p className="mt-3 text-xl font-bold tracking-tight">
+              {totalBalance.toLocaleString("pt-AO", { minimumFractionDigits: 2 })}
+            </p>
+            <p className="text-xs font-medium text-muted-foreground">Saldo total (Kz)</p>
+          </div>
+        </div>
 
         <div className="relative mt-4">
           <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -172,20 +208,36 @@ function AdminUsuariosPage() {
                     ) : null}
                   </div>
                   <p className="truncate text-xs text-muted-foreground">{u.phone}</p>
+                  <p className="mt-0.5 text-xs font-semibold text-primary">
+                    {(u.balance ?? 0).toLocaleString("pt-AO", { minimumFractionDigits: 2 })} Kz ·{" "}
+                    <span className="font-normal text-muted-foreground">
+                      desde {new Date(u.created_at).toLocaleDateString("pt-AO")}
+                    </span>
+                  </p>
                 </div>
-                <button
-                  onClick={() => toggleStar(u.user_id, u.starred)}
-                  disabled={pending === u.user_id}
-                  aria-label={u.starred ? "Remover estrela" : "Dar estrela"}
-                  className={cn(
-                    "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-colors disabled:opacity-50",
-                    u.starred
-                      ? "bg-gold-soft text-gold hover:bg-gold/20"
-                      : "text-muted-foreground hover:bg-secondary",
-                  )}
-                >
-                  <Star className={cn("h-5 w-5", u.starred && "fill-gold")} />
-                </button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button
+                      disabled={pending === u.user_id}
+                      aria-label="Ações"
+                      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-muted-foreground hover:bg-secondary disabled:opacity-50"
+                    >
+                      <MoreVertical className="h-4.5 w-4.5" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="rounded-xl">
+                    <DropdownMenuItem
+                      onClick={() => toggleStar(u.user_id, u.starred)}
+                      className="gap-2"
+                    >
+                      <Star className={cn("h-4 w-4", u.starred && "fill-gold text-gold")} />
+                      {u.starred ? "Remover estrela" : "Dar estrela"}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => copyPhone(u.phone)} className="gap-2">
+                      <Phone className="h-4 w-4" /> Copiar telefone
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             ))
           )}

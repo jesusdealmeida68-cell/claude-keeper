@@ -9,6 +9,7 @@ export type Withdrawal = {
   status: string;
   method: WithdrawalMethod;
   destination: string | null;
+  paid_at: string | null;
   created_at: string;
 };
 
@@ -45,7 +46,11 @@ export async function approveSubmissionWithPayment(submissionId: string, amount:
 }
 
 /** Utilizador pede para retirar um valor do seu saldo (por telefone ou IBAN). */
-export async function requestWithdrawal(amount: number, method: WithdrawalMethod, destination: string) {
+export async function requestWithdrawal(
+  amount: number,
+  method: WithdrawalMethod,
+  destination: string,
+) {
   const { error } = await supabase.rpc("request_withdrawal", {
     _amount: amount,
     _method: method,
@@ -77,4 +82,12 @@ export async function getAllWithdrawals(): Promise<WithdrawalWithProfile[]> {
     method: w.method as WithdrawalMethod,
     profile: profileByUser.get(w.user_id),
   }));
+}
+
+/** Admin marca a retirada como paga; o utilizador recebe uma notificação automática. */
+export async function markWithdrawalPaid(withdrawalId: string) {
+  const { error } = await supabase.rpc("mark_withdrawal_paid", {
+    _withdrawal_id: withdrawalId,
+  });
+  if (error) throw error;
 }
