@@ -474,14 +474,15 @@ function AdminAnunciosPage() {
                           </>
                         )}
                       </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => setToDelete(a)}
-                        className="gap-2 text-destructive focus:text-destructive"
-                      >
-                        <Trash2 className="h-4 w-4" /> Eliminar
-                      </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
+                  <button
+                    onClick={() => setToDelete(a)}
+                    aria-label="Eliminar anúncio"
+                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-destructive hover:bg-destructive/10"
+                  >
+                    <Trash2 className="h-4.5 w-4.5" />
+                  </button>
                 </div>
               ))
             )}

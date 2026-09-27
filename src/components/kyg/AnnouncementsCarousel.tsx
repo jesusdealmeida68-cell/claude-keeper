@@ -85,7 +85,7 @@ function AnnouncementCard({ a }: { a: Announcement }) {
       </div>
 
       {/* Botão(ões) — sempre abrem um link (site ou WhatsApp) */}
-      {a.button_label && a.button_url ? (
+      {a.button_url ? (
         <div className="flex gap-2 p-3 pt-2.5">
           <a
             href={a.button_url}
@@ -93,16 +93,16 @@ function AnnouncementCard({ a }: { a: Announcement }) {
             rel="noreferrer"
             className="flex-1 rounded-lg bg-[#1877F2] px-3 py-2.5 text-center text-[13px] font-semibold text-white"
           >
-            {a.button_label}
+            {a.button_label || (isNews ? "Ler mais" : "Saiba mais")}
           </a>
-          {a.button2_label && a.button2_url ? (
+          {a.button2_url ? (
             <a
               href={a.button2_url}
               target="_blank"
               rel="noreferrer"
               className="flex-1 rounded-lg border border-primary/30 px-3 py-2.5 text-center text-[13px] font-semibold text-primary"
             >
-              {a.button2_label}
+              {a.button2_label || "Falar agora"}
             </a>
           ) : null}
         </div>
