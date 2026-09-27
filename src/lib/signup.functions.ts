@@ -39,7 +39,12 @@ export const adminSignUp = createServerFn({ method: "POST" })
     if (error) {
       console.error("[adminSignUp] Erro do Supabase ao criar utilizador:", error);
       const msg = (error.message ?? "").toLowerCase();
-      if (msg.includes("already") || msg.includes("registered") || error.status === 422) {
+      if (
+        msg.includes("already") ||
+        msg.includes("registered") ||
+        msg.includes("database error creating new user") ||
+        error.status === 422
+      ) {
         throw new Error("already_registered");
       }
       throw new Error(`signup_failed: ${error.message ?? "erro desconhecido"}`);
