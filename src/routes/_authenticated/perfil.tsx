@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { getMyProfile, getMyRoles } from "@/lib/auth";
-import { requestWithdrawal } from "@/lib/wallet";
+import { requestWithdrawal, type WithdrawalMethod } from "@/lib/wallet";
 import {
   ChevronRight,
   KeyRound,
@@ -38,6 +38,8 @@ function PerfilPage() {
   const queryClient = useQueryClient();
   const [withdrawOpen, setWithdrawOpen] = useState(false);
   const [amount, setAmount] = useState("");
+  const [method, setMethod] = useState<WithdrawalMethod>("phone");
+  const [destination, setDestination] = useState("");
   const [withdrawing, setWithdrawing] = useState(false);
 
   const { data: profile } = useQuery({
@@ -69,13 +71,23 @@ function PerfilPage() {
       toast.error("Saldo insuficiente.");
       return;
     }
+    const dest = destination.trim();
+    if (method === "phone" && !/^\d{9,15}$/.test(dest)) {
+      toast.error("Indica um número de telefone válido.");
+      return;
+    }
+    if (method === "iban" && !/^[A-Za-z]{2}\d{2}[A-Za-z0-9]{10,30}$/.test(dest.replace(/\s/g, ""))) {
+      toast.error("Indica um IBAN válido.");
+      return;
+    }
     setWithdrawing(true);
     try {
-      await requestWithdrawal(value);
+      await requestWithdrawal(value, method, method === "iban" ? dest.replace(/\s/g, "").toUpperCase() : dest);
       await queryClient.invalidateQueries({ queryKey: ["profile", user.id] });
       toast.success("Pedido de retirada enviado.");
       setWithdrawOpen(false);
       setAmount("");
+      setDestination("");
     } catch {
       toast.error("Não foi possível pedir a retirada.");
     } finally {
@@ -173,12 +185,40 @@ function PerfilPage() {
             onChange={(e) => setAmount(e.target.value)}
             className="h-12 rounded-xl"
           />
+          <div className="grid grid-cols-2 gap-2">
+            {(
+              [
+                { value: "phone", label: "Telefone" },
+                { value: "iban", label: "IBAN" },
+              ] as const
+            ).map((opt) => (
+              <button
+                key={opt.value}
+                type="button"
+                onClick={() => setMethod(opt.value)}
+                className={`h-11 rounded-xl border text-sm font-semibold transition-colors ${
+                  method === opt.value
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "bg-card text-muted-foreground hover:bg-secondary"
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+          <Input
+            placeholder={method === "phone" ? "Número de telefone para receber" : "IBAN para receber (ex.: AO06...)"}
+            value={destination}
+            onChange={(e) => setDestination(e.target.value)}
+            className="h-12 rounded-xl"
+            maxLength={60}
+          />
           <DialogFooter className="gap-2">
             <Button variant="outline" onClick={() => setWithdrawOpen(false)} className="rounded-xl">
               Cancelar
             </Button>
             <Button
-              disabled={withdrawing || !amount}
+              disabled={withdrawing || !amount || !destination.trim()}
               onClick={handleWithdraw}
               className="rounded-xl bg-primary font-semibold"
             >

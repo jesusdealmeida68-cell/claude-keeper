@@ -86,7 +86,7 @@ function AdminRetiradasPage() {
                     {w.profile?.full_name ?? "Utilizador"}
                   </p>
                   <p className="truncate text-xs text-muted-foreground">
-                    {w.profile?.phone ?? "—"} ·{" "}
+                    {w.method === "iban" ? "IBAN" : "Telefone"}: {w.destination ?? "—"} ·{" "}
                     {new Date(w.created_at).toLocaleDateString("pt-AO")}
                   </p>
                 </div>
