@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { getMyProfile } from "@/lib/auth";
 import { getAppSettings } from "@/lib/wallet";
-import { FileText, Send, Inbox, Ban } from "lucide-react";
+import { FileText, Send, Inbox, Ban, Star } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/inicio")({
   component: InicioPage,
@@ -46,7 +46,10 @@ function InicioPage() {
   return (
     <AppShell>
       <div className="animate-fade-up">
-        <h1 className="text-2xl font-bold tracking-tight">Olá, {firstName || "Utilizador"}</h1>
+        <h1 className="flex items-center gap-1.5 text-2xl font-bold tracking-tight">
+          Olá, {firstName || "Utilizador"}
+          {profile?.starred ? <Star className="h-5 w-5 fill-gold text-gold" /> : null}
+        </h1>
         <p className="mt-1 text-sm text-muted-foreground">Acompanhe os seus serviços</p>
       </div>
 

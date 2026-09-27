@@ -50,7 +50,13 @@ function AdminUsuariosPage() {
   });
   const isAdmin = roles?.includes("admin");
 
-  const { data: users, isLoading } = useQuery({
+  const {
+    data: users,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useQuery({
     queryKey: ["admin-users"],
     enabled: !!isAdmin,
     queryFn: getAllUsers,
@@ -122,6 +128,21 @@ function AdminUsuariosPage() {
             Array.from({ length: 4 }).map((_, i) => (
               <div key={i} className="h-16 animate-pulse rounded-2xl bg-secondary" />
             ))
+          ) : isError ? (
+            <div className="rounded-3xl border border-dashed border-destructive/40 bg-destructive-soft px-6 py-10 text-center">
+              <p className="text-sm font-medium text-destructive">
+                Não foi possível carregar os utilizadores
+              </p>
+              <p className="mt-1 text-xs text-destructive/80">
+                {error instanceof Error ? error.message : "Erro desconhecido"}
+              </p>
+              <button
+                onClick={() => refetch()}
+                className="mt-3 rounded-xl bg-destructive px-4 py-2 text-xs font-semibold text-destructive-foreground"
+              >
+                Tentar novamente
+              </button>
+            </div>
           ) : !filtered.length ? (
             <div className="rounded-3xl border border-dashed bg-card px-6 py-10 text-center">
               <Users className="mx-auto h-9 w-9 text-muted-foreground/40" />
