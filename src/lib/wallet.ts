@@ -72,5 +72,9 @@ export async function getAllWithdrawals(): Promise<WithdrawalWithProfile[]> {
     profileByUser = new Map((profiles ?? []).map((p) => [p.user_id, p]));
   }
 
-  return (withdrawals ?? []).map((w) => ({ ...w, profile: profileByUser.get(w.user_id) }));
+  return (withdrawals ?? []).map((w) => ({
+    ...w,
+    method: w.method as WithdrawalMethod,
+    profile: profileByUser.get(w.user_id),
+  }));
 }
