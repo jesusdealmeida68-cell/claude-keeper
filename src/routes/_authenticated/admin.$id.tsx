@@ -39,11 +39,16 @@ function AdminAnalisePage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("submissions")
-        .select("*, profiles!submissions_user_id_fkey(full_name, phone)")
+        .select("*")
         .eq("id", id)
         .single();
       if (error) throw error;
-      return data;
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("full_name, phone")
+        .eq("user_id", data.user_id)
+        .maybeSingle();
+      return { ...data, profile: profile ?? null };
     },
   });
 
@@ -67,7 +72,7 @@ function AdminAnalisePage() {
     );
   }
 
-  const profile = s.profiles as { full_name: string; phone: string } | null;
+  const profile = s.profile;
   const isPdf = s.file_name?.toLowerCase().endsWith(".pdf");
 
   async function reject(reviewNote: string) {
