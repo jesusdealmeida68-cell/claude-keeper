@@ -254,12 +254,10 @@ export type Database = {
         }
         Returns: boolean
       }
-      request_withdrawal:
-        | { Args: { _amount: number }; Returns: string }
-        | {
-            Args: { _amount: number; _destination?: string; _method?: string }
-            Returns: string
-          }
+      request_withdrawal: {
+        Args: { _amount: number; _destination?: string; _method?: string }
+        Returns: string
+      }
     }
     Enums: {
       app_role: "admin" | "user"
