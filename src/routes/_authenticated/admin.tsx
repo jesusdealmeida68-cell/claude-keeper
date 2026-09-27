@@ -8,8 +8,7 @@ import { StatusBadge } from "@/components/kyg/StatusBadge";
 import { KygLogo } from "@/components/kyg/KygLogo";
 import { supabase } from "@/integrations/supabase/client";
 import { getMyProfile, getMyRoles } from "@/lib/auth";
-import { getAppSettings, getAllWithdrawals, setSubmissionsBlocked } from "@/lib/wallet";
-import { getAllUsers } from "@/lib/users";
+import { getAppSettings, setSubmissionsBlocked } from "@/lib/wallet";
 import { cn } from "@/lib/utils";
 import {
   DropdownMenu,
@@ -29,7 +28,7 @@ import {
   LogOut,
   Bell,
   Megaphone,
-  MoreVertical,
+  Menu as MenuIcon,
   Search,
   ShieldCheck,
   Users,
@@ -101,21 +100,6 @@ function AdminPage() {
     queryFn: getAppSettings,
   });
   const blocked = settings?.submissions_blocked ?? false;
-
-  const { data: users } = useQuery({
-    queryKey: ["admin-users-summary"],
-    enabled: !!isAdmin,
-    queryFn: getAllUsers,
-  });
-
-  const { data: withdrawals } = useQuery({
-    queryKey: ["admin-withdrawals-summary"],
-    enabled: !!isAdmin,
-    queryFn: getAllWithdrawals,
-  });
-
-  const totalBalance = (users ?? []).reduce((sum, u) => sum + (u.balance ?? 0), 0);
-  const pendingWithdrawals = (withdrawals ?? []).filter((w) => w.status === "pending").length;
 
   async function handleToggleBlock() {
     try {
@@ -216,51 +200,6 @@ function AdminPage() {
   const adminName = profile?.full_name ?? "Administrador";
   const loading = rolesLoading || submissionsLoading;
 
-  const areas = [
-    {
-      label: "Comprovativos",
-      hint: `${counts.pending} pendente${counts.pending === 1 ? "" : "s"}`,
-      to: "/admin",
-      icon: Files,
-      cls: "bg-secondary text-foreground",
-    },
-    {
-      label: "Utilizadores",
-      hint: `${users?.length ?? 0} no total`,
-      to: "/admin/usuarios",
-      icon: Users,
-      cls: "bg-primary/10 text-primary",
-    },
-    {
-      label: "Retiradas",
-      hint: `${pendingWithdrawals} por pagar`,
-      to: "/admin/retiradas",
-      icon: Wallet,
-      cls: "bg-warning-soft text-warning",
-    },
-    {
-      label: "Anúncios",
-      hint: "Gerir patrocínios",
-      to: "/admin/anuncios",
-      icon: Megaphone,
-      cls: "bg-gold-soft text-gold-foreground",
-    },
-    {
-      label: "Notificações",
-      hint: "Enviar avisos",
-      to: "/admin/notificacoes",
-      icon: Bell,
-      cls: "bg-success-soft text-success",
-    },
-    {
-      label: "Saldo pago",
-      hint: `${totalBalance.toLocaleString("pt-AO", { minimumFractionDigits: 2 })} Kz`,
-      to: "/admin/usuarios",
-      icon: Wallet,
-      cls: "bg-destructive-soft text-destructive",
-    },
-  ] as const;
-
   if (!isIndex) {
     return <Outlet />;
   }
@@ -276,10 +215,10 @@ function AdminPage() {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button
-              aria-label="Mais opções"
+              aria-label="Menu"
               className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-primary-foreground/80 transition-colors hover:bg-white/10 hover:text-primary-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
             >
-              <MoreVertical className="h-5 w-5" />
+              <MenuIcon className="h-5 w-5" />
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" sideOffset={10} className="w-64 p-0 overflow-hidden">
@@ -294,6 +233,31 @@ function AdminPage() {
                 </p>
               </div>
             </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild className="cursor-pointer gap-3 px-4 py-2.5">
+              <Link to="/admin/usuarios">
+                <Users className="h-4 w-4 text-muted-foreground" />
+                Usuários
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild className="cursor-pointer gap-3 px-4 py-2.5">
+              <Link to="/admin/retiradas">
+                <Wallet className="h-4 w-4 text-muted-foreground" />
+                Retiradas
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild className="cursor-pointer gap-3 px-4 py-2.5">
+              <Link to="/admin/anuncios">
+                <Megaphone className="h-4 w-4 text-muted-foreground" />
+                Anúncios
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild className="cursor-pointer gap-3 px-4 py-2.5">
+              <Link to="/admin/notificacoes">
+                <Bell className="h-4 w-4 text-muted-foreground" />
+                Notificações
+              </Link>
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onSelect={handleToggleBlock}
@@ -345,38 +309,6 @@ function AdminPage() {
               </div>
             );
           })}
-        </div>
-
-        {/* Áreas */}
-        <div className="mt-6 animate-fade-up [animation-delay:60ms]">
-          <h2 className="text-sm font-semibold text-muted-foreground">Áreas</h2>
-          <div className="mt-2.5 grid grid-cols-2 gap-3">
-            {areas.map((a) => {
-              const Icon = a.icon;
-              return (
-                <Link
-                  key={a.label}
-                  to={a.to}
-                  className="flex flex-col gap-2.5 rounded-2xl bg-card p-4 shadow-card transition-transform active:scale-[0.98]"
-                >
-                  <div
-                    className={cn("flex h-10 w-10 items-center justify-center rounded-xl", a.cls)}
-                  >
-                    <Icon className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold leading-tight">{a.label}</p>
-                    <p className="mt-0.5 text-xs text-muted-foreground">{a.hint}</p>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Comprovativos */}
-        <div className="mt-6 flex items-center justify-between animate-fade-up [animation-delay:100ms]">
-          <h2 className="text-sm font-semibold text-muted-foreground">Comprovativos</h2>
         </div>
 
         {/* Busca */}
