@@ -34,7 +34,7 @@ export function NotificationBell() {
   return (
     <Link
       to="/notificacoes"
-      className="relative ml-auto flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-foreground/80 hover:bg-secondary"
+      className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-foreground/80 hover:bg-secondary"
     >
       <Bell className="h-5 w-5" />
       {unseen > 0 ? (
