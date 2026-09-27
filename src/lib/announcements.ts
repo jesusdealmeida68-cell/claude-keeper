@@ -28,6 +28,37 @@ export type AnnouncementInput = {
   button2_url?: string | null;
 };
 
+/**
+ * Recebe o que o admin escreveu num campo de link (URL de site OU número de
+ * telefone) e devolve sempre um link pronto a usar:
+ * - Já é um link (http/https, wa.me) -> devolve tal como está.
+ * - Parece um número de telefone -> devolve link do WhatsApp (wa.me).
+ * - Parece um domínio sem "https://" (ex.: "site.co.ao") -> acrescenta o https://.
+ */
+export function resolveAnnouncementLink(raw: string): string {
+  const value = raw.trim();
+  if (!value) return "";
+
+  if (/^https?:\/\//i.test(value)) return value;
+  if (/^wa\.me\//i.test(value)) return `https://${value}`;
+  if (/^(mailto:|tel:)/i.test(value)) return value;
+
+  const digitsOnly = value.replace(/[^\d]/g, "");
+  const strippedOfPunctuation = value.replace(/[\s()+-]/g, "");
+  const looksLikePhone = digitsOnly.length >= 8 && digitsOnly === strippedOfPunctuation;
+
+  if (looksLikePhone) {
+    const phone = digitsOnly.startsWith("244") ? digitsOnly : `244${digitsOnly}`;
+    return `https://wa.me/${phone}`;
+  }
+
+  if (/^[\w-]+(\.[\w-]+)+([/?#].*)?$/i.test(value)) {
+    return `https://${value}`;
+  }
+
+  return value;
+}
+
 export async function getActiveAnnouncements() {
   const { data, error } = await supabase
     .from("announcements")

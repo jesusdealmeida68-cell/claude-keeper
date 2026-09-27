@@ -39,6 +39,7 @@ import {
   createAnnouncement,
   deleteAnnouncement,
   getAllAnnouncements,
+  resolveAnnouncementLink,
   setAnnouncementActive,
   updateAnnouncement,
   uploadAnnouncementImage,
@@ -167,9 +168,9 @@ function AdminAnunciosPage() {
         image_url: imageUrl,
         description: form.description.trim(),
         button_label: form.buttonLabel.trim() || null,
-        button_url: form.buttonUrl.trim() || null,
+        button_url: form.buttonUrl.trim() ? resolveAnnouncementLink(form.buttonUrl) : null,
         button2_label: form.button2Label.trim() || null,
-        button2_url: form.button2Url.trim() || null,
+        button2_url: form.button2Url.trim() ? resolveAnnouncementLink(form.button2Url) : null,
       });
       await refresh();
       toast.success(form.type === "noticia" ? "Notícia publicada." : "Anúncio publicado.");
@@ -211,9 +212,11 @@ function AdminAnunciosPage() {
         sponsor_name: editForm.sponsorName.trim(),
         description: editForm.description.trim(),
         button_label: editForm.buttonLabel.trim() || null,
-        button_url: editForm.buttonUrl.trim() || null,
+        button_url: editForm.buttonUrl.trim() ? resolveAnnouncementLink(editForm.buttonUrl) : null,
         button2_label: editForm.button2Label.trim() || null,
-        button2_url: editForm.button2Url.trim() || null,
+        button2_url: editForm.button2Url.trim()
+          ? resolveAnnouncementLink(editForm.button2Url)
+          : null,
         ...(imageUrl ? { image_url: imageUrl } : {}),
       });
       await refresh();
@@ -355,16 +358,20 @@ function AdminAnunciosPage() {
                 />
               </div>
               <div>
-                <Label htmlFor="btn1url">Link do botão 1</Label>
+                <Label htmlFor="btn1url">Link ou nº WhatsApp</Label>
                 <Input
                   id="btn1url"
                   value={form.buttonUrl}
                   onChange={(e) => setForm((f) => ({ ...f, buttonUrl: e.target.value }))}
-                  placeholder="https://…"
+                  placeholder="923 000 000 ou https://…"
                   className="mt-1.5 rounded-xl"
                 />
               </div>
             </div>
+            <p className="-mt-1 text-[11px] text-muted-foreground">
+              Escreve um número (ex.: 923000000) para abrir o WhatsApp, ou cola um link normal
+              para abrir um site — o sistema reconhece sozinho.
+            </p>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
@@ -378,12 +385,12 @@ function AdminAnunciosPage() {
                 />
               </div>
               <div>
-                <Label htmlFor="btn2url">Link do botão 2</Label>
+                <Label htmlFor="btn2url">Link ou nº WhatsApp</Label>
                 <Input
                   id="btn2url"
                   value={form.button2Url}
                   onChange={(e) => setForm((f) => ({ ...f, button2Url: e.target.value }))}
-                  placeholder="https://wa.me/…"
+                  placeholder="923 000 000 ou https://…"
                   className="mt-1.5 rounded-xl"
                 />
               </div>
@@ -534,7 +541,7 @@ function AdminAnunciosPage() {
                 />
               </div>
               <div>
-                <Label htmlFor="edit-btn1url">Link do botão 1</Label>
+                <Label htmlFor="edit-btn1url">Link ou nº WhatsApp</Label>
                 <Input
                   id="edit-btn1url"
                   value={editForm.buttonUrl}
@@ -554,7 +561,7 @@ function AdminAnunciosPage() {
                 />
               </div>
               <div>
-                <Label htmlFor="edit-btn2url">Link do botão 2</Label>
+                <Label htmlFor="edit-btn2url">Link ou nº WhatsApp</Label>
                 <Input
                   id="edit-btn2url"
                   value={editForm.button2Url}
