@@ -3,8 +3,18 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { KygLogo } from "@/components/kyg/KygLogo";
+import { StarRating } from "@/components/kyg/StarRating";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { getMyRoles } from "@/lib/auth";
-import { getAllUsers, setUserStarred } from "@/lib/users";
+import { getAllUsers, setUserRating, type AdminUser } from "@/lib/users";
 import { cn } from "@/lib/utils";
 import {
   DropdownMenu,
@@ -12,7 +22,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ArrowLeft, MoreVertical, Phone, Search, Star, Users, Wallet } from "lucide-react";
+import { ArrowLeft, Loader2, MoreVertical, Phone, Search, Star, Users, Wallet } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin/usuarios")({
   component: AdminUsuariosPage,
@@ -48,7 +58,9 @@ function AdminUsuariosPage() {
   const { user } = Route.useRouteContext();
   const queryClient = useQueryClient();
   const [query, setQuery] = useState("");
-  const [pending, setPending] = useState<string | null>(null);
+  const [rating, setRating] = useState<AdminUser | null>(null);
+  const [ratingValue, setRatingValue] = useState("0");
+  const [savingRating, setSavingRating] = useState(false);
 
   const { data: roles, isLoading: rolesLoading } = useQuery({
     queryKey: ["roles", user.id],
@@ -93,16 +105,28 @@ function AdminUsuariosPage() {
     );
   }
 
-  async function toggleStar(userId: string, current: boolean) {
-    setPending(userId);
+  function openRating(u: AdminUser) {
+    setRating(u);
+    setRatingValue(String(u.rating ?? 0));
+  }
+
+  async function saveRating() {
+    if (!rating) return;
+    const value = Number(ratingValue.replace(",", "."));
+    if (Number.isNaN(value) || value < 0 || value > 5) {
+      toast.error("Indica um valor entre 0 e 5.");
+      return;
+    }
+    setSavingRating(true);
     try {
-      await setUserStarred(userId, !current);
+      await setUserRating(rating.user_id, value);
       await queryClient.invalidateQueries({ queryKey: ["admin-users"] });
-      toast.success(!current ? "Estrela atribuída." : "Estrela removida.");
+      toast.success("Avaliação guardada.");
+      setRating(null);
     } catch {
-      toast.error("Não foi possível atualizar.");
+      toast.error("Não foi possível guardar a avaliação.");
     } finally {
-      setPending(null);
+      setSavingRating(false);
     }
   }
 
@@ -201,24 +225,21 @@ function AdminUsuariosPage() {
                   {initialsOf(u.full_name)}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-1.5">
-                    <p className="truncate text-sm font-semibold">{u.full_name}</p>
-                    {u.starred ? (
-                      <Star className="h-3.5 w-3.5 shrink-0 fill-gold text-gold" />
-                    ) : null}
-                  </div>
+                  <p className="truncate text-sm font-semibold">{u.full_name}</p>
                   <p className="truncate text-xs text-muted-foreground">{u.phone}</p>
-                  <p className="mt-0.5 text-xs font-semibold text-primary">
-                    {(u.balance ?? 0).toLocaleString("pt-AO", { minimumFractionDigits: 2 })} Kz ·{" "}
-                    <span className="font-normal text-muted-foreground">
-                      desde {new Date(u.created_at).toLocaleDateString("pt-AO")}
-                    </span>
+                  <div className="mt-0.5 flex items-center gap-2">
+                    <p className="text-xs font-semibold text-primary">
+                      {(u.balance ?? 0).toLocaleString("pt-AO", { minimumFractionDigits: 2 })} Kz
+                    </p>
+                    <StarRating value={u.rating ?? 0} size="xs" />
+                  </div>
+                  <p className="mt-0.5 text-xs text-muted-foreground">
+                    desde {new Date(u.created_at).toLocaleDateString("pt-AO")}
                   </p>
                 </div>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <button
-                      disabled={pending === u.user_id}
                       aria-label="Ações"
                       className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-muted-foreground hover:bg-secondary disabled:opacity-50"
                     >
@@ -226,12 +247,9 @@ function AdminUsuariosPage() {
                     </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="rounded-xl">
-                    <DropdownMenuItem
-                      onClick={() => toggleStar(u.user_id, u.starred)}
-                      className="gap-2"
-                    >
-                      <Star className={cn("h-4 w-4", u.starred && "fill-gold text-gold")} />
-                      {u.starred ? "Remover estrela" : "Dar estrela"}
+                    <DropdownMenuItem onClick={() => openRating(u)} className="gap-2">
+                      <Star className="h-4 w-4 text-gold" />
+                      Avaliar
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => copyPhone(u.phone)} className="gap-2">
                       <Phone className="h-4 w-4" /> Copiar telefone
@@ -243,6 +261,40 @@ function AdminUsuariosPage() {
           )}
         </div>
       </main>
+
+      <Dialog open={!!rating} onOpenChange={(open) => !open && setRating(null)}>
+        <DialogContent className="rounded-3xl">
+          <DialogHeader>
+            <DialogTitle>Avaliar {rating?.full_name}</DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col items-center gap-3 py-2">
+            <StarRating value={Number(ratingValue.replace(",", ".")) || 0} size="md" />
+            <Input
+              type="number"
+              inputMode="decimal"
+              min={0}
+              max={5}
+              step={0.1}
+              value={ratingValue}
+              onChange={(e) => setRatingValue(e.target.value)}
+              className="h-12 w-32 rounded-xl text-center text-lg font-bold"
+            />
+            <p className="text-xs text-muted-foreground">De 0 a 5, com casas decimais (ex.: 1.4)</p>
+          </div>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setRating(null)} className="rounded-xl">
+              Cancelar
+            </Button>
+            <Button
+              disabled={savingRating}
+              onClick={saveRating}
+              className="rounded-xl bg-primary font-semibold"
+            >
+              {savingRating ? <Loader2 className="h-4 w-4 animate-spin" /> : "Guardar"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

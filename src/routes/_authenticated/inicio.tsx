@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { AppShell } from "@/components/kyg/AppShell";
 import { AnnouncementsCarousel } from "@/components/kyg/AnnouncementsCarousel";
+import { StarRating } from "@/components/kyg/StarRating";
 import { StatusBadge } from "@/components/kyg/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -48,7 +49,9 @@ function InicioPage() {
       <div className="animate-fade-up">
         <h1 className="flex items-center gap-1.5 text-2xl font-bold tracking-tight">
           Olá, {firstName || "Utilizador"}
-          {profile?.starred ? <Star className="h-5 w-5 fill-gold text-gold" /> : null}
+          {(profile?.rating ?? 0) > 0 ? (
+            <StarRating value={profile?.rating ?? 0} size="xs" />
+          ) : null}
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">Acompanhe os seus serviços</p>
       </div>

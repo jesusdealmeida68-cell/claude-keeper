@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/kyg/AppShell";
+import { StarRating } from "@/components/kyg/StarRating";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -145,7 +146,9 @@ function PerfilPage() {
         </div>
         <h2 className="mt-4 flex items-center gap-1.5 text-xl font-bold tracking-tight">
           {profile?.full_name ?? "…"}
-          {profile?.starred ? <Star className="h-4.5 w-4.5 fill-gold text-gold" /> : null}
+          {(profile?.rating ?? 0) > 0 ? (
+            <StarRating value={profile?.rating ?? 0} size="xs" />
+          ) : null}
         </h2>
         <p className="mt-0.5 text-sm text-muted-foreground">{profile?.phone ?? ""}</p>
       </div>

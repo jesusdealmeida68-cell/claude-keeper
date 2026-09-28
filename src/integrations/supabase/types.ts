@@ -122,6 +122,7 @@ export type Database = {
           full_name: string;
           id: string;
           phone: string;
+          rating: number;
           starred: boolean;
           user_id: string;
         };
@@ -131,6 +132,7 @@ export type Database = {
           full_name: string;
           id?: string;
           phone: string;
+          rating?: number;
           starred?: boolean;
           user_id: string;
         };
@@ -140,6 +142,7 @@ export type Database = {
           full_name?: string;
           id?: string;
           phone?: string;
+          rating?: number;
           starred?: boolean;
           user_id?: string;
         };
