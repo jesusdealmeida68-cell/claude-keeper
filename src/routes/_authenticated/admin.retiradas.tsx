@@ -4,8 +4,15 @@ import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { KygLogo } from "@/components/kyg/KygLogo";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import { getMyRoles } from "@/lib/auth";
-import { getAllWithdrawals, markWithdrawalPaid, type WithdrawalWithProfile } from "@/lib/wallet";
+import {
+  getAllWithdrawals,
+  markWithdrawalPaid,
+  rejectWithdrawal,
+  type WithdrawalWithProfile,
+} from "@/lib/wallet";
+import { downloadWithdrawalReceipt } from "@/lib/receipt";
 import { cn } from "@/lib/utils";
 import {
   AlertDialog,
@@ -17,12 +24,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -33,11 +35,13 @@ import {
   ArrowLeft,
   CheckCircle2,
   Clock,
+  Download,
   Landmark,
   Loader2,
   MoreVertical,
   Phone,
   Wallet,
+  XCircle,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin/retiradas")({
@@ -47,6 +51,7 @@ export const Route = createFileRoute("/_authenticated/admin/retiradas")({
 const tabs = [
   { key: "pending", label: "Pendentes", icon: Clock },
   { key: "paid", label: "Pagas", icon: CheckCircle2 },
+  { key: "rejected", label: "Recusadas", icon: XCircle },
 ] as const;
 
 function initialsOf(name: string) {
@@ -66,8 +71,11 @@ function AdminRetiradasPage() {
   const queryClient = useQueryClient();
   const [tab, setTab] = useState<(typeof tabs)[number]["key"]>("pending");
   const [toPay, setToPay] = useState<WithdrawalWithProfile | null>(null);
+  const [toReject, setToReject] = useState<WithdrawalWithProfile | null>(null);
+  const [reason, setReason] = useState("");
   const [viewing, setViewing] = useState<WithdrawalWithProfile | null>(null);
   const [paying, setPaying] = useState(false);
+  const [rejecting, setRejecting] = useState(false);
 
   const { data: roles, isLoading: rolesLoading } = useQuery({
     queryKey: ["roles", user.id],
@@ -84,6 +92,7 @@ function AdminRetiradasPage() {
   const all = useMemo(() => withdrawals ?? [], [withdrawals]);
   const pendingCount = all.filter((w) => w.status === "pending").length;
   const paidCount = all.filter((w) => w.status === "paid").length;
+  const rejectedCount = all.filter((w) => w.status === "rejected").length;
   const filtered = useMemo(() => all.filter((w) => w.status === tab), [all, tab]);
 
   if (!rolesLoading && !isAdmin) {
@@ -105,6 +114,19 @@ function AdminRetiradasPage() {
     .filter((w) => w.status === "pending")
     .reduce((sum, w) => sum + Number(w.amount), 0);
 
+  function receiptOf(w: WithdrawalWithProfile) {
+    downloadWithdrawalReceipt({
+      id: w.id,
+      full_name: w.profile?.full_name ?? "Utilizador",
+      phone: w.profile?.phone ?? "—",
+      amount: Number(w.amount),
+      method: w.method,
+      destination: w.destination,
+      created_at: w.created_at,
+      paid_at: w.paid_at,
+    });
+  }
+
   async function confirmPay() {
     if (!toPay) return;
     setPaying(true);
@@ -118,6 +140,27 @@ function AdminRetiradasPage() {
       toast.error("Não foi possível marcar como paga.");
     } finally {
       setPaying(false);
+    }
+  }
+
+  async function confirmReject() {
+    if (!toReject) return;
+    if (!reason.trim()) {
+      toast.error("Escreve o motivo da recusa.");
+      return;
+    }
+    setRejecting(true);
+    try {
+      await rejectWithdrawal(toReject.id, reason.trim());
+      await queryClient.invalidateQueries({ queryKey: ["admin-withdrawals"] });
+      await queryClient.invalidateQueries({ queryKey: ["admin-withdrawals-summary"] });
+      toast.success("Retirada recusada. O saldo voltou para o utilizador.");
+      setToReject(null);
+      setReason("");
+    } catch {
+      toast.error("Não foi possível recusar.");
+    } finally {
+      setRejecting(false);
     }
   }
 
@@ -152,10 +195,11 @@ function AdminRetiradasPage() {
         </div>
 
         {/* Abas */}
-        <div className="mt-5 flex gap-2">
+        <div className="mt-5 flex flex-wrap gap-2">
           {tabs.map((t) => {
             const TIcon = t.icon;
-            const count = t.key === "pending" ? pendingCount : paidCount;
+            const count =
+              t.key === "pending" ? pendingCount : t.key === "paid" ? paidCount : rejectedCount;
             return (
               <button
                 key={t.key}
@@ -191,7 +235,11 @@ function AdminRetiradasPage() {
             <div className="rounded-3xl border border-dashed bg-card px-6 py-10 text-center">
               <Wallet className="mx-auto h-9 w-9 text-muted-foreground/40" />
               <p className="mt-3 text-sm font-medium">
-                {tab === "pending" ? "Sem retiradas por pagar" : "Ainda não há retiradas pagas"}
+                {tab === "pending"
+                  ? "Sem retiradas por pagar"
+                  : tab === "paid"
+                    ? "Ainda não há retiradas pagas"
+                    : "Ainda não há retiradas recusadas"}
               </p>
             </div>
           ) : (
@@ -236,10 +284,28 @@ function AdminRetiradasPage() {
                       <DropdownMenuItem onClick={() => setToPay(w)} className="gap-2">
                         <CheckCircle2 className="h-4 w-4 text-success" /> Marcar como pago
                       </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => setToReject(w)}
+                        className="gap-2 text-destructive focus:bg-destructive-soft focus:text-destructive"
+                      >
+                        <XCircle className="h-4 w-4" /> Recusar
+                      </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
+                ) : w.status === "paid" ? (
+                  <span
+                    role="button"
+                    aria-label="Descarregar comprovativo"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      receiptOf(w);
+                    }}
+                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-success hover:bg-success-soft"
+                  >
+                    <Download className="h-4.5 w-4.5" />
+                  </span>
                 ) : (
-                  <CheckCircle2 className="h-5 w-5 shrink-0 text-success" />
+                  <XCircle className="h-5 w-5 shrink-0 text-destructive" />
                 )}
               </button>
             ))
@@ -247,6 +313,7 @@ function AdminRetiradasPage() {
         </div>
       </main>
 
+      {/* Confirmar pagamento */}
       <AlertDialog open={!!toPay} onOpenChange={(open) => !open && setToPay(null)}>
         <AlertDialogContent className="rounded-3xl">
           <AlertDialogHeader>
@@ -276,6 +343,48 @@ function AdminRetiradasPage() {
         </AlertDialogContent>
       </AlertDialog>
 
+      {/* Recusar com motivo */}
+      <Dialog
+        open={!!toReject}
+        onOpenChange={(open) => {
+          if (!open) {
+            setToReject(null);
+            setReason("");
+          }
+        }}
+      >
+        <DialogContent className="rounded-3xl">
+          <DialogHeader>
+            <DialogTitle>Recusar retirada</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            Explica a {toReject?.profile?.full_name ?? "o utilizador"} porque a retirada de{" "}
+            <span className="font-semibold text-foreground">
+              {toReject
+                ? Number(toReject.amount).toLocaleString("pt-AO", { minimumFractionDigits: 2 })
+                : ""}{" "}
+              Kz
+            </span>{" "}
+            foi recusada. O valor volta automaticamente para o saldo dele e ele recebe esta mensagem
+            numa notificação.
+          </p>
+          <Textarea
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+            placeholder="Ex.: Os dados do IBAN não conferem com o teu nome."
+            className="min-h-24 rounded-xl"
+          />
+          <Button
+            disabled={rejecting}
+            onClick={confirmReject}
+            className="h-11 w-full rounded-xl bg-destructive font-semibold text-destructive-foreground hover:bg-destructive/90"
+          >
+            {rejecting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Recusar e devolver saldo"}
+          </Button>
+        </DialogContent>
+      </Dialog>
+
+      {/* Detalhes */}
       <Dialog open={!!viewing} onOpenChange={(open) => !open && setViewing(null)}>
         <DialogContent className="rounded-3xl">
           <DialogHeader>
@@ -346,18 +455,49 @@ function AdminRetiradasPage() {
                     </div>
                   </div>
                 ) : null}
+
+                {viewing.status === "rejected" && viewing.rejection_reason ? (
+                  <div className="flex items-start gap-3 rounded-xl bg-destructive-soft p-3">
+                    <XCircle className="h-4 w-4 shrink-0 text-destructive" />
+                    <div className="min-w-0">
+                      <p className="text-xs text-destructive/80">Motivo da recusa</p>
+                      <p className="text-sm font-semibold text-destructive">
+                        {viewing.rejection_reason}
+                      </p>
+                    </div>
+                  </div>
+                ) : null}
               </div>
 
               {viewing.status === "pending" ? (
+                <div className="flex gap-2">
+                  <Button
+                    disabled={paying}
+                    onClick={() => {
+                      setToPay(viewing);
+                      setViewing(null);
+                    }}
+                    className="h-11 flex-1 rounded-xl bg-success font-semibold text-white hover:bg-success/90"
+                  >
+                    <CheckCircle2 className="mr-1.5 h-4 w-4" /> Pagar
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setToReject(viewing);
+                      setViewing(null);
+                    }}
+                    className="h-11 flex-1 rounded-xl border-destructive font-semibold text-destructive hover:bg-destructive-soft"
+                  >
+                    <XCircle className="mr-1.5 h-4 w-4" /> Recusar
+                  </Button>
+                </div>
+              ) : viewing.status === "paid" ? (
                 <Button
-                  disabled={paying}
-                  onClick={() => {
-                    setToPay(viewing);
-                    setViewing(null);
-                  }}
-                  className="h-11 w-full rounded-xl bg-success font-semibold text-white hover:bg-success/90"
+                  onClick={() => receiptOf(viewing)}
+                  className="h-11 w-full rounded-xl bg-primary font-semibold"
                 >
-                  <CheckCircle2 className="mr-1.5 h-4 w-4" /> Marcar como pago
+                  <Download className="mr-1.5 h-4 w-4" /> Baixar comprovativo (PDF)
                 </Button>
               ) : null}
             </div>

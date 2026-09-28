@@ -10,6 +10,7 @@ export type Withdrawal = {
   method: WithdrawalMethod;
   destination: string | null;
   paid_at: string | null;
+  rejection_reason: string | null;
   created_at: string;
 };
 
@@ -90,4 +91,24 @@ export async function markWithdrawalPaid(withdrawalId: string) {
     _withdrawal_id: withdrawalId,
   });
   if (error) throw error;
+}
+
+/** Admin recusa a retirada com um motivo; o valor volta para o saldo do utilizador. */
+export async function rejectWithdrawal(withdrawalId: string, reason: string) {
+  const { error } = await supabase.rpc("reject_withdrawal", {
+    _withdrawal_id: withdrawalId,
+    _reason: reason,
+  });
+  if (error) throw error;
+}
+
+/** Histórico de retiradas do próprio utilizador. */
+export async function getMyWithdrawals(userId: string): Promise<Withdrawal[]> {
+  const { data, error } = await supabase
+    .from("withdrawals")
+    .select("*")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return (data ?? []).map((w) => ({ ...w, method: w.method as WithdrawalMethod }));
 }

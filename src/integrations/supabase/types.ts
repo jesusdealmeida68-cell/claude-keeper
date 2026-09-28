@@ -252,6 +252,7 @@ export type Database = {
           id: string;
           method: string;
           paid_at: string | null;
+          rejection_reason: string | null;
           status: string;
           user_id: string;
         };
@@ -262,6 +263,7 @@ export type Database = {
           id?: string;
           method?: string;
           paid_at?: string | null;
+          rejection_reason?: string | null;
           status?: string;
           user_id: string;
         };
@@ -272,6 +274,7 @@ export type Database = {
           id?: string;
           method?: string;
           paid_at?: string | null;
+          rejection_reason?: string | null;
           status?: string;
           user_id?: string;
         };
@@ -295,6 +298,10 @@ export type Database = {
       };
       mark_withdrawal_paid: {
         Args: { _withdrawal_id: string };
+        Returns: undefined;
+      };
+      reject_withdrawal: {
+        Args: { _reason: string; _withdrawal_id: string };
         Returns: undefined;
       };
       request_withdrawal: {

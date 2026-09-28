@@ -17,9 +17,12 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { getMyProfile, getMyRoles } from "@/lib/auth";
 import { useInstallPrompt } from "@/hooks/use-install-prompt";
-import { requestWithdrawal, type WithdrawalMethod } from "@/lib/wallet";
+import { getMyWithdrawals, requestWithdrawal, type WithdrawalMethod } from "@/lib/wallet";
+import { downloadWithdrawalReceipt } from "@/lib/receipt";
 import {
+  CheckCircle2,
   ChevronRight,
+  Clock,
   Download,
   Fingerprint,
   KeyRound,
@@ -33,6 +36,7 @@ import {
   SquarePlus,
   Star,
   Wallet,
+  XCircle,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/perfil")({
@@ -59,6 +63,11 @@ function PerfilPage() {
   const { data: roles } = useQuery({
     queryKey: ["roles", user.id],
     queryFn: () => getMyRoles(user.id),
+  });
+
+  const { data: withdrawals } = useQuery({
+    queryKey: ["my-withdrawals", user.id],
+    queryFn: () => getMyWithdrawals(user.id),
   });
 
   const isAdmin = roles?.includes("admin");
@@ -114,6 +123,7 @@ function PerfilPage() {
         method === "iban" ? dest.replace(/\s/g, "").toUpperCase() : dest,
       );
       await queryClient.invalidateQueries({ queryKey: ["profile", user.id] });
+      await queryClient.invalidateQueries({ queryKey: ["my-withdrawals", user.id] });
       toast.success("Pedido de retirada enviado.");
       setWithdrawOpen(false);
       setAmount("");
@@ -183,6 +193,76 @@ function PerfilPage() {
           Retirar
         </Button>
       </div>
+
+      {withdrawals?.length ? (
+        <div className="mt-6 animate-fade-up [animation-delay:80ms]">
+          <h2 className="text-sm font-semibold text-muted-foreground">As minhas retiradas</h2>
+          <div className="mt-2.5 space-y-2.5">
+            {withdrawals.map((w) => (
+              <div key={w.id} className="rounded-2xl bg-card p-4 shadow-card">
+                <div className="flex items-center gap-3">
+                  <div
+                    className={
+                      "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl " +
+                      (w.status === "paid"
+                        ? "bg-success-soft text-success"
+                        : w.status === "rejected"
+                          ? "bg-destructive-soft text-destructive"
+                          : "bg-warning-soft text-warning")
+                    }
+                  >
+                    {w.status === "paid" ? (
+                      <CheckCircle2 className="h-4.5 w-4.5" />
+                    ) : w.status === "rejected" ? (
+                      <XCircle className="h-4.5 w-4.5" />
+                    ) : (
+                      <Clock className="h-4.5 w-4.5" />
+                    )}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-semibold">
+                      {Number(w.amount).toLocaleString("pt-AO", { minimumFractionDigits: 2 })} Kz
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {w.status === "paid"
+                        ? "Paga"
+                        : w.status === "rejected"
+                          ? "Recusada"
+                          : "Pendente"}{" "}
+                      · {new Date(w.created_at).toLocaleDateString("pt-AO")}
+                    </p>
+                  </div>
+                  {w.status === "paid" ? (
+                    <button
+                      onClick={() =>
+                        downloadWithdrawalReceipt({
+                          id: w.id,
+                          full_name: profile?.full_name ?? "Utilizador",
+                          phone: profile?.phone ?? "—",
+                          amount: Number(w.amount),
+                          method: w.method,
+                          destination: w.destination,
+                          created_at: w.created_at,
+                          paid_at: w.paid_at,
+                        })
+                      }
+                      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-primary hover:bg-secondary"
+                      aria-label="Descarregar comprovativo"
+                    >
+                      <Download className="h-4.5 w-4.5" />
+                    </button>
+                  ) : null}
+                </div>
+                {w.status === "rejected" && w.rejection_reason ? (
+                  <p className="mt-2.5 rounded-xl bg-destructive-soft p-2.5 text-xs text-destructive">
+                    {w.rejection_reason}
+                  </p>
+                ) : null}
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : null}
 
       {!isStandalone ? (
         <button
