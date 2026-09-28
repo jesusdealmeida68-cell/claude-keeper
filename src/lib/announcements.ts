@@ -108,3 +108,39 @@ export async function deleteAnnouncement(id: string) {
   const { error } = await supabase.from("announcements").delete().eq("id", id);
   if (error) throw error;
 }
+
+/** Likes de todos os anúncios dados: contagem total + quais o utilizador já deu. */
+export async function getAnnouncementLikes(announcementIds: string[], userId: string) {
+  if (!announcementIds.length)
+    return { counts: new Map<string, number>(), likedByMe: new Set<string>() };
+
+  const { data, error } = await supabase
+    .from("announcement_likes")
+    .select("announcement_id, user_id")
+    .in("announcement_id", announcementIds);
+  if (error) throw error;
+
+  const counts = new Map<string, number>();
+  const likedByMe = new Set<string>();
+  for (const row of data ?? []) {
+    counts.set(row.announcement_id, (counts.get(row.announcement_id) ?? 0) + 1);
+    if (row.user_id === userId) likedByMe.add(row.announcement_id);
+  }
+  return { counts, likedByMe };
+}
+
+export async function likeAnnouncement(announcementId: string, userId: string) {
+  const { error } = await supabase
+    .from("announcement_likes")
+    .insert({ announcement_id: announcementId, user_id: userId });
+  if (error) throw error;
+}
+
+export async function unlikeAnnouncement(announcementId: string, userId: string) {
+  const { error } = await supabase
+    .from("announcement_likes")
+    .delete()
+    .eq("announcement_id", announcementId)
+    .eq("user_id", userId);
+  if (error) throw error;
+}
