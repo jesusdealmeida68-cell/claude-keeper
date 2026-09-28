@@ -6,11 +6,23 @@ import { StarRating } from "@/components/kyg/StarRating";
 import { StatusBadge } from "@/components/kyg/StatusBadge";
 import { supabase } from "@/integrations/supabase/client";
 import { getMyProfile } from "@/lib/auth";
-import { FileText, Inbox } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Award, Clock, FileText, Gem, Inbox, Medal, Trophy, Wallet } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/inicio")({
   component: InicioPage,
 });
+
+const LEVELS = [
+  { name: "Bronze", min: 0, next: 5, icon: Medal, cls: "bg-warning-soft text-warning" },
+  { name: "Prata", min: 5, next: 15, icon: Award, cls: "bg-secondary text-foreground" },
+  { name: "Ouro", min: 15, next: 30, icon: Trophy, cls: "bg-gold-soft text-gold-foreground" },
+  { name: "Platina", min: 30, next: null, icon: Gem, cls: "bg-primary/10 text-primary" },
+] as const;
+
+function levelFor(approvedCount: number) {
+  return [...LEVELS].reverse().find((l) => approvedCount >= l.min) ?? LEVELS[0];
+}
 
 function InicioPage() {
   const { user } = Route.useRouteContext();
@@ -34,7 +46,28 @@ function InicioPage() {
     },
   });
 
+  const { data: stats } = useQuery({
+    queryKey: ["home-stats", user.id],
+    queryFn: async () => {
+      const { count: approved } = await supabase
+        .from("submissions")
+        .select("*", { count: "exact", head: true })
+        .eq("user_id", user.id)
+        .eq("status", "approved");
+      const { count: pending } = await supabase
+        .from("submissions")
+        .select("*", { count: "exact", head: true })
+        .eq("user_id", user.id)
+        .eq("status", "pending");
+      return { approved: approved ?? 0, pending: pending ?? 0 };
+    },
+  });
+
   const firstName = profile?.full_name?.split(" ")[0] ?? "";
+  const approved = stats?.approved ?? 0;
+  const level = levelFor(approved);
+  const LevelIcon = level.icon;
+  const progress = level.next ? Math.min(100, (approved / level.next) * 100) : 100;
 
   return (
     <AppShell>
@@ -46,6 +79,61 @@ function InicioPage() {
           ) : null}
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">Acompanhe os seus serviços</p>
+      </div>
+
+      {/* Nível da conta */}
+      <div className="mt-5 rounded-3xl bg-primary p-5 text-primary-foreground shadow-card-lg animate-fade-up [animation-delay:60ms]">
+        <div className="flex items-center gap-3">
+          <div
+            className={cn(
+              "flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl",
+              level.cls,
+            )}
+          >
+            <LevelIcon className="h-5.5 w-5.5" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-base font-bold tracking-tight">Nível {level.name}</p>
+            <p className="text-xs text-primary-foreground/70">
+              {level.next
+                ? `${approved} de ${level.next} comprovativos aprovados`
+                : `${approved} comprovativos aprovados · nível máximo`}
+            </p>
+          </div>
+        </div>
+        <div className="mt-3.5 h-2 overflow-hidden rounded-full bg-white/15">
+          <div
+            className="h-full rounded-full bg-gold transition-all"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+      </div>
+
+      {/* Resumo rápido */}
+      <div className="mt-3 grid grid-cols-3 gap-2.5 animate-fade-up [animation-delay:90ms]">
+        <div className="rounded-2xl bg-card p-3.5 shadow-card">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gold-soft text-gold-foreground">
+            <Wallet className="h-4 w-4" />
+          </div>
+          <p className="mt-2 truncate text-sm font-bold tracking-tight">
+            {(profile?.balance ?? 0).toLocaleString("pt-AO", { maximumFractionDigits: 0 })}
+          </p>
+          <p className="text-[11px] text-muted-foreground">Saldo (Kz)</p>
+        </div>
+        <div className="rounded-2xl bg-card p-3.5 shadow-card">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-success-soft text-success">
+            <FileText className="h-4 w-4" />
+          </div>
+          <p className="mt-2 text-sm font-bold tracking-tight">{approved}</p>
+          <p className="text-[11px] text-muted-foreground">Aprovados</p>
+        </div>
+        <div className="rounded-2xl bg-card p-3.5 shadow-card">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-warning-soft text-warning">
+            <Clock className="h-4 w-4" />
+          </div>
+          <p className="mt-2 text-sm font-bold tracking-tight">{stats?.pending ?? 0}</p>
+          <p className="text-[11px] text-muted-foreground">Em análise</p>
+        </div>
       </div>
 
       <AnnouncementsCarousel userId={user.id} />
