@@ -115,6 +115,42 @@ export type Database = {
           },
         ];
       };
+      identity_verifications: {
+        Row: {
+          back_url: string;
+          created_at: string;
+          front_url: string;
+          id: string;
+          rejection_reason: string | null;
+          reviewed_at: string | null;
+          selfie_url: string;
+          status: string;
+          user_id: string;
+        };
+        Insert: {
+          back_url: string;
+          created_at?: string;
+          front_url: string;
+          id?: string;
+          rejection_reason?: string | null;
+          reviewed_at?: string | null;
+          selfie_url: string;
+          status?: string;
+          user_id: string;
+        };
+        Update: {
+          back_url?: string;
+          created_at?: string;
+          front_url?: string;
+          id?: string;
+          rejection_reason?: string | null;
+          reviewed_at?: string | null;
+          selfie_url?: string;
+          status?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       profiles: {
         Row: {
           balance: number;

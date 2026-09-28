@@ -25,6 +25,7 @@ import {
   Clock,
   FileText,
   Files,
+  Fingerprint,
   LogOut,
   Bell,
   Megaphone,
@@ -238,6 +239,12 @@ function AdminPage() {
               <Link to="/admin/usuarios">
                 <Users className="h-4 w-4 text-muted-foreground" />
                 Usuários
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild className="cursor-pointer gap-3 px-4 py-2.5">
+              <Link to="/admin/identidade">
+                <Fingerprint className="h-4 w-4 text-muted-foreground" />
+                Identidade
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild className="cursor-pointer gap-3 px-4 py-2.5">

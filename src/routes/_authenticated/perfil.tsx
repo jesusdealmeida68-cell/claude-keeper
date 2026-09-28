@@ -21,6 +21,7 @@ import { requestWithdrawal, type WithdrawalMethod } from "@/lib/wallet";
 import {
   ChevronRight,
   Download,
+  Fingerprint,
   KeyRound,
   Loader2,
   LogOut,
@@ -132,6 +133,7 @@ function PerfilPage() {
     .toUpperCase();
 
   const options = [
+    { icon: Fingerprint, label: "Verificação de identidade", to: "/identidade" },
     { icon: Pencil, label: "Editar perfil", to: "/perfil/editar" },
     { icon: KeyRound, label: "Alterar senha", to: "/perfil/senha" },
     { icon: ScrollText, label: "Termos e condições", to: "/termos" },
