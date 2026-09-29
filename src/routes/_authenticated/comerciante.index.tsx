@@ -11,7 +11,7 @@ import {
 import { ComercianteShell } from "@/components/comerciante/ComercianteShell";
 import { CheckCircle2, Clock3, ListChecks, Wallet2 } from "lucide-react";
 
-export const Route = createFileRoute("/_authenticated/comerciante")({
+export const Route = createFileRoute("/_authenticated/comerciante/")({
   component: ComercianteVisaoGeralPage,
 });
 
