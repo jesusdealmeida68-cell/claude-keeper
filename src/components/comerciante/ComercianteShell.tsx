@@ -46,7 +46,7 @@ function KygMark({ className }: { className?: string }) {
         className,
       )}
     >
-      KYG
+      Pioneer
     </div>
   );
 }
@@ -96,7 +96,7 @@ export function ComercianteShell({
         <div className="flex items-center gap-2.5 px-5 py-5">
           <KygMark />
           <div className="min-w-0">
-            <p className="text-sm font-bold tracking-tight text-white">KYG</p>
+            <p className="text-sm font-bold tracking-tight text-white">Pioneer</p>
             <p className="text-[11px] text-slate-500">Área do Comerciante</p>
           </div>
         </div>
@@ -120,7 +120,7 @@ export function ComercianteShell({
           <div className="flex items-center gap-2.5 px-5 py-5">
             <KygMark />
             <div className="min-w-0">
-              <p className="text-sm font-bold tracking-tight text-white">KYG</p>
+              <p className="text-sm font-bold tracking-tight text-white">Pioneer</p>
               <p className="text-[11px] text-slate-500">Área do Comerciante</p>
             </div>
           </div>

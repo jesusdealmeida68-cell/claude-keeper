@@ -45,7 +45,7 @@ export function AdminGate({ children }: { children: ReactNode }) {
         <div className="flex flex-col items-center text-center">
           <KygLogo size="lg" />
           <div className="mt-3 flex items-center gap-1.5 text-sm font-semibold text-muted-foreground">
-            <ShieldCheck className="h-4 w-4" /> Acesso restrito · Admin KYG
+            <ShieldCheck className="h-4 w-4" /> Acesso restrito · Admin Pioneer
           </div>
         </div>
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">

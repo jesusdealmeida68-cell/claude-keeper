@@ -23,7 +23,7 @@ export function downloadWithdrawalReceipt(w: ReceiptData) {
   doc.setTextColor(255, 255, 255);
   doc.setFont("helvetica", "bold");
   doc.setFontSize(18);
-  doc.text("KYG", margin, 14);
+  doc.text("Pioneer", margin, 14);
   doc.setFontSize(10);
   doc.setFont("helvetica", "normal");
   doc.text("Comprovativo de Retirada", margin, 21);
@@ -57,7 +57,7 @@ export function downloadWithdrawalReceipt(w: ReceiptData) {
   doc.setFont("helvetica", "italic");
   doc.setFontSize(8);
   doc.setTextColor(140, 140, 140);
-  doc.text("Documento gerado automaticamente pela KYG.", margin, y);
+  doc.text("Documento gerado automaticamente pelo Pioneer.", margin, y);
 
   doc.save(`comprovativo-retirada-${w.id.slice(0, 8)}.pdf`);
 }

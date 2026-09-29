@@ -11,15 +11,15 @@ import { Loader2 } from "lucide-react";
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Entrar — KYG" },
+      { title: "Entrar — Pioneer" },
       {
         name: "description",
-        content: "Entre na sua conta KYG para acompanhar os seus comprovativos.",
+        content: "Entre na sua conta Pioneer para acompanhar os seus comprovativos.",
       },
-      { property: "og:title", content: "Entrar — KYG" },
+      { property: "og:title", content: "Entrar — Pioneer" },
       {
         property: "og:description",
-        content: "Entre na sua conta KYG para acompanhar os seus comprovativos.",
+        content: "Entre na sua conta Pioneer para acompanhar os seus comprovativos.",
       },
     ],
   }),

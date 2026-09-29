@@ -210,7 +210,7 @@ function AdminPage() {
       <header className="sticky top-0 z-10 flex items-center justify-between border-b bg-primary px-5 py-3 shadow-card">
         <div className="flex items-center gap-3">
           <KygLogo size="sm" className="bg-card text-primary" />
-          <h1 className="text-lg font-semibold text-primary-foreground">KYG Admin</h1>
+          <h1 className="text-lg font-semibold text-primary-foreground">Pioneer Admin</h1>
         </div>
 
         <DropdownMenu>
@@ -230,7 +230,7 @@ function AdminPage() {
               <div className="min-w-0">
                 <p className="truncate text-sm font-semibold leading-tight">{adminName}</p>
                 <p className="truncate text-xs font-normal text-muted-foreground">
-                  Administrador · KYG
+                  Administrador · Pioneer
                 </p>
               </div>
             </DropdownMenuLabel>
@@ -298,7 +298,7 @@ function AdminPage() {
             <p className="truncate text-base font-bold tracking-tight">
               Olá, {adminName.split(" ")[0]}
             </p>
-            <p className="text-xs text-primary-foreground/70">Painel de administração · KYG</p>
+            <p className="text-xs text-primary-foreground/70">Painel de administração · Pioneer</p>
           </div>
         </div>
 

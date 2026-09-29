@@ -35,7 +35,7 @@ export function InstallPwaBanner() {
               <span className="font-semibold">Adicionar ao Ecrã Principal</span>.
             </p>
           ) : (
-            <p className="font-semibold text-foreground">Instalar o KYG no teu dispositivo</p>
+            <p className="font-semibold text-foreground">Instalar o Pioneer no teu dispositivo</p>
           )}
         </div>
         {!showIosHint && (

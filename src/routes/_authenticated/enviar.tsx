@@ -19,7 +19,7 @@ function EnviarPage() {
   const { user } = Route.useRouteContext();
   const navigate = useNavigate();
   const fileRef = useRef<HTMLInputElement>(null);
-  const service = "Verificação KYG";
+  const service = "Verificação Pioneer";
   const [reference, setReference] = useState("");
   const date = new Date().toISOString().slice(0, 10);
   const [note, setNote] = useState("");
@@ -80,94 +80,94 @@ function EnviarPage() {
           </p>
         </div>
       ) : (
-      <form onSubmit={handleSubmit} className="space-y-5 animate-fade-up">
-        <div className="space-y-2">
-          <Label htmlFor="service">Serviço</Label>
-          <Input
-            id="service"
-            value={service}
-            readOnly
-            disabled
-            className="h-12 rounded-xl bg-card"
-          />
-        </div>
+        <form onSubmit={handleSubmit} className="space-y-5 animate-fade-up">
+          <div className="space-y-2">
+            <Label htmlFor="service">Serviço</Label>
+            <Input
+              id="service"
+              value={service}
+              readOnly
+              disabled
+              className="h-12 rounded-xl bg-card"
+            />
+          </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="ref">
-            Referência <span className="text-muted-foreground">(opcional)</span>
-          </Label>
-          <Input
-            id="ref"
-            placeholder="Nº de referência"
-            value={reference}
-            onChange={(e) => setReference(e.target.value)}
-            className="h-12 rounded-xl bg-card"
-          />
-        </div>
+          <div className="space-y-2">
+            <Label htmlFor="ref">
+              Referência <span className="text-muted-foreground">(opcional)</span>
+            </Label>
+            <Input
+              id="ref"
+              placeholder="Nº de referência"
+              value={reference}
+              onChange={(e) => setReference(e.target.value)}
+              className="h-12 rounded-xl bg-card"
+            />
+          </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="date">Data</Label>
-          <Input
-            id="date"
-            type="date"
-            value={date}
-            readOnly
-            disabled
-            className="h-12 rounded-xl bg-card"
-          />
-        </div>
+          <div className="space-y-2">
+            <Label htmlFor="date">Data</Label>
+            <Input
+              id="date"
+              type="date"
+              value={date}
+              readOnly
+              disabled
+              className="h-12 rounded-xl bg-card"
+            />
+          </div>
 
-        <div className="space-y-2">
-          <Label>Comprovativo</Label>
-          <button
-            type="button"
-            onClick={() => fileRef.current?.click()}
-            className="flex w-full flex-col items-center justify-center rounded-3xl border-2 border-dashed bg-card px-6 py-10 text-center transition-colors hover:border-gold/60 hover:bg-gold-soft/40"
+          <div className="space-y-2">
+            <Label>Comprovativo</Label>
+            <button
+              type="button"
+              onClick={() => fileRef.current?.click()}
+              className="flex w-full flex-col items-center justify-center rounded-3xl border-2 border-dashed bg-card px-6 py-10 text-center transition-colors hover:border-gold/60 hover:bg-gold-soft/40"
+            >
+              {file ? (
+                <>
+                  <FileCheck2 className="h-10 w-10 text-gold" />
+                  <p className="mt-3 max-w-full truncate text-sm font-semibold">{file.name}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">Toca para trocar o ficheiro</p>
+                </>
+              ) : (
+                <>
+                  <CloudUpload className="h-10 w-10 text-muted-foreground/60" />
+                  <p className="mt-3 text-sm font-semibold">Adicionar comprovativo</p>
+                  <p className="mt-1 text-xs text-muted-foreground">JPG, PNG ou PDF</p>
+                </>
+              )}
+            </button>
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/jpeg,image/png,application/pdf"
+              className="hidden"
+              onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="note">
+              Observação <span className="text-muted-foreground">(opcional)</span>
+            </Label>
+            <Textarea
+              id="note"
+              placeholder="Alguma nota sobre este serviço?"
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              className="min-h-24 rounded-xl bg-card"
+            />
+          </div>
+
+          <Button
+            type="submit"
+            disabled={loading}
+            className="h-12 w-full rounded-xl bg-gold text-base font-semibold text-gold-foreground hover:bg-gold/90"
           >
-            {file ? (
-              <>
-                <FileCheck2 className="h-10 w-10 text-gold" />
-                <p className="mt-3 max-w-full truncate text-sm font-semibold">{file.name}</p>
-                <p className="mt-1 text-xs text-muted-foreground">Toca para trocar o ficheiro</p>
-              </>
-            ) : (
-              <>
-                <CloudUpload className="h-10 w-10 text-muted-foreground/60" />
-                <p className="mt-3 text-sm font-semibold">Adicionar comprovativo</p>
-                <p className="mt-1 text-xs text-muted-foreground">JPG, PNG ou PDF</p>
-              </>
-            )}
-          </button>
-          <input
-            ref={fileRef}
-            type="file"
-            accept="image/jpeg,image/png,application/pdf"
-            className="hidden"
-            onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="note">
-            Observação <span className="text-muted-foreground">(opcional)</span>
-          </Label>
-          <Textarea
-            id="note"
-            placeholder="Alguma nota sobre este serviço?"
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-            className="min-h-24 rounded-xl bg-card"
-          />
-        </div>
-
-        <Button
-          type="submit"
-          disabled={loading}
-          className="h-12 w-full rounded-xl bg-gold text-base font-semibold text-gold-foreground hover:bg-gold/90"
-        >
-          {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : "Enviar para análise"}
-        </Button>
-      </form>
+            {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : "Enviar para análise"}
+          </Button>
+        </form>
       )}
     </AppShell>
   );

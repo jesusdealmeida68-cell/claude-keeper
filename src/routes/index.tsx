@@ -6,12 +6,15 @@ import { supabase } from "@/integrations/supabase/client";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "KYG — Gestão simples de serviços" },
-      { name: "description", content: "Envie e acompanhe comprovativos de serviços com o KYG." },
-      { property: "og:title", content: "KYG — Gestão simples de serviços" },
+      { title: "Pioneer" },
+      {
+        name: "description",
+        content: "Envie e acompanhe comprovativos de serviços com o Pioneer.",
+      },
+      { property: "og:title", content: "Pioneer" },
       {
         property: "og:description",
-        content: "Envie e acompanhe comprovativos de serviços com o KYG.",
+        content: "Envie e acompanhe comprovativos de serviços com o Pioneer.",
       },
     ],
   }),
