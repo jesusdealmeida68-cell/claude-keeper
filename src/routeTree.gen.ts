@@ -15,6 +15,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as PrivacidadeRouteImport } from './routes/privacidade'
 import { Route as TermosRouteImport } from './routes/termos'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedComercianteRouteImport } from './routes/_authenticated/comerciante'
 import { Route as AuthenticatedEnviadoRouteImport } from './routes/_authenticated/enviado'
 import { Route as AuthenticatedEnviarRouteImport } from './routes/_authenticated/enviar'
 import { Route as AuthenticatedEnviosRouteImport } from './routes/_authenticated/envios'
@@ -28,6 +29,12 @@ import { Route as AuthenticatedAdminIdentidadeRouteImport } from './routes/_auth
 import { Route as AuthenticatedAdminNotificacoesRouteImport } from './routes/_authenticated/admin.notificacoes'
 import { Route as AuthenticatedAdminRetiradasRouteImport } from './routes/_authenticated/admin.retiradas'
 import { Route as AuthenticatedAdminUsuariosRouteImport } from './routes/_authenticated/admin.usuarios'
+import { Route as AuthenticatedComercianteCarteiraRouteImport } from './routes/_authenticated/comerciante.carteira'
+import { Route as AuthenticatedComercianteCriarTarefaRouteImport } from './routes/_authenticated/comerciante.criar-tarefa'
+import { Route as AuthenticatedComercianteMinhasTarefasRouteImport } from './routes/_authenticated/comerciante.minhas-tarefas'
+import { Route as AuthenticatedComercianteRelatoriosRouteImport } from './routes/_authenticated/comerciante.relatorios'
+import { Route as AuthenticatedComercianteResultadosRouteImport } from './routes/_authenticated/comerciante.resultados'
+import { Route as AuthenticatedComercianteSuporteRouteImport } from './routes/_authenticated/comerciante.suporte'
 import { Route as AuthenticatedEnviosIdRouteImport } from './routes/_authenticated/envios.$id'
 import { Route as AuthenticatedPerfilEditarRouteImport } from './routes/_authenticated/perfil.editar'
 import { Route as AuthenticatedPerfilSenhaRouteImport } from './routes/_authenticated/perfil.senha'
@@ -61,6 +68,12 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedComercianteRoute =
+  AuthenticatedComercianteRouteImport.update({
+    id: '/comerciante',
+    path: '/comerciante',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedEnviadoRoute = AuthenticatedEnviadoRouteImport.update({
   id: '/enviado',
   path: '/enviado',
@@ -132,6 +145,42 @@ const AuthenticatedAdminUsuariosRoute =
     path: '/usuarios',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedComercianteCarteiraRoute =
+  AuthenticatedComercianteCarteiraRouteImport.update({
+    id: '/carteira',
+    path: '/carteira',
+    getParentRoute: () => AuthenticatedComercianteRoute,
+  } as any)
+const AuthenticatedComercianteCriarTarefaRoute =
+  AuthenticatedComercianteCriarTarefaRouteImport.update({
+    id: '/criar-tarefa',
+    path: '/criar-tarefa',
+    getParentRoute: () => AuthenticatedComercianteRoute,
+  } as any)
+const AuthenticatedComercianteMinhasTarefasRoute =
+  AuthenticatedComercianteMinhasTarefasRouteImport.update({
+    id: '/minhas-tarefas',
+    path: '/minhas-tarefas',
+    getParentRoute: () => AuthenticatedComercianteRoute,
+  } as any)
+const AuthenticatedComercianteRelatoriosRoute =
+  AuthenticatedComercianteRelatoriosRouteImport.update({
+    id: '/relatorios',
+    path: '/relatorios',
+    getParentRoute: () => AuthenticatedComercianteRoute,
+  } as any)
+const AuthenticatedComercianteResultadosRoute =
+  AuthenticatedComercianteResultadosRouteImport.update({
+    id: '/resultados',
+    path: '/resultados',
+    getParentRoute: () => AuthenticatedComercianteRoute,
+  } as any)
+const AuthenticatedComercianteSuporteRoute =
+  AuthenticatedComercianteSuporteRouteImport.update({
+    id: '/suporte',
+    path: '/suporte',
+    getParentRoute: () => AuthenticatedComercianteRoute,
+  } as any)
 const AuthenticatedEnviosIdRoute = AuthenticatedEnviosIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -156,6 +205,7 @@ export interface FileRoutesByFullPath {
   '/privacidade': typeof PrivacidadeRoute
   '/termos': typeof TermosRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/comerciante': typeof AuthenticatedComercianteRouteWithChildren
   '/enviado': typeof AuthenticatedEnviadoRoute
   '/enviar': typeof AuthenticatedEnviarRoute
   '/envios': typeof AuthenticatedEnviosRouteWithChildren
@@ -169,6 +219,12 @@ export interface FileRoutesByFullPath {
   '/admin/notificacoes': typeof AuthenticatedAdminNotificacoesRoute
   '/admin/retiradas': typeof AuthenticatedAdminRetiradasRoute
   '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
+  '/comerciante/carteira': typeof AuthenticatedComercianteCarteiraRoute
+  '/comerciante/criar-tarefa': typeof AuthenticatedComercianteCriarTarefaRoute
+  '/comerciante/minhas-tarefas': typeof AuthenticatedComercianteMinhasTarefasRoute
+  '/comerciante/relatorios': typeof AuthenticatedComercianteRelatoriosRoute
+  '/comerciante/resultados': typeof AuthenticatedComercianteResultadosRoute
+  '/comerciante/suporte': typeof AuthenticatedComercianteSuporteRoute
   '/envios/$id': typeof AuthenticatedEnviosIdRoute
   '/perfil/editar': typeof AuthenticatedPerfilEditarRoute
   '/perfil/senha': typeof AuthenticatedPerfilSenhaRoute
@@ -179,6 +235,7 @@ export interface FileRoutesByTo {
   '/privacidade': typeof PrivacidadeRoute
   '/termos': typeof TermosRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/comerciante': typeof AuthenticatedComercianteRouteWithChildren
   '/enviado': typeof AuthenticatedEnviadoRoute
   '/enviar': typeof AuthenticatedEnviarRoute
   '/envios': typeof AuthenticatedEnviosRouteWithChildren
@@ -192,6 +249,12 @@ export interface FileRoutesByTo {
   '/admin/notificacoes': typeof AuthenticatedAdminNotificacoesRoute
   '/admin/retiradas': typeof AuthenticatedAdminRetiradasRoute
   '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
+  '/comerciante/carteira': typeof AuthenticatedComercianteCarteiraRoute
+  '/comerciante/criar-tarefa': typeof AuthenticatedComercianteCriarTarefaRoute
+  '/comerciante/minhas-tarefas': typeof AuthenticatedComercianteMinhasTarefasRoute
+  '/comerciante/relatorios': typeof AuthenticatedComercianteRelatoriosRoute
+  '/comerciante/resultados': typeof AuthenticatedComercianteResultadosRoute
+  '/comerciante/suporte': typeof AuthenticatedComercianteSuporteRoute
   '/envios/$id': typeof AuthenticatedEnviosIdRoute
   '/perfil/editar': typeof AuthenticatedPerfilEditarRoute
   '/perfil/senha': typeof AuthenticatedPerfilSenhaRoute
@@ -204,6 +267,7 @@ export interface FileRoutesById {
   '/privacidade': typeof PrivacidadeRoute
   '/termos': typeof TermosRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/_authenticated/comerciante': typeof AuthenticatedComercianteRouteWithChildren
   '/_authenticated/enviado': typeof AuthenticatedEnviadoRoute
   '/_authenticated/enviar': typeof AuthenticatedEnviarRoute
   '/_authenticated/envios': typeof AuthenticatedEnviosRouteWithChildren
@@ -217,6 +281,12 @@ export interface FileRoutesById {
   '/_authenticated/admin/notificacoes': typeof AuthenticatedAdminNotificacoesRoute
   '/_authenticated/admin/retiradas': typeof AuthenticatedAdminRetiradasRoute
   '/_authenticated/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
+  '/_authenticated/comerciante/carteira': typeof AuthenticatedComercianteCarteiraRoute
+  '/_authenticated/comerciante/criar-tarefa': typeof AuthenticatedComercianteCriarTarefaRoute
+  '/_authenticated/comerciante/minhas-tarefas': typeof AuthenticatedComercianteMinhasTarefasRoute
+  '/_authenticated/comerciante/relatorios': typeof AuthenticatedComercianteRelatoriosRoute
+  '/_authenticated/comerciante/resultados': typeof AuthenticatedComercianteResultadosRoute
+  '/_authenticated/comerciante/suporte': typeof AuthenticatedComercianteSuporteRoute
   '/_authenticated/envios/$id': typeof AuthenticatedEnviosIdRoute
   '/_authenticated/perfil/editar': typeof AuthenticatedPerfilEditarRoute
   '/_authenticated/perfil/senha': typeof AuthenticatedPerfilSenhaRoute
@@ -229,6 +299,7 @@ export interface FileRouteTypes {
     | '/privacidade'
     | '/termos'
     | '/admin'
+    | '/comerciante'
     | '/enviado'
     | '/enviar'
     | '/envios'
@@ -242,6 +313,12 @@ export interface FileRouteTypes {
     | '/admin/notificacoes'
     | '/admin/retiradas'
     | '/admin/usuarios'
+    | '/comerciante/carteira'
+    | '/comerciante/criar-tarefa'
+    | '/comerciante/minhas-tarefas'
+    | '/comerciante/relatorios'
+    | '/comerciante/resultados'
+    | '/comerciante/suporte'
     | '/envios/$id'
     | '/perfil/editar'
     | '/perfil/senha'
@@ -252,6 +329,7 @@ export interface FileRouteTypes {
     | '/privacidade'
     | '/termos'
     | '/admin'
+    | '/comerciante'
     | '/enviado'
     | '/enviar'
     | '/envios'
@@ -265,6 +343,12 @@ export interface FileRouteTypes {
     | '/admin/notificacoes'
     | '/admin/retiradas'
     | '/admin/usuarios'
+    | '/comerciante/carteira'
+    | '/comerciante/criar-tarefa'
+    | '/comerciante/minhas-tarefas'
+    | '/comerciante/relatorios'
+    | '/comerciante/resultados'
+    | '/comerciante/suporte'
     | '/envios/$id'
     | '/perfil/editar'
     | '/perfil/senha'
@@ -276,6 +360,7 @@ export interface FileRouteTypes {
     | '/privacidade'
     | '/termos'
     | '/_authenticated/admin'
+    | '/_authenticated/comerciante'
     | '/_authenticated/enviado'
     | '/_authenticated/enviar'
     | '/_authenticated/envios'
@@ -289,6 +374,12 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/notificacoes'
     | '/_authenticated/admin/retiradas'
     | '/_authenticated/admin/usuarios'
+    | '/_authenticated/comerciante/carteira'
+    | '/_authenticated/comerciante/criar-tarefa'
+    | '/_authenticated/comerciante/minhas-tarefas'
+    | '/_authenticated/comerciante/relatorios'
+    | '/_authenticated/comerciante/resultados'
+    | '/_authenticated/comerciante/suporte'
     | '/_authenticated/envios/$id'
     | '/_authenticated/perfil/editar'
     | '/_authenticated/perfil/senha'
@@ -344,6 +435,13 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/comerciante': {
+      id: '/_authenticated/comerciante'
+      path: '/comerciante'
+      fullPath: '/comerciante'
+      preLoaderRoute: typeof AuthenticatedComercianteRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/enviado': {
@@ -437,6 +535,48 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminUsuariosRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/comerciante/carteira': {
+      id: '/_authenticated/comerciante/carteira'
+      path: '/carteira'
+      fullPath: '/comerciante/carteira'
+      preLoaderRoute: typeof AuthenticatedComercianteCarteiraRouteImport
+      parentRoute: typeof AuthenticatedComercianteRoute
+    }
+    '/_authenticated/comerciante/criar-tarefa': {
+      id: '/_authenticated/comerciante/criar-tarefa'
+      path: '/criar-tarefa'
+      fullPath: '/comerciante/criar-tarefa'
+      preLoaderRoute: typeof AuthenticatedComercianteCriarTarefaRouteImport
+      parentRoute: typeof AuthenticatedComercianteRoute
+    }
+    '/_authenticated/comerciante/minhas-tarefas': {
+      id: '/_authenticated/comerciante/minhas-tarefas'
+      path: '/minhas-tarefas'
+      fullPath: '/comerciante/minhas-tarefas'
+      preLoaderRoute: typeof AuthenticatedComercianteMinhasTarefasRouteImport
+      parentRoute: typeof AuthenticatedComercianteRoute
+    }
+    '/_authenticated/comerciante/relatorios': {
+      id: '/_authenticated/comerciante/relatorios'
+      path: '/relatorios'
+      fullPath: '/comerciante/relatorios'
+      preLoaderRoute: typeof AuthenticatedComercianteRelatoriosRouteImport
+      parentRoute: typeof AuthenticatedComercianteRoute
+    }
+    '/_authenticated/comerciante/resultados': {
+      id: '/_authenticated/comerciante/resultados'
+      path: '/resultados'
+      fullPath: '/comerciante/resultados'
+      preLoaderRoute: typeof AuthenticatedComercianteResultadosRouteImport
+      parentRoute: typeof AuthenticatedComercianteRoute
+    }
+    '/_authenticated/comerciante/suporte': {
+      id: '/_authenticated/comerciante/suporte'
+      path: '/suporte'
+      fullPath: '/comerciante/suporte'
+      preLoaderRoute: typeof AuthenticatedComercianteSuporteRouteImport
+      parentRoute: typeof AuthenticatedComercianteRoute
+    }
     '/_authenticated/envios/$id': {
       id: '/_authenticated/envios/$id'
       path: '/$id'
@@ -482,6 +622,35 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
 const AuthenticatedAdminRouteWithChildren =
   AuthenticatedAdminRoute._addFileChildren(AuthenticatedAdminRouteChildren)
 
+interface AuthenticatedComercianteRouteChildren {
+  AuthenticatedComercianteCarteiraRoute: typeof AuthenticatedComercianteCarteiraRoute
+  AuthenticatedComercianteCriarTarefaRoute: typeof AuthenticatedComercianteCriarTarefaRoute
+  AuthenticatedComercianteMinhasTarefasRoute: typeof AuthenticatedComercianteMinhasTarefasRoute
+  AuthenticatedComercianteRelatoriosRoute: typeof AuthenticatedComercianteRelatoriosRoute
+  AuthenticatedComercianteResultadosRoute: typeof AuthenticatedComercianteResultadosRoute
+  AuthenticatedComercianteSuporteRoute: typeof AuthenticatedComercianteSuporteRoute
+}
+
+const AuthenticatedComercianteRouteChildren: AuthenticatedComercianteRouteChildren =
+  {
+    AuthenticatedComercianteCarteiraRoute:
+      AuthenticatedComercianteCarteiraRoute,
+    AuthenticatedComercianteCriarTarefaRoute:
+      AuthenticatedComercianteCriarTarefaRoute,
+    AuthenticatedComercianteMinhasTarefasRoute:
+      AuthenticatedComercianteMinhasTarefasRoute,
+    AuthenticatedComercianteRelatoriosRoute:
+      AuthenticatedComercianteRelatoriosRoute,
+    AuthenticatedComercianteResultadosRoute:
+      AuthenticatedComercianteResultadosRoute,
+    AuthenticatedComercianteSuporteRoute: AuthenticatedComercianteSuporteRoute,
+  }
+
+const AuthenticatedComercianteRouteWithChildren =
+  AuthenticatedComercianteRoute._addFileChildren(
+    AuthenticatedComercianteRouteChildren,
+  )
+
 interface AuthenticatedEnviosRouteChildren {
   AuthenticatedEnviosIdRoute: typeof AuthenticatedEnviosIdRoute
 }
@@ -508,6 +677,7 @@ const AuthenticatedPerfilRouteWithChildren =
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
+  AuthenticatedComercianteRoute: typeof AuthenticatedComercianteRouteWithChildren
   AuthenticatedEnviadoRoute: typeof AuthenticatedEnviadoRoute
   AuthenticatedEnviarRoute: typeof AuthenticatedEnviarRoute
   AuthenticatedEnviosRoute: typeof AuthenticatedEnviosRouteWithChildren
@@ -519,6 +689,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
+  AuthenticatedComercianteRoute: AuthenticatedComercianteRouteWithChildren,
   AuthenticatedEnviadoRoute: AuthenticatedEnviadoRoute,
   AuthenticatedEnviarRoute: AuthenticatedEnviarRoute,
   AuthenticatedEnviosRoute: AuthenticatedEnviosRouteWithChildren,
