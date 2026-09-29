@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { AppShell } from "@/components/kyg/AppShell";
@@ -39,6 +39,8 @@ const statusMeta: Record<
 
 function TrabalhosPage() {
   const { user } = Route.useRouteContext();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const isIndex = pathname === "/trabalhos";
   const [filter, setFilter] = useState<(typeof filters)[number]["key"]>("todas");
   const [query, setQuery] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
@@ -93,6 +95,10 @@ function TrabalhosPage() {
   }, [tasks, filter, query]);
 
   const loading = tasksLoading || subsLoading;
+
+  if (!isIndex) {
+    return <Outlet />;
+  }
 
   return (
     <AppShell title="Trabalhos">
