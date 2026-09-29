@@ -36,11 +36,28 @@ export async function getActiveTasks(): Promise<Task[]> {
   return (data ?? []) as Task[];
 }
 
-export async function getMyTaskSubmissions(userId: string): Promise<TaskSubmission[]> {
+export async function getTaskById(id: string): Promise<Task> {
+  const { data, error } = await supabase.from("tasks").select("*").eq("id", id).single();
+  if (error) throw error;
+  return data as Task;
+}
+
+export async function getMyTaskSubmission(
+  userId: string,
+  taskId: string,
+): Promise<TaskSubmission | null> {
   const { data, error } = await supabase
     .from("task_submissions")
     .select("*")
-    .eq("user_id", userId);
+    .eq("user_id", userId)
+    .eq("task_id", taskId)
+    .maybeSingle();
+  if (error) throw error;
+  return (data as TaskSubmission) ?? null;
+}
+
+export async function getMyTaskSubmissions(userId: string): Promise<TaskSubmission[]> {
+  const { data, error } = await supabase.from("task_submissions").select("*").eq("user_id", userId);
   if (error) throw error;
   return (data ?? []) as TaskSubmission[];
 }

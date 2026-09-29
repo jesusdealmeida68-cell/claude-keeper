@@ -9,55 +9,50 @@ import {
   YAxis,
 } from "recharts";
 import { ComercianteShell } from "@/components/comerciante/ComercianteShell";
-import { CheckCircle2, Clock3, ListChecks, TrendingUp, Wallet2 } from "lucide-react";
+import { CheckCircle2, Clock3, ListChecks, Wallet2 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/comerciante")({
   component: ComercianteVisaoGeralPage,
 });
 
 const performance = [
-  { dia: "Seg", concluidas: 120 },
-  { dia: "Ter", concluidas: 165 },
-  { dia: "Qua", concluidas: 148 },
-  { dia: "Qui", concluidas: 210 },
-  { dia: "Sex", concluidas: 260 },
-  { dia: "Sáb", concluidas: 190 },
-  { dia: "Dom", concluidas: 147 },
+  { dia: "Seg", concluidas: 0 },
+  { dia: "Ter", concluidas: 0 },
+  { dia: "Qua", concluidas: 0 },
+  { dia: "Qui", concluidas: 0 },
+  { dia: "Sex", concluidas: 0 },
+  { dia: "Sáb", concluidas: 0 },
+  { dia: "Dom", concluidas: 0 },
 ];
 
 const cards = [
   {
     label: "Saldo disponível",
-    value: "50.000 Kz",
+    value: "0,00 Kz",
     icon: Wallet2,
     accent: "from-blue-500 to-blue-600",
   },
   {
     label: "Tarefas ativas",
-    value: "8",
+    value: "0",
     icon: ListChecks,
     accent: "from-slate-700 to-slate-900",
   },
   {
     label: "Tarefas concluídas",
-    value: "1.240",
+    value: "0",
     icon: CheckCircle2,
     accent: "from-emerald-500 to-emerald-600",
   },
   {
     label: "Pendentes de aprovação",
-    value: "86",
+    value: "0",
     icon: Clock3,
     accent: "from-amber-500 to-amber-600",
   },
 ] as const;
 
-const recentTasks = [
-  { name: "Seguir página no Instagram", reward: "150 Kz", status: "Ativa" },
-  { name: "Avaliar aplicativo na Play Store", reward: "200 Kz", status: "Ativa" },
-  { name: "Subscrever canal no YouTube", reward: "100 Kz", status: "Pausada" },
-  { name: "Partilhar publicação no Facebook", reward: "120 Kz", status: "Concluída" },
-] as const;
+const recentTasks: { name: string; reward: string; status: string }[] = [];
 
 const statusCls: Record<string, string> = {
   Ativa: "bg-emerald-50 text-emerald-600",
@@ -93,9 +88,6 @@ function ComercianteVisaoGeralPage() {
           <div>
             <h2 className="text-base font-bold text-slate-900">Desempenho das tarefas</h2>
             <p className="text-sm text-slate-500">Conclusões por dia, últimos 7 dias</p>
-          </div>
-          <div className="flex items-center gap-1.5 rounded-full bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-600">
-            <TrendingUp className="h-3.5 w-3.5" /> +18% esta semana
           </div>
         </div>
 
@@ -146,19 +138,23 @@ function ComercianteVisaoGeralPage() {
           </Link>
         </div>
         <div className="mt-3 divide-y divide-slate-100">
-          {recentTasks.map((t) => (
-            <div key={t.name} className="flex items-center gap-3 py-3">
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-semibold text-slate-900">{t.name}</p>
-                <p className="text-xs text-slate-500">Recompensa: {t.reward}</p>
+          {recentTasks.length ? (
+            recentTasks.map((t) => (
+              <div key={t.name} className="flex items-center gap-3 py-3">
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-semibold text-slate-900">{t.name}</p>
+                  <p className="text-xs text-slate-500">Recompensa: {t.reward}</p>
+                </div>
+                <span
+                  className={`shrink-0 rounded-full px-3 py-1 text-xs font-semibold ${statusCls[t.status]}`}
+                >
+                  {t.status}
+                </span>
               </div>
-              <span
-                className={`shrink-0 rounded-full px-3 py-1 text-xs font-semibold ${statusCls[t.status]}`}
-              >
-                {t.status}
-              </span>
-            </div>
-          ))}
+            ))
+          ) : (
+            <p className="py-6 text-center text-sm text-slate-400">Ainda não há tarefas criadas.</p>
+          )}
         </div>
       </div>
     </ComercianteShell>

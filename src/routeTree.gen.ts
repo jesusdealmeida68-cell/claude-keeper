@@ -39,6 +39,7 @@ import { Route as AuthenticatedComercianteSuporteRouteImport } from './routes/_a
 import { Route as AuthenticatedEnviosIdRouteImport } from './routes/_authenticated/envios.$id'
 import { Route as AuthenticatedPerfilEditarRouteImport } from './routes/_authenticated/perfil.editar'
 import { Route as AuthenticatedPerfilSenhaRouteImport } from './routes/_authenticated/perfil.senha'
+import { Route as AuthenticatedTrabalhosIdRouteImport } from './routes/_authenticated/trabalhos.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -204,6 +205,12 @@ const AuthenticatedPerfilSenhaRoute =
     path: '/senha',
     getParentRoute: () => AuthenticatedPerfilRoute,
   } as any)
+const AuthenticatedTrabalhosIdRoute =
+  AuthenticatedTrabalhosIdRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => AuthenticatedTrabalhosRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -219,7 +226,7 @@ export interface FileRoutesByFullPath {
   '/inicio': typeof AuthenticatedInicioRoute
   '/notificacoes': typeof AuthenticatedNotificacoesRoute
   '/perfil': typeof AuthenticatedPerfilRouteWithChildren
-  '/trabalhos': typeof AuthenticatedTrabalhosRoute
+  '/trabalhos': typeof AuthenticatedTrabalhosRouteWithChildren
   '/admin/$id': typeof AuthenticatedAdminIdRoute
   '/admin/anuncios': typeof AuthenticatedAdminAnunciosRoute
   '/admin/identidade': typeof AuthenticatedAdminIdentidadeRoute
@@ -235,6 +242,7 @@ export interface FileRoutesByFullPath {
   '/envios/$id': typeof AuthenticatedEnviosIdRoute
   '/perfil/editar': typeof AuthenticatedPerfilEditarRoute
   '/perfil/senha': typeof AuthenticatedPerfilSenhaRoute
+  '/trabalhos/$id': typeof AuthenticatedTrabalhosIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -250,7 +258,7 @@ export interface FileRoutesByTo {
   '/inicio': typeof AuthenticatedInicioRoute
   '/notificacoes': typeof AuthenticatedNotificacoesRoute
   '/perfil': typeof AuthenticatedPerfilRouteWithChildren
-  '/trabalhos': typeof AuthenticatedTrabalhosRoute
+  '/trabalhos': typeof AuthenticatedTrabalhosRouteWithChildren
   '/admin/$id': typeof AuthenticatedAdminIdRoute
   '/admin/anuncios': typeof AuthenticatedAdminAnunciosRoute
   '/admin/identidade': typeof AuthenticatedAdminIdentidadeRoute
@@ -266,6 +274,7 @@ export interface FileRoutesByTo {
   '/envios/$id': typeof AuthenticatedEnviosIdRoute
   '/perfil/editar': typeof AuthenticatedPerfilEditarRoute
   '/perfil/senha': typeof AuthenticatedPerfilSenhaRoute
+  '/trabalhos/$id': typeof AuthenticatedTrabalhosIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -283,7 +292,7 @@ export interface FileRoutesById {
   '/_authenticated/inicio': typeof AuthenticatedInicioRoute
   '/_authenticated/notificacoes': typeof AuthenticatedNotificacoesRoute
   '/_authenticated/perfil': typeof AuthenticatedPerfilRouteWithChildren
-  '/_authenticated/trabalhos': typeof AuthenticatedTrabalhosRoute
+  '/_authenticated/trabalhos': typeof AuthenticatedTrabalhosRouteWithChildren
   '/_authenticated/admin/$id': typeof AuthenticatedAdminIdRoute
   '/_authenticated/admin/anuncios': typeof AuthenticatedAdminAnunciosRoute
   '/_authenticated/admin/identidade': typeof AuthenticatedAdminIdentidadeRoute
@@ -299,6 +308,7 @@ export interface FileRoutesById {
   '/_authenticated/envios/$id': typeof AuthenticatedEnviosIdRoute
   '/_authenticated/perfil/editar': typeof AuthenticatedPerfilEditarRoute
   '/_authenticated/perfil/senha': typeof AuthenticatedPerfilSenhaRoute
+  '/_authenticated/trabalhos/$id': typeof AuthenticatedTrabalhosIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -332,6 +342,7 @@ export interface FileRouteTypes {
     | '/envios/$id'
     | '/perfil/editar'
     | '/perfil/senha'
+    | '/trabalhos/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -363,6 +374,7 @@ export interface FileRouteTypes {
     | '/envios/$id'
     | '/perfil/editar'
     | '/perfil/senha'
+    | '/trabalhos/$id'
   id:
     | '__root__'
     | '/'
@@ -395,6 +407,7 @@ export interface FileRouteTypes {
     | '/_authenticated/envios/$id'
     | '/_authenticated/perfil/editar'
     | '/_authenticated/perfil/senha'
+    | '/_authenticated/trabalhos/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -617,6 +630,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPerfilSenhaRouteImport
       parentRoute: typeof AuthenticatedPerfilRoute
     }
+    '/_authenticated/trabalhos/$id': {
+      id: '/_authenticated/trabalhos/$id'
+      path: '/$id'
+      fullPath: '/trabalhos/$id'
+      preLoaderRoute: typeof AuthenticatedTrabalhosIdRouteImport
+      parentRoute: typeof AuthenticatedTrabalhosRoute
+    }
   }
 }
 
@@ -694,6 +714,20 @@ const AuthenticatedPerfilRouteChildren: AuthenticatedPerfilRouteChildren = {
 const AuthenticatedPerfilRouteWithChildren =
   AuthenticatedPerfilRoute._addFileChildren(AuthenticatedPerfilRouteChildren)
 
+interface AuthenticatedTrabalhosRouteChildren {
+  AuthenticatedTrabalhosIdRoute: typeof AuthenticatedTrabalhosIdRoute
+}
+
+const AuthenticatedTrabalhosRouteChildren: AuthenticatedTrabalhosRouteChildren =
+  {
+    AuthenticatedTrabalhosIdRoute: AuthenticatedTrabalhosIdRoute,
+  }
+
+const AuthenticatedTrabalhosRouteWithChildren =
+  AuthenticatedTrabalhosRoute._addFileChildren(
+    AuthenticatedTrabalhosRouteChildren,
+  )
+
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
   AuthenticatedComercianteRoute: typeof AuthenticatedComercianteRouteWithChildren
@@ -704,7 +738,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedInicioRoute: typeof AuthenticatedInicioRoute
   AuthenticatedNotificacoesRoute: typeof AuthenticatedNotificacoesRoute
   AuthenticatedPerfilRoute: typeof AuthenticatedPerfilRouteWithChildren
-  AuthenticatedTrabalhosRoute: typeof AuthenticatedTrabalhosRoute
+  AuthenticatedTrabalhosRoute: typeof AuthenticatedTrabalhosRouteWithChildren
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -717,7 +751,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedInicioRoute: AuthenticatedInicioRoute,
   AuthenticatedNotificacoesRoute: AuthenticatedNotificacoesRoute,
   AuthenticatedPerfilRoute: AuthenticatedPerfilRouteWithChildren,
-  AuthenticatedTrabalhosRoute: AuthenticatedTrabalhosRoute,
+  AuthenticatedTrabalhosRoute: AuthenticatedTrabalhosRouteWithChildren,
 }
 
 const AuthenticatedRouteRouteWithChildren =

@@ -9,14 +9,14 @@ export const Route = createFileRoute("/_authenticated/comerciante/relatorios")({
 const reportCards = [
   {
     label: "Taxa de aprovação",
-    value: "92%",
+    value: "—",
     icon: TrendingUp,
     cls: "text-emerald-600 bg-emerald-50",
   },
-  { label: "Participantes únicos", value: "3.180", icon: Users, cls: "text-blue-600 bg-blue-50" },
+  { label: "Participantes únicos", value: "0", icon: Users, cls: "text-blue-600 bg-blue-50" },
   {
     label: "Custo médio por conclusão",
-    value: "148 Kz",
+    value: "0,00 Kz",
     icon: BarChart3,
     cls: "text-slate-600 bg-slate-100",
   },

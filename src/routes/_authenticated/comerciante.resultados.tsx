@@ -17,40 +17,7 @@ const initialSubmissions: {
   proof: string;
   datetime: string;
   status: SubmissionStatus;
-}[] = [
-  {
-    id: "s1",
-    userId: "#UT-4821",
-    task: "Seguir página no Instagram",
-    proof: "print-instagram.jpg",
-    datetime: "28 Set, 14:32",
-    status: "Pendente",
-  },
-  {
-    id: "s2",
-    userId: "#UT-3390",
-    task: "Avaliar aplicativo na Play Store",
-    proof: "review-playstore.jpg",
-    datetime: "28 Set, 13:10",
-    status: "Pendente",
-  },
-  {
-    id: "s3",
-    userId: "#UT-1027",
-    task: "Subscrever canal no YouTube",
-    proof: "print-youtube.jpg",
-    datetime: "27 Set, 19:44",
-    status: "Aprovado",
-  },
-  {
-    id: "s4",
-    userId: "#UT-5512",
-    task: "Partilhar publicação no Facebook",
-    proof: "print-facebook.jpg",
-    datetime: "27 Set, 09:02",
-    status: "Rejeitado",
-  },
-];
+}[] = [];
 
 const statusCls: Record<SubmissionStatus, string> = {
   Pendente: "bg-amber-50 text-amber-600",

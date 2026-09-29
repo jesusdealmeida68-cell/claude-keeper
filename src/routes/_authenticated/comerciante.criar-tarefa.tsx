@@ -26,8 +26,8 @@ const proofTypes = [
 
 function ComercianteCriarTarefaPage() {
   const [proof, setProof] = useState<(typeof proofTypes)[number]["key"]>("imagem");
-  const [participants, setParticipants] = useState("100");
-  const [reward, setReward] = useState("150");
+  const [participants, setParticipants] = useState("");
+  const [reward, setReward] = useState("");
 
   const total = (Number(participants || 0) * Number(reward || 0)).toLocaleString("pt-AO");
 
@@ -88,6 +88,7 @@ function ComercianteCriarTarefaPage() {
                   type="number"
                   value={participants}
                   onChange={(e) => setParticipants(e.target.value)}
+                  placeholder="Ex.: 100"
                   className="mt-1.5 rounded-xl border-slate-200"
                 />
               </div>
@@ -97,6 +98,7 @@ function ComercianteCriarTarefaPage() {
                   type="number"
                   value={reward}
                   onChange={(e) => setReward(e.target.value)}
+                  placeholder="Ex.: 150"
                   className="mt-1.5 rounded-xl border-slate-200"
                 />
               </div>
