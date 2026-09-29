@@ -142,6 +142,66 @@ export type Database = {
         }
         Relationships: []
       }
+      merchant_deposits: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          proof_url: string
+          rejection_reason: string | null
+          reviewed_at: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          id?: string
+          proof_url: string
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          proof_url?: string
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      merchant_transactions: {
+        Row: {
+          amount: number
+          created_at: string
+          description: string
+          id: string
+          kind: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          description: string
+          id?: string
+          kind: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          description?: string
+          id?: string
+          kind?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           created_at: string
@@ -192,6 +252,7 @@ export type Database = {
           created_at: string
           full_name: string
           id: string
+          merchant_balance: number
           phone: string
           rating: number
           starred: boolean
@@ -202,6 +263,7 @@ export type Database = {
           created_at?: string
           full_name: string
           id?: string
+          merchant_balance?: number
           phone: string
           rating?: number
           starred?: boolean
@@ -212,6 +274,7 @@ export type Database = {
           created_at?: string
           full_name?: string
           id?: string
+          merchant_balance?: number
           phone?: string
           rating?: number
           starred?: boolean
@@ -308,33 +371,42 @@ export type Database = {
       tasks: {
         Row: {
           active: boolean
+          category: string
           created_at: string
           description: string
           estimated_minutes: number
           id: string
           instructions: string[]
+          merchant_id: string | null
+          proof_type: string
           reward: number
           slots: number
           title: string
         }
         Insert: {
           active?: boolean
+          category?: string
           created_at?: string
           description: string
           estimated_minutes?: number
           id?: string
           instructions?: string[]
+          merchant_id?: string | null
+          proof_type?: string
           reward: number
           slots?: number
           title: string
         }
         Update: {
           active?: boolean
+          category?: string
           created_at?: string
           description?: string
           estimated_minutes?: number
           id?: string
           instructions?: string[]
+          merchant_id?: string | null
+          proof_type?: string
           reward?: number
           slots?: number
           title?: string
@@ -415,6 +487,18 @@ export type Database = {
         Args: { _withdrawal_id: string }
         Returns: undefined
       }
+      publish_merchant_task: {
+        Args: {
+          _category: string
+          _description: string
+          _instructions: string[]
+          _proof_type: string
+          _reward: number
+          _slots: number
+          _title: string
+        }
+        Returns: string
+      }
       reject_withdrawal: {
         Args: { _reason: string; _withdrawal_id: string }
         Returns: undefined
@@ -422,6 +506,10 @@ export type Database = {
       request_withdrawal: {
         Args: { _amount: number; _destination?: string; _method?: string }
         Returns: string
+      }
+      review_merchant_deposit: {
+        Args: { _approve: boolean; _deposit_id: string; _reason?: string }
+        Returns: undefined
       }
       review_task_submission: {
         Args: {
@@ -431,6 +519,11 @@ export type Database = {
         }
         Returns: undefined
       }
+      set_merchant_task_active: {
+        Args: { _active: boolean; _task_id: string }
+        Returns: undefined
+      }
+      transfer_to_merchant: { Args: { _amount: number }; Returns: undefined }
     }
     Enums: {
       app_role: "admin" | "user"
