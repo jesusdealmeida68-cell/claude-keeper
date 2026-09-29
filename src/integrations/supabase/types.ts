@@ -205,6 +205,78 @@ export type Database = {
         };
         Relationships: [];
       };
+      tasks: {
+        Row: {
+          active: boolean;
+          created_at: string;
+          description: string;
+          estimated_minutes: number;
+          id: string;
+          instructions: string[];
+          reward: number;
+          slots: number;
+          title: string;
+        };
+        Insert: {
+          active?: boolean;
+          created_at?: string;
+          description: string;
+          estimated_minutes?: number;
+          id?: string;
+          instructions?: string[];
+          reward: number;
+          slots?: number;
+          title: string;
+        };
+        Update: {
+          active?: boolean;
+          created_at?: string;
+          description?: string;
+          estimated_minutes?: number;
+          id?: string;
+          instructions?: string[];
+          reward?: number;
+          slots?: number;
+          title?: string;
+        };
+        Relationships: [];
+      };
+      task_submissions: {
+        Row: {
+          answer_text: string | null;
+          created_at: string;
+          evidence_url: string | null;
+          id: string;
+          review_note: string | null;
+          reviewed_at: string | null;
+          status: string;
+          task_id: string;
+          user_id: string;
+        };
+        Insert: {
+          answer_text?: string | null;
+          created_at?: string;
+          evidence_url?: string | null;
+          id?: string;
+          review_note?: string | null;
+          reviewed_at?: string | null;
+          status?: string;
+          task_id: string;
+          user_id: string;
+        };
+        Update: {
+          answer_text?: string | null;
+          created_at?: string;
+          evidence_url?: string | null;
+          id?: string;
+          review_note?: string | null;
+          reviewed_at?: string | null;
+          status?: string;
+          task_id?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       submissions: {
         Row: {
           created_at: string;
@@ -328,6 +400,10 @@ export type Database = {
       request_withdrawal: {
         Args: { _amount: number; _destination?: string; _method?: string };
         Returns: string;
+      };
+      review_task_submission: {
+        Args: { _submission_id: string; _approve: boolean; _review_note?: string | null };
+        Returns: undefined;
       };
     };
     Enums: {
