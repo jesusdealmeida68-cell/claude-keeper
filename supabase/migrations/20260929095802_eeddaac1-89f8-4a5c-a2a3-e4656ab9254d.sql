@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.protect_profile_balances() FROM PUBLIC, anon, authenticated;
