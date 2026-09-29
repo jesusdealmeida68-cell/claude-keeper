@@ -20,6 +20,7 @@ import { useInstallPrompt } from "@/hooks/use-install-prompt";
 import { getMyWithdrawals, requestWithdrawal, type WithdrawalMethod } from "@/lib/wallet";
 import { downloadWithdrawalReceipt } from "@/lib/receipt";
 import {
+  Briefcase,
   CheckCircle2,
   ChevronRight,
   Clock,
@@ -175,6 +176,15 @@ function PerfilPage() {
           <ChevronRight className="h-4 w-4 text-primary-foreground/60" />
         </Link>
       ) : null}
+
+      <Link
+        to="/comerciante"
+        className="mt-3 flex items-center gap-3 rounded-2xl bg-slate-900 p-4 text-white shadow-card animate-fade-up"
+      >
+        <Briefcase className="h-5 w-5 text-blue-400" />
+        <span className="flex-1 text-sm font-semibold">Área do Comerciante</span>
+        <ChevronRight className="h-4 w-4 text-white/60" />
+      </Link>
 
       <div className="mt-6 flex items-center gap-3 rounded-3xl bg-card p-5 shadow-card animate-fade-up">
         <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gold-soft text-gold-foreground">
