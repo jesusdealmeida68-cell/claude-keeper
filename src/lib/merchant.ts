@@ -187,7 +187,7 @@ export async function reviewSubmission(id: string, approve: boolean, note?: stri
   const { error } = await supabase.rpc("review_task_submission", {
     _submission_id: id,
     _approve: approve,
-    _review_note: note || undefined,
+    ...(note ? { _review_note: note } : {}),
   });
   if (error) throw error;
 }
@@ -227,7 +227,7 @@ export async function reviewDeposit(id: string, approve: boolean, reason?: strin
   const { error } = await supabase.rpc("review_merchant_deposit", {
     _deposit_id: id,
     _approve: approve,
-    _reason: reason || undefined,
+    ...(reason ? { _reason: reason } : {}),
   });
   if (error) throw error;
 }
