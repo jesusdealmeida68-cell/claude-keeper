@@ -81,10 +81,12 @@ function NavList({ active, onNavigate }: { active: ComerciantePage; onNavigate?:
 export function ComercianteShell({
   active,
   title,
+  balance,
   children,
 }: {
   active: ComerciantePage;
   title: string;
+  balance?: string;
   children: ReactNode;
 }) {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -145,7 +147,7 @@ export function ComercianteShell({
           <div className="flex items-center gap-2.5 sm:gap-3">
             <div className="hidden items-center gap-1.5 rounded-full bg-blue-50 px-3.5 py-1.5 text-blue-700 sm:flex">
               <Wallet2 className="h-3.5 w-3.5" />
-              <span className="text-xs font-bold">50.000 Kz</span>
+              <span className="text-xs font-bold">{balance ?? "—"}</span>
             </div>
             <button
               className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-slate-500 hover:bg-slate-100"

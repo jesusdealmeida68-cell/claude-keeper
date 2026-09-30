@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import {
   Area,
   AreaChart,
@@ -9,50 +10,19 @@ import {
   YAxis,
 } from "recharts";
 import { ComercianteShell } from "@/components/comerciante/ComercianteShell";
+import {
+  formatKz,
+  getMerchantSubmissions,
+  getMerchantWallet,
+  getMyMerchantTasks,
+} from "@/lib/merchant";
 import { CheckCircle2, Clock3, ListChecks, Wallet2 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/comerciante/")({
   component: ComercianteVisaoGeralPage,
 });
 
-const performance = [
-  { dia: "Seg", concluidas: 0 },
-  { dia: "Ter", concluidas: 0 },
-  { dia: "Qua", concluidas: 0 },
-  { dia: "Qui", concluidas: 0 },
-  { dia: "Sex", concluidas: 0 },
-  { dia: "Sáb", concluidas: 0 },
-  { dia: "Dom", concluidas: 0 },
-];
-
-const cards = [
-  {
-    label: "Saldo disponível",
-    value: "0,00 Kz",
-    icon: Wallet2,
-    accent: "from-blue-500 to-blue-600",
-  },
-  {
-    label: "Tarefas ativas",
-    value: "0",
-    icon: ListChecks,
-    accent: "from-slate-700 to-slate-900",
-  },
-  {
-    label: "Tarefas concluídas",
-    value: "0",
-    icon: CheckCircle2,
-    accent: "from-emerald-500 to-emerald-600",
-  },
-  {
-    label: "Pendentes de aprovação",
-    value: "0",
-    icon: Clock3,
-    accent: "from-amber-500 to-amber-600",
-  },
-] as const;
-
-const recentTasks: { name: string; reward: string; status: string }[] = [];
+const DIAS = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
 
 const statusCls: Record<string, string> = {
   Ativa: "bg-emerald-50 text-emerald-600",
@@ -61,8 +31,80 @@ const statusCls: Record<string, string> = {
 };
 
 function ComercianteVisaoGeralPage() {
+  const { user } = Route.useRouteContext();
+
+  const { data: wallet } = useQuery({
+    queryKey: ["merchant-wallet", user.id],
+    queryFn: () => getMerchantWallet(user.id),
+  });
+
+  const { data: tasks } = useQuery({
+    queryKey: ["merchant-tasks", user.id],
+    queryFn: () => getMyMerchantTasks(user.id),
+  });
+
+  const { data: submissions } = useQuery({
+    queryKey: ["merchant-submissions", user.id],
+    queryFn: () => getMerchantSubmissions(user.id),
+  });
+
+  const approvedByTask = new Map<string, number>();
+  for (const s of submissions ?? []) {
+    if (s.status === "approved")
+      approvedByTask.set(s.task_id, (approvedByTask.get(s.task_id) ?? 0) + 1);
+  }
+
+  const activas = (tasks ?? []).filter((t) => t.active).length;
+  const pendentes = (submissions ?? []).filter((s) => s.status === "pending").length;
+  const concluidas = (submissions ?? []).filter((s) => s.status === "approved").length;
+
+  const performance = DIAS.map((dia) => ({ dia, concluidas: 0 }));
+  for (const s of submissions ?? []) {
+    if (s.status !== "approved") continue;
+    const idx = new Date(s.created_at).getDay();
+    const bucket = performance[idx];
+    if (bucket) bucket.concluidas += 1;
+  }
+
+  const cards = [
+    {
+      label: "Saldo disponível",
+      value: formatKz(wallet?.merchant_balance ?? 0),
+      icon: Wallet2,
+      accent: "from-blue-500 to-blue-600",
+    },
+    {
+      label: "Tarefas ativas",
+      value: String(activas),
+      icon: ListChecks,
+      accent: "from-slate-700 to-slate-900",
+    },
+    {
+      label: "Tarefas concluídas",
+      value: String(concluidas),
+      icon: CheckCircle2,
+      accent: "from-emerald-500 to-emerald-600",
+    },
+    {
+      label: "Pendentes de aprovação",
+      value: String(pendentes),
+      icon: Clock3,
+      accent: "from-amber-500 to-amber-600",
+    },
+  ] as const;
+
+  const recentTasks = (tasks ?? []).slice(0, 5).map((t) => {
+    const done = approvedByTask.get(t.id) ?? 0;
+    const status = !t.active ? "Pausada" : done >= t.slots ? "Concluída" : "Ativa";
+    return { name: t.title, reward: formatKz(t.reward), status };
+  });
+
   return (
-    <ComercianteShell active="visao-geral" title="Visão Geral">
+    <ComercianteShell
+      active="visao-geral"
+      title="Visão Geral"
+      balance={formatKz(wallet?.merchant_balance ?? 0)}
+    >
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {cards.map((c) => {
           const Icon = c.icon;
@@ -84,16 +126,14 @@ function ComercianteVisaoGeralPage() {
       </div>
 
       <div className="mt-6 rounded-2xl border border-slate-100 bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_8px_24px_-12px_rgba(15,23,42,0.08)] sm:p-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-base font-bold text-slate-900">Desempenho das tarefas</h2>
-            <p className="text-sm text-slate-500">Conclusões por dia, últimos 7 dias</p>
-          </div>
+        <div>
+          <h2 className="text-base font-bold text-slate-900">Desempenho das tarefas</h2>
+          <p className="text-sm text-slate-500">Conclusões aprovadas por dia da semana</p>
         </div>
 
         <div className="mt-4 h-64 w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={[...performance]} margin={{ left: -20, right: 10, top: 10 }}>
+            <AreaChart data={performance} margin={{ left: -20, right: 10, top: 10 }}>
               <defs>
                 <linearGradient id="fillConcluidas" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.35} />
@@ -107,7 +147,12 @@ function ComercianteVisaoGeralPage() {
                 tickLine={false}
                 tick={{ fill: "#94a3b8", fontSize: 12 }}
               />
-              <YAxis axisLine={false} tickLine={false} tick={{ fill: "#94a3b8", fontSize: 12 }} />
+              <YAxis
+                allowDecimals={false}
+                axisLine={false}
+                tickLine={false}
+                tick={{ fill: "#94a3b8", fontSize: 12 }}
+              />
               <Tooltip
                 contentStyle={{
                   borderRadius: 12,
