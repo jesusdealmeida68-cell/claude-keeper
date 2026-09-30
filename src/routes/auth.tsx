@@ -6,6 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { KygLogo } from "@/components/kyg/KygLogo";
 import { signInWithPhone, signUpWithPhone } from "@/lib/auth";
+import { supabase } from "@/integrations/supabase/client";
+import { useServerFn } from "@tanstack/react-start";
+import { redeemPasswordReset } from "@/lib/password-reset.functions";
 import { Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/auth")({
@@ -27,7 +30,7 @@ export const Route = createFileRoute("/auth")({
 });
 
 function AuthPage() {
-  const [mode, setMode] = useState<"login" | "signup">("login");
+  const [mode, setMode] = useState<"login" | "signup" | "forgot" | "code">("login");
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-md flex-col bg-background pb-10">
       <div className="relative h-56 w-full overflow-hidden rounded-b-3xl bg-primary shadow-card-lg animate-fade-in">
@@ -40,16 +43,154 @@ function AuthPage() {
 
       <div className="px-6 pt-14">
         {mode === "login" ? (
-          <LoginForm onSwitch={() => setMode("signup")} />
-        ) : (
+          <LoginForm onSwitch={() => setMode("signup")} onForgot={() => setMode("forgot")} />
+        ) : mode === "signup" ? (
           <SignupForm onSwitch={() => setMode("login")} />
+        ) : mode === "forgot" ? (
+          <ForgotForm onBack={() => setMode("login")} onHaveCode={() => setMode("code")} />
+        ) : (
+          <RedeemForm onBack={() => setMode("login")} />
         )}
       </div>
     </div>
   );
 }
 
-function LoginForm({ onSwitch }: { onSwitch: () => void }) {
+function ForgotForm({ onBack, onHaveCode }: { onBack: () => void; onHaveCode: () => void }) {
+  const [phone, setPhone] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [sent, setSent] = useState(false);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (phone.replace(/\D/g, "").length < 9) {
+      toast.error("Use um número angolano válido.");
+      return;
+    }
+    setLoading(true);
+    const { error } = await supabase.rpc("request_password_reset", { _phone: phone });
+    setLoading(false);
+    if (error) {
+      toast.error("Não foi possível enviar o pedido.");
+      return;
+    }
+    setSent(true);
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="mt-10 animate-fade-up space-y-5">
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight">Esqueci a senha</h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Indica o teu número. O administrador vai enviar-te um código.
+        </p>
+      </div>
+      {sent ? (
+        <div className="rounded-2xl bg-gold-soft p-4 text-sm font-medium">
+          Pedido enviado. Aguarda o código do administrador.
+        </div>
+      ) : (
+        <>
+          <div className="space-y-2">
+            <Label htmlFor="f-phone">Número de telefone</Label>
+            <Input
+              id="f-phone"
+              type="tel"
+              inputMode="tel"
+              placeholder="9XX XXX XXX"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              required
+              className="h-12 rounded-xl bg-card"
+            />
+          </div>
+          <Button
+            type="submit"
+            disabled={loading}
+            className="h-12 w-full rounded-xl bg-gold text-base font-semibold text-gold-foreground hover:bg-gold/90"
+          >
+            {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : "Pedir código"}
+          </Button>
+        </>
+      )}
+      <Button type="button" variant="outline" onClick={onHaveCode} className="h-12 w-full rounded-xl">
+        Tenho um código
+      </Button>
+      <button type="button" onClick={onBack} className="w-full text-center text-sm font-semibold text-gold">
+        Voltar ao login
+      </button>
+    </form>
+  );
+}
+
+function RedeemForm({ onBack }: { onBack: () => void }) {
+  const navigate = useNavigate();
+  const redeem = useServerFn(redeemPasswordReset);
+  const [phone, setPhone] = useState("");
+  const [code, setCode] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (password !== confirm) return void toast.error("As senhas não coincidem.");
+    if (password.length < 6) return void toast.error("A senha deve ter pelo menos 6 caracteres.");
+    if (!/^\d{6}$/.test(code.trim())) return void toast.error("Código inválido ou já utilizado");
+    setLoading(true);
+    try {
+      await redeem({ data: { phone, code: code.trim(), newPassword: password } });
+    } catch (err) {
+      setLoading(false);
+      const m = err instanceof Error ? err.message : "";
+      toast.error(m.includes("invalid_code") ? "Código inválido ou já utilizado" : "Erro no servidor. Tenta de novo.");
+      return;
+    }
+    try {
+      await signInWithPhone(phone, password);
+      toast.success("Senha alterada com sucesso!");
+      navigate({ to: "/inicio", replace: true });
+    } catch {
+      toast.success("Senha alterada. Entra com a nova senha.");
+      onBack();
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="mt-10 animate-fade-up space-y-4">
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight">Tenho um código</h1>
+        <p className="mt-1 text-sm text-muted-foreground">Define a tua nova senha.</p>
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="r-phone">Número de telefone</Label>
+        <Input id="r-phone" type="tel" inputMode="tel" value={phone} onChange={(e) => setPhone(e.target.value)} required className="h-12 rounded-xl bg-card" />
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="r-code">Código</Label>
+        <Input id="r-code" inputMode="numeric" maxLength={6} placeholder="000000" value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))} required className="h-12 rounded-xl bg-card tracking-widest" />
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="r-pass">Nova senha</Label>
+        <Input id="r-pass" type="password" minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} required className="h-12 rounded-xl bg-card" />
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="r-confirm">Confirmar nova senha</Label>
+        <Input id="r-confirm" type="password" minLength={6} value={confirm} onChange={(e) => setConfirm(e.target.value)} required className="h-12 rounded-xl bg-card" />
+      </div>
+      <Button type="submit" disabled={loading} className="h-12 w-full rounded-xl bg-gold text-base font-semibold text-gold-foreground hover:bg-gold/90">
+        {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : "Confirmar"}
+      </Button>
+      <button type="button" onClick={onBack} className="w-full text-center text-sm font-semibold text-gold">
+        Voltar ao login
+      </button>
+    </form>
+  );
+}
+
+function LoginForm({ onSwitch, onForgot }: { onSwitch: () => void; onForgot: () => void }) {
   const navigate = useNavigate();
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
@@ -102,6 +243,11 @@ function LoginForm({ onSwitch }: { onSwitch: () => void }) {
           required
           className="h-12 rounded-xl bg-card"
         />
+        <div className="text-right">
+          <button type="button" onClick={onForgot} className="text-xs font-semibold text-gold hover:underline">
+            Esqueci a senha
+          </button>
+        </div>
       </div>
 
       <Button
