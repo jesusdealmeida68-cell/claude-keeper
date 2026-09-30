@@ -24,17 +24,24 @@ function EditarPerfilPage() {
     queryFn: () => getMyProfile(user.id),
   });
   const [name, setName] = useState<string | null>(null);
+  const [alt, setAlt] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const value = name ?? profile?.full_name ?? "";
+  const altValue = alt ?? profile?.alternate_phone ?? "";
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    const altDigits = altValue.replace(/\D/g, "");
+    if (altDigits && (altDigits.length < 9 || altDigits.length > 15)) {
+      toast.error("Telefone alternativo inválido.");
+      return;
+    }
     setLoading(true);
     try {
       const { error } = await supabase
         .from("profiles")
-        .update({ full_name: value })
+        .update({ full_name: value, alternate_phone: altDigits || null })
         .eq("user_id", user.id);
       if (error) throw error;
       await queryClient.invalidateQueries({ queryKey: ["profile", user.id] });
@@ -57,6 +64,18 @@ function EditarPerfilPage() {
             value={value}
             onChange={(e) => setName(e.target.value)}
             required
+            className="h-12 rounded-xl bg-card"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="alt">Telefone alternativo (opcional)</Label>
+          <Input
+            id="alt"
+            type="tel"
+            inputMode="tel"
+            placeholder="9XX XXX XXX"
+            value={altValue}
+            onChange={(e) => setAlt(e.target.value)}
             className="h-12 rounded-xl bg-card"
           />
         </div>
