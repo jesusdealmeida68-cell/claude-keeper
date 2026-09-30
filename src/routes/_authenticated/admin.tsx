@@ -26,6 +26,7 @@ import {
   FileText,
   Files,
   Fingerprint,
+  Landmark,
   LogOut,
   Bell,
   Megaphone,
@@ -251,6 +252,12 @@ function AdminPage() {
               <Link to="/admin/retiradas">
                 <Wallet className="h-4 w-4 text-muted-foreground" />
                 Retiradas
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild className="cursor-pointer gap-3 px-4 py-2.5">
+              <Link to="/admin/depositos">
+                <Landmark className="h-4 w-4 text-muted-foreground" />
+                Depósitos
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild className="cursor-pointer gap-3 px-4 py-2.5">
