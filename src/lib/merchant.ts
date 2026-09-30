@@ -60,6 +60,8 @@ export function friendlyError(e: unknown): string {
   if (msg.includes("invalid reward")) return "A recompensa mínima é 10 Kz.";
   if (msg.includes("invalid slots")) return "Indica uma quantidade de participantes válida.";
   if (msg.includes("invalid amount")) return "Valor inválido.";
+  if (msg.includes("invalid proof")) return "Tipo de comprovativo inválido.";
+  if (msg.includes("task not found")) return "Tarefa não encontrada.";
   if (msg.includes("already reviewed")) return "Este pedido já foi analisado.";
   if (msg.includes("not authorized")) return "Não tens permissão para esta ação.";
   return "Algo correu mal. Tenta novamente.";
@@ -109,6 +111,27 @@ export async function publishTask(input: {
   });
   if (error) throw error;
   return data;
+}
+
+export async function updateMerchantTask(
+  taskId: string,
+  input: {
+    title: string;
+    description: string;
+    instructions: string[];
+    category: string;
+    proofType: string;
+  },
+) {
+  const { error } = await supabase.rpc("update_merchant_task", {
+    _task_id: taskId,
+    _title: input.title,
+    _description: input.description,
+    _instructions: input.instructions,
+    _category: input.category,
+    _proof_type: input.proofType,
+  });
+  if (error) throw error;
 }
 
 export async function setTaskActive(taskId: string, active: boolean) {
