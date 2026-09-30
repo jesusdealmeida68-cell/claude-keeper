@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/kyg/AppShell";
+import { Linkify } from "@/components/kyg/Linkify";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -149,7 +150,9 @@ function TrabalhoDetalhePage() {
 
         <div className="p-5">
           <h1 className="text-xl font-bold leading-tight">{task.title}</h1>
-          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{task.description}</p>
+          <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-muted-foreground">
+            <Linkify text={task.description} />
+          </p>
 
           <div className="mt-4 flex flex-wrap gap-2 text-xs">
             <span className="flex items-center gap-1 rounded-full bg-gold-soft px-3 py-1.5 font-bold text-gold-foreground">
@@ -230,7 +233,9 @@ function TrabalhoDetalhePage() {
                   <span className="flex h-5.5 w-5.5 shrink-0 items-center justify-center rounded-full bg-secondary text-[11px] font-bold text-muted-foreground">
                     {i + 1}
                   </span>
-                  <span>{step}</span>
+                  <span className="min-w-0">
+                    <Linkify text={step} />
+                  </span>
                 </li>
               ))}
             </ol>
