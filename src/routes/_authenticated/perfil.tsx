@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/kyg/AppShell";
 import { StarRating } from "@/components/kyg/StarRating";
@@ -15,12 +15,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
-import { getMyProfile, getMyRoles } from "@/lib/auth";
+import { getMyProfile, getMyRoles, uploadAvatar } from "@/lib/auth";
 import { useInstallPrompt } from "@/hooks/use-install-prompt";
 import { getMyWithdrawals, requestWithdrawal, type WithdrawalMethod } from "@/lib/wallet";
 import { downloadWithdrawalReceipt } from "@/lib/receipt";
 import {
   Briefcase,
+  Camera,
   CheckCircle2,
   ChevronRight,
   Clock,
@@ -55,6 +56,8 @@ function PerfilPage() {
   const [withdrawing, setWithdrawing] = useState(false);
   const [iosInstallOpen, setIosInstallOpen] = useState(false);
   const { canInstall, isIos, isStandalone, promptInstall } = useInstallPrompt();
+  const avatarInputRef = useRef<HTMLInputElement>(null);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
 
   const { data: profile } = useQuery({
     queryKey: ["profile", user.id],
@@ -143,6 +146,22 @@ function PerfilPage() {
     .join("")
     .toUpperCase();
 
+  async function handleAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    setUploadingAvatar(true);
+    try {
+      await uploadAvatar(user.id, file);
+      await queryClient.invalidateQueries({ queryKey: ["profile", user.id] });
+      toast.success("Foto de perfil atualizada.");
+    } catch {
+      toast.error("Não foi possível atualizar a foto.");
+    } finally {
+      setUploadingAvatar(false);
+    }
+  }
+
   const options = [
     { icon: Fingerprint, label: "Verificação de identidade", to: "/identidade" },
     { icon: Pencil, label: "Editar perfil", to: "/perfil/editar" },
@@ -154,9 +173,36 @@ function PerfilPage() {
   return (
     <AppShell title="Meu perfil">
       <div className="flex flex-col items-center pt-4 animate-fade-up">
-        <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary text-2xl font-bold text-gold shadow-card-lg">
-          {initials}
-        </div>
+        <input
+          ref={avatarInputRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={handleAvatarChange}
+        />
+        <button
+          type="button"
+          onClick={() => avatarInputRef.current?.click()}
+          disabled={uploadingAvatar}
+          className="relative flex h-20 w-20 items-center justify-center rounded-full bg-primary text-2xl font-bold text-gold shadow-card-lg"
+        >
+          {profile?.avatar_url ? (
+            <img
+              src={profile.avatar_url}
+              alt="Foto de perfil"
+              className="h-full w-full rounded-full object-cover"
+            />
+          ) : (
+            initials
+          )}
+          <span className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full bg-gold text-gold-foreground shadow-card ring-2 ring-background">
+            {uploadingAvatar ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            ) : (
+              <Camera className="h-3.5 w-3.5" />
+            )}
+          </span>
+        </button>
         <h2 className="mt-4 flex items-center gap-1.5 text-xl font-bold tracking-tight">
           {profile?.full_name ?? "…"}
           {(profile?.rating ?? 0) > 0 ? (

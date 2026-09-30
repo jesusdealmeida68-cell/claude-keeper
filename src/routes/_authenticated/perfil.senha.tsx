@@ -1,4 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/kyg/AppShell";
@@ -6,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
+import { getMyProfile, phoneToEmail } from "@/lib/auth";
 import { Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/perfil/senha")({
@@ -13,7 +15,12 @@ export const Route = createFileRoute("/_authenticated/perfil/senha")({
 });
 
 function AlterarSenhaPage() {
+  const { user } = Route.useRouteContext();
   const navigate = useNavigate();
+  const { data: profile } = useQuery({
+    queryKey: ["profile", user.id],
+    queryFn: () => getMyProfile(user.id),
+  });
   const [current, setCurrent] = useState("");
   const [next, setNext] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -25,17 +32,28 @@ function AlterarSenhaPage() {
       toast.error("As senhas não coincidem.");
       return;
     }
+    if (!profile?.phone) {
+      toast.error("Não foi possível confirmar a tua conta. Tenta novamente.");
+      return;
+    }
     setLoading(true);
     try {
-      const { error } = await supabase.auth.updateUser({
-        password: next,
-        current_password: current,
+      // Confirma a senha atual antes de a trocar.
+      const { error: reauthError } = await supabase.auth.signInWithPassword({
+        email: phoneToEmail(profile.phone),
+        password: current,
       });
+      if (reauthError) {
+        toast.error("Senha atual incorreta.");
+        return;
+      }
+
+      const { error } = await supabase.auth.updateUser({ password: next });
       if (error) throw error;
       toast.success("Senha alterada com sucesso.");
       navigate({ to: "/perfil" });
     } catch {
-      toast.error("Não foi possível alterar a senha. Confirma a senha atual.");
+      toast.error("Não foi possível alterar a senha.");
     } finally {
       setLoading(false);
     }
