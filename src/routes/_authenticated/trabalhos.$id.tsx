@@ -12,6 +12,8 @@ import {
   getMyTaskSubmission,
   getTaskById,
   getTaskEvidenceUrl,
+  getTaskSlotsTaken,
+  slotsLeft,
   submitTask,
 } from "@/lib/tasks";
 import {
@@ -62,6 +64,11 @@ function TrabalhoDetalhePage() {
     queryFn: () => getTaskById(id),
   });
 
+  const { data: slotsTaken, isLoading: slotsLoading } = useQuery({
+    queryKey: ["task-slots-taken"],
+    queryFn: getTaskSlotsTaken,
+  });
+
   const { data: submission, isLoading: subLoading } = useQuery({
     queryKey: ["my-task-submission", user.id, id],
     queryFn: () => getMyTaskSubmission(user.id, id),
@@ -100,15 +107,22 @@ function TrabalhoDetalhePage() {
       });
       await queryClient.invalidateQueries({ queryKey: ["my-task-submission", user.id, id] });
       await queryClient.invalidateQueries({ queryKey: ["my-task-submissions", user.id] });
+      await queryClient.invalidateQueries({ queryKey: ["task-slots-taken"] });
       toast.success("Tarefa enviada para análise.");
-    } catch {
-      toast.error("Não foi possível enviar a tarefa.");
+    } catch (e) {
+      const msg = (e as { message?: string })?.message ?? "";
+      if (msg.includes("no slots left")) {
+        await queryClient.invalidateQueries({ queryKey: ["task-slots-taken"] });
+        toast.error("As vagas desta tarefa já esgotaram.");
+      } else {
+        toast.error("Não foi possível enviar a tarefa.");
+      }
     } finally {
       setSending(false);
     }
   }
 
-  if (taskLoading || subLoading || !task) {
+  if (taskLoading || subLoading || slotsLoading || !task) {
     return (
       <AppShell title="Detalhes da tarefa">
         <div className="space-y-3 animate-fade-up">
@@ -120,6 +134,7 @@ function TrabalhoDetalhePage() {
   }
 
   const status = submission?.status ?? null;
+  const vagasRestantes = slotsLeft(task, slotsTaken);
 
   return (
     <AppShell title="Detalhes da tarefa">
@@ -162,11 +177,11 @@ function TrabalhoDetalhePage() {
               <Timer className="h-3.5 w-3.5" /> {task.estimated_minutes} min
             </span>
             <span className="flex items-center gap-1 rounded-full bg-secondary px-3 py-1.5 font-medium text-muted-foreground">
-              <Users className="h-3.5 w-3.5" /> {task.slots} vagas
+              <Users className="h-3.5 w-3.5" /> {vagasRestantes} {vagasRestantes === 1 ? "vaga" : "vagas"}
             </span>
           </div>
 
-          {!status ? (
+          {!status && vagasRestantes > 0 ? (
             <a
               href="#enviar"
               className="mt-4 flex items-center justify-between gap-3 rounded-2xl bg-success-soft px-4 py-3 text-success"
@@ -207,7 +222,7 @@ function TrabalhoDetalhePage() {
               <p className="flex items-center gap-1 text-[11px] font-medium text-muted-foreground">
                 <Users className="h-3 w-3" /> Vagas
               </p>
-              <p className="mt-0.5 text-sm font-bold">{task.slots}</p>
+              <p className="mt-0.5 text-sm font-bold">{vagasRestantes}</p>
             </div>
             <div>
               <p className="flex items-center gap-1 text-[11px] font-medium text-muted-foreground">
@@ -289,6 +304,10 @@ function TrabalhoDetalhePage() {
                 Enviada em:{" "}
                 {submission ? new Date(submission.created_at).toLocaleDateString("pt-AO") : "—"}
               </p>
+            </div>
+          ) : vagasRestantes <= 0 ? (
+            <div className="mt-6 rounded-2xl bg-secondary/60 p-4 text-center">
+              <p className="text-sm font-medium">As vagas desta tarefa já esgotaram.</p>
             </div>
           ) : (
             <>
