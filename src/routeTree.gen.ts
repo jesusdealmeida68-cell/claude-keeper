@@ -15,11 +15,10 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as PrivacidadeRouteImport } from './routes/privacidade'
 import { Route as TermosRouteImport } from './routes/termos'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
-import { Route as AuthenticatedEnviadoRouteImport } from './routes/_authenticated/enviado'
-import { Route as AuthenticatedEnviarRouteImport } from './routes/_authenticated/enviar'
 import { Route as AuthenticatedEnviosRouteImport } from './routes/_authenticated/envios'
 import { Route as AuthenticatedIdentidadeRouteImport } from './routes/_authenticated/identidade'
 import { Route as AuthenticatedInicioRouteImport } from './routes/_authenticated/inicio'
+import { Route as AuthenticatedMeusTrabalhosRouteImport } from './routes/_authenticated/meus-trabalhos'
 import { Route as AuthenticatedNotificacoesRouteImport } from './routes/_authenticated/notificacoes'
 import { Route as AuthenticatedPerfilRouteImport } from './routes/_authenticated/perfil'
 import { Route as AuthenticatedTrabalhosRouteImport } from './routes/_authenticated/trabalhos'
@@ -70,16 +69,6 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedEnviadoRoute = AuthenticatedEnviadoRouteImport.update({
-  id: '/enviado',
-  path: '/enviado',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedEnviarRoute = AuthenticatedEnviarRouteImport.update({
-  id: '/enviar',
-  path: '/enviar',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 const AuthenticatedEnviosRoute = AuthenticatedEnviosRouteImport.update({
   id: '/envios',
   path: '/envios',
@@ -95,6 +84,12 @@ const AuthenticatedInicioRoute = AuthenticatedInicioRouteImport.update({
   path: '/inicio',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedMeusTrabalhosRoute =
+  AuthenticatedMeusTrabalhosRouteImport.update({
+    id: '/meus-trabalhos',
+    path: '/meus-trabalhos',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedNotificacoesRoute =
   AuthenticatedNotificacoesRouteImport.update({
     id: '/notificacoes',
@@ -218,11 +213,10 @@ export interface FileRoutesByFullPath {
   '/privacidade': typeof PrivacidadeRoute
   '/termos': typeof TermosRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
-  '/enviado': typeof AuthenticatedEnviadoRoute
-  '/enviar': typeof AuthenticatedEnviarRoute
   '/envios': typeof AuthenticatedEnviosRouteWithChildren
   '/identidade': typeof AuthenticatedIdentidadeRoute
   '/inicio': typeof AuthenticatedInicioRoute
+  '/meus-trabalhos': typeof AuthenticatedMeusTrabalhosRoute
   '/notificacoes': typeof AuthenticatedNotificacoesRoute
   '/perfil': typeof AuthenticatedPerfilRouteWithChildren
   '/trabalhos': typeof AuthenticatedTrabalhosRouteWithChildren
@@ -250,11 +244,10 @@ export interface FileRoutesByTo {
   '/privacidade': typeof PrivacidadeRoute
   '/termos': typeof TermosRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
-  '/enviado': typeof AuthenticatedEnviadoRoute
-  '/enviar': typeof AuthenticatedEnviarRoute
   '/envios': typeof AuthenticatedEnviosRouteWithChildren
   '/identidade': typeof AuthenticatedIdentidadeRoute
   '/inicio': typeof AuthenticatedInicioRoute
+  '/meus-trabalhos': typeof AuthenticatedMeusTrabalhosRoute
   '/notificacoes': typeof AuthenticatedNotificacoesRoute
   '/perfil': typeof AuthenticatedPerfilRouteWithChildren
   '/trabalhos': typeof AuthenticatedTrabalhosRouteWithChildren
@@ -284,11 +277,10 @@ export interface FileRoutesById {
   '/privacidade': typeof PrivacidadeRoute
   '/termos': typeof TermosRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
-  '/_authenticated/enviado': typeof AuthenticatedEnviadoRoute
-  '/_authenticated/enviar': typeof AuthenticatedEnviarRoute
   '/_authenticated/envios': typeof AuthenticatedEnviosRouteWithChildren
   '/_authenticated/identidade': typeof AuthenticatedIdentidadeRoute
   '/_authenticated/inicio': typeof AuthenticatedInicioRoute
+  '/_authenticated/meus-trabalhos': typeof AuthenticatedMeusTrabalhosRoute
   '/_authenticated/notificacoes': typeof AuthenticatedNotificacoesRoute
   '/_authenticated/perfil': typeof AuthenticatedPerfilRouteWithChildren
   '/_authenticated/trabalhos': typeof AuthenticatedTrabalhosRouteWithChildren
@@ -318,11 +310,10 @@ export interface FileRouteTypes {
     | '/privacidade'
     | '/termos'
     | '/admin'
-    | '/enviado'
-    | '/enviar'
     | '/envios'
     | '/identidade'
     | '/inicio'
+    | '/meus-trabalhos'
     | '/notificacoes'
     | '/perfil'
     | '/trabalhos'
@@ -350,11 +341,10 @@ export interface FileRouteTypes {
     | '/privacidade'
     | '/termos'
     | '/admin'
-    | '/enviado'
-    | '/enviar'
     | '/envios'
     | '/identidade'
     | '/inicio'
+    | '/meus-trabalhos'
     | '/notificacoes'
     | '/perfil'
     | '/trabalhos'
@@ -383,11 +373,10 @@ export interface FileRouteTypes {
     | '/privacidade'
     | '/termos'
     | '/_authenticated/admin'
-    | '/_authenticated/enviado'
-    | '/_authenticated/enviar'
     | '/_authenticated/envios'
     | '/_authenticated/identidade'
     | '/_authenticated/inicio'
+    | '/_authenticated/meus-trabalhos'
     | '/_authenticated/notificacoes'
     | '/_authenticated/perfil'
     | '/_authenticated/trabalhos'
@@ -462,20 +451,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/enviado': {
-      id: '/_authenticated/enviado'
-      path: '/enviado'
-      fullPath: '/enviado'
-      preLoaderRoute: typeof AuthenticatedEnviadoRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/enviar': {
-      id: '/_authenticated/enviar'
-      path: '/enviar'
-      fullPath: '/enviar'
-      preLoaderRoute: typeof AuthenticatedEnviarRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/envios': {
       id: '/_authenticated/envios'
       path: '/envios'
@@ -495,6 +470,13 @@ declare module '@tanstack/react-router' {
       path: '/inicio'
       fullPath: '/inicio'
       preLoaderRoute: typeof AuthenticatedInicioRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/meus-trabalhos': {
+      id: '/_authenticated/meus-trabalhos'
+      path: '/meus-trabalhos'
+      fullPath: '/meus-trabalhos'
+      preLoaderRoute: typeof AuthenticatedMeusTrabalhosRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/notificacoes': {
@@ -701,11 +683,10 @@ const AuthenticatedTrabalhosRouteWithChildren =
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
-  AuthenticatedEnviadoRoute: typeof AuthenticatedEnviadoRoute
-  AuthenticatedEnviarRoute: typeof AuthenticatedEnviarRoute
   AuthenticatedEnviosRoute: typeof AuthenticatedEnviosRouteWithChildren
   AuthenticatedIdentidadeRoute: typeof AuthenticatedIdentidadeRoute
   AuthenticatedInicioRoute: typeof AuthenticatedInicioRoute
+  AuthenticatedMeusTrabalhosRoute: typeof AuthenticatedMeusTrabalhosRoute
   AuthenticatedNotificacoesRoute: typeof AuthenticatedNotificacoesRoute
   AuthenticatedPerfilRoute: typeof AuthenticatedPerfilRouteWithChildren
   AuthenticatedTrabalhosRoute: typeof AuthenticatedTrabalhosRouteWithChildren
@@ -720,11 +701,10 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
-  AuthenticatedEnviadoRoute: AuthenticatedEnviadoRoute,
-  AuthenticatedEnviarRoute: AuthenticatedEnviarRoute,
   AuthenticatedEnviosRoute: AuthenticatedEnviosRouteWithChildren,
   AuthenticatedIdentidadeRoute: AuthenticatedIdentidadeRoute,
   AuthenticatedInicioRoute: AuthenticatedInicioRoute,
+  AuthenticatedMeusTrabalhosRoute: AuthenticatedMeusTrabalhosRoute,
   AuthenticatedNotificacoesRoute: AuthenticatedNotificacoesRoute,
   AuthenticatedPerfilRoute: AuthenticatedPerfilRouteWithChildren,
   AuthenticatedTrabalhosRoute: AuthenticatedTrabalhosRouteWithChildren,

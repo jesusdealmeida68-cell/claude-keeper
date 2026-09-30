@@ -65,6 +65,13 @@ export async function getMyTaskSubmission(
   return (data as TaskSubmission) ?? null;
 }
 
+export async function getTasksByIds(ids: string[]): Promise<Task[]> {
+  if (ids.length === 0) return [];
+  const { data, error } = await supabase.from("tasks").select("*").in("id", ids);
+  if (error) throw error;
+  return (data ?? []) as Task[];
+}
+
 export async function getMyTaskSubmissions(userId: string): Promise<TaskSubmission[]> {
   const { data, error } = await supabase.from("task_submissions").select("*").eq("user_id", userId);
   if (error) throw error;

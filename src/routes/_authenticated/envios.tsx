@@ -69,7 +69,7 @@ function EnviosPage() {
               asChild
               className="mt-6 h-11 rounded-xl bg-gold font-semibold text-gold-foreground hover:bg-gold/90"
             >
-              <Link to="/enviar">Enviar comprovativo</Link>
+              <Link to="/trabalhos">Procurar trabalhos</Link>
             </Button>
           </div>
         ) : (

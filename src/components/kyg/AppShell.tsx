@@ -1,6 +1,6 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { cn } from "@/lib/utils";
-import { Home, Briefcase, Send, FileText, User } from "lucide-react";
+import { Home, Briefcase, ListChecks, User } from "lucide-react";
 import type { ReactNode } from "react";
 import { KygLogo } from "./KygLogo";
 import { NotificationBell } from "./NotificationBell";
@@ -9,8 +9,7 @@ import { HeaderBalance } from "./HeaderBalance";
 const navItems = [
   { to: "/inicio", label: "Início", icon: Home },
   { to: "/trabalhos", label: "Trabalhos", icon: Briefcase },
-  { to: "/enviar", label: "Enviar", icon: Send },
-  { to: "/envios", label: "Envios", icon: FileText },
+  { to: "/meus-trabalhos", label: "Meus trabalhos", icon: ListChecks },
   { to: "/perfil", label: "Perfil", icon: User },
 ] as const;
 
@@ -31,7 +30,7 @@ export function AppShell({ children, title }: { children: ReactNode; title?: str
       <main className="flex-1 px-5 pb-28 pt-5">{children}</main>
 
       <nav className="fixed bottom-0 left-1/2 z-10 w-full max-w-md -translate-x-1/2 border-t bg-card/95 backdrop-blur">
-        <div className="grid grid-cols-5">
+        <div className="grid grid-cols-4">
           {navItems.map((item) => {
             const active = pathname.startsWith(item.to);
             const Icon = item.icon;
