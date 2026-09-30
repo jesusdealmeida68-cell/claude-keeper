@@ -265,6 +265,12 @@ function AdminPage() {
                 Notificações
               </Link>
             </DropdownMenuItem>
+            <DropdownMenuItem asChild className="cursor-pointer gap-3 px-4 py-2.5">
+              <Link to="/admin/recuperar-senha">
+                <Fingerprint className="h-4 w-4 text-muted-foreground" />
+                Recuperar senha
+              </Link>
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onSelect={handleToggleBlock}

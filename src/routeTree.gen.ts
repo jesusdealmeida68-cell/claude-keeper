@@ -26,6 +26,7 @@ import { Route as AuthenticatedAdminIdRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedAdminAnunciosRouteImport } from './routes/_authenticated/admin.anuncios'
 import { Route as AuthenticatedAdminIdentidadeRouteImport } from './routes/_authenticated/admin.identidade'
 import { Route as AuthenticatedAdminNotificacoesRouteImport } from './routes/_authenticated/admin.notificacoes'
+import { Route as AuthenticatedAdminRecuperarSenhaRouteImport } from './routes/_authenticated/admin.recuperar-senha'
 import { Route as AuthenticatedAdminRetiradasRouteImport } from './routes/_authenticated/admin.retiradas'
 import { Route as AuthenticatedAdminUsuariosRouteImport } from './routes/_authenticated/admin.usuarios'
 import { Route as AuthenticatedComercianteIndexRouteImport } from './routes/_authenticated/comerciante.index'
@@ -129,6 +130,12 @@ const AuthenticatedAdminNotificacoesRoute =
     path: '/notificacoes',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminRecuperarSenhaRoute =
+  AuthenticatedAdminRecuperarSenhaRouteImport.update({
+    id: '/recuperar-senha',
+    path: '/recuperar-senha',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminRetiradasRoute =
   AuthenticatedAdminRetiradasRouteImport.update({
     id: '/retiradas',
@@ -224,6 +231,7 @@ export interface FileRoutesByFullPath {
   '/admin/anuncios': typeof AuthenticatedAdminAnunciosRoute
   '/admin/identidade': typeof AuthenticatedAdminIdentidadeRoute
   '/admin/notificacoes': typeof AuthenticatedAdminNotificacoesRoute
+  '/admin/recuperar-senha': typeof AuthenticatedAdminRecuperarSenhaRoute
   '/admin/retiradas': typeof AuthenticatedAdminRetiradasRoute
   '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/comerciante/carteira': typeof AuthenticatedComercianteCarteiraRoute
@@ -255,6 +263,7 @@ export interface FileRoutesByTo {
   '/admin/anuncios': typeof AuthenticatedAdminAnunciosRoute
   '/admin/identidade': typeof AuthenticatedAdminIdentidadeRoute
   '/admin/notificacoes': typeof AuthenticatedAdminNotificacoesRoute
+  '/admin/recuperar-senha': typeof AuthenticatedAdminRecuperarSenhaRoute
   '/admin/retiradas': typeof AuthenticatedAdminRetiradasRoute
   '/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/comerciante/carteira': typeof AuthenticatedComercianteCarteiraRoute
@@ -288,6 +297,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/anuncios': typeof AuthenticatedAdminAnunciosRoute
   '/_authenticated/admin/identidade': typeof AuthenticatedAdminIdentidadeRoute
   '/_authenticated/admin/notificacoes': typeof AuthenticatedAdminNotificacoesRoute
+  '/_authenticated/admin/recuperar-senha': typeof AuthenticatedAdminRecuperarSenhaRoute
   '/_authenticated/admin/retiradas': typeof AuthenticatedAdminRetiradasRoute
   '/_authenticated/admin/usuarios': typeof AuthenticatedAdminUsuariosRoute
   '/_authenticated/comerciante/carteira': typeof AuthenticatedComercianteCarteiraRoute
@@ -321,6 +331,7 @@ export interface FileRouteTypes {
     | '/admin/anuncios'
     | '/admin/identidade'
     | '/admin/notificacoes'
+    | '/admin/recuperar-senha'
     | '/admin/retiradas'
     | '/admin/usuarios'
     | '/comerciante/carteira'
@@ -352,6 +363,7 @@ export interface FileRouteTypes {
     | '/admin/anuncios'
     | '/admin/identidade'
     | '/admin/notificacoes'
+    | '/admin/recuperar-senha'
     | '/admin/retiradas'
     | '/admin/usuarios'
     | '/comerciante/carteira'
@@ -384,6 +396,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/anuncios'
     | '/_authenticated/admin/identidade'
     | '/_authenticated/admin/notificacoes'
+    | '/_authenticated/admin/recuperar-senha'
     | '/_authenticated/admin/retiradas'
     | '/_authenticated/admin/usuarios'
     | '/_authenticated/comerciante/carteira'
@@ -528,6 +541,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminNotificacoesRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/recuperar-senha': {
+      id: '/_authenticated/admin/recuperar-senha'
+      path: '/recuperar-senha'
+      fullPath: '/admin/recuperar-senha'
+      preLoaderRoute: typeof AuthenticatedAdminRecuperarSenhaRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/retiradas': {
       id: '/_authenticated/admin/retiradas'
       path: '/retiradas'
@@ -627,6 +647,7 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminAnunciosRoute: typeof AuthenticatedAdminAnunciosRoute
   AuthenticatedAdminIdentidadeRoute: typeof AuthenticatedAdminIdentidadeRoute
   AuthenticatedAdminNotificacoesRoute: typeof AuthenticatedAdminNotificacoesRoute
+  AuthenticatedAdminRecuperarSenhaRoute: typeof AuthenticatedAdminRecuperarSenhaRoute
   AuthenticatedAdminRetiradasRoute: typeof AuthenticatedAdminRetiradasRoute
   AuthenticatedAdminUsuariosRoute: typeof AuthenticatedAdminUsuariosRoute
 }
@@ -636,6 +657,7 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminAnunciosRoute: AuthenticatedAdminAnunciosRoute,
   AuthenticatedAdminIdentidadeRoute: AuthenticatedAdminIdentidadeRoute,
   AuthenticatedAdminNotificacoesRoute: AuthenticatedAdminNotificacoesRoute,
+  AuthenticatedAdminRecuperarSenhaRoute: AuthenticatedAdminRecuperarSenhaRoute,
   AuthenticatedAdminRetiradasRoute: AuthenticatedAdminRetiradasRoute,
   AuthenticatedAdminUsuariosRoute: AuthenticatedAdminUsuariosRoute,
 }
