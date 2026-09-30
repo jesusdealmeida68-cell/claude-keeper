@@ -7,6 +7,8 @@ import {
   categoryLabel,
   getActiveTasks,
   getMyTaskSubmissions,
+  getTaskSlotsTaken,
+  slotsLeft,
   type TaskSubmission,
 } from "@/lib/tasks";
 import {
@@ -59,6 +61,11 @@ function TrabalhosPage() {
     queryFn: () => getMyTaskSubmissions(user.id),
   });
 
+  const { data: slotsTaken, isLoading: slotsLoading } = useQuery({
+    queryKey: ["task-slots-taken"],
+    queryFn: getTaskSlotsTaken,
+  });
+
   const submissionByTask = useMemo(() => {
     const map = new Map<string, TaskSubmission>();
     (submissions ?? []).forEach((s) => map.set(s.task_id, s));
@@ -76,12 +83,17 @@ function TrabalhosPage() {
         const t = list.find((tk) => tk.id === s.task_id);
         return sum + (t?.reward ?? 0);
       }, 0);
-    const available = list.filter((t) => !submissionByTask.has(t.id)).length;
+    const available = list.filter(
+      (t) => !submissionByTask.has(t.id) && slotsLeft(t, slotsTaken) > 0,
+    ).length;
     return { available, pending, approved, earned };
-  }, [tasks, submissions, submissionByTask]);
+  }, [tasks, submissions, submissionByTask, slotsTaken]);
 
   const visibleTasks = useMemo(() => {
-    let list = [...(tasks ?? [])];
+    // Só mostra tarefas que ainda não fiz e que ainda têm vagas.
+    let list = (tasks ?? []).filter(
+      (t) => !submissionByTask.has(t.id) && slotsLeft(t, slotsTaken) > 0,
+    );
     if (query.trim()) {
       const q = query.trim().toLowerCase();
       list = list.filter(
@@ -96,9 +108,9 @@ function TrabalhosPage() {
       list.sort((a, b) => b.reward - a.reward);
     }
     return list;
-  }, [tasks, filter, query]);
+  }, [tasks, filter, query, submissionByTask, slotsTaken]);
 
-  const loading = tasksLoading || subsLoading;
+  const loading = tasksLoading || subsLoading || slotsLoading;
 
   if (!isIndex) {
     return <Outlet />;
@@ -235,7 +247,8 @@ function TrabalhosPage() {
                       <Timer className="h-3 w-3" /> {task.estimated_minutes} min
                     </span>
                     <span className="flex items-center gap-1 rounded-full bg-secondary px-2.5 py-1 font-medium text-muted-foreground">
-                      <Users className="h-3 w-3" /> {task.slots} vagas
+                      <Users className="h-3 w-3" /> {slotsLeft(task, slotsTaken)}{" "}
+                      {slotsLeft(task, slotsTaken) === 1 ? "vaga" : "vagas"}
                     </span>
                     {meta && StatusIcon ? (
                       <span
