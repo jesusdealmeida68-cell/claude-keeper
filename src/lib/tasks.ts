@@ -45,6 +45,18 @@ export async function getActiveTasks(): Promise<Task[]> {
   return (data ?? []) as Task[];
 }
 
+// Quantas vagas já foram ocupadas (envios em análise ou aprovados) por tarefa.
+export async function getTaskSlotsTaken(): Promise<Map<string, number>> {
+  const { data, error } = await supabase.rpc("get_task_slots_taken" as never);
+  if (error) throw error;
+  const rows = (data ?? []) as unknown as { task_id: string; taken: number }[];
+  return new Map(rows.map((r) => [r.task_id, Number(r.taken)]));
+}
+
+export function slotsLeft(task: Pick<Task, "id" | "slots">, taken: Map<string, number> | undefined) {
+  return Math.max(0, task.slots - (taken?.get(task.id) ?? 0));
+}
+
 export async function getTaskById(id: string): Promise<Task> {
   const { data, error } = await supabase.from("tasks").select("*").eq("id", id).single();
   if (error) throw error;
