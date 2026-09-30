@@ -246,8 +246,45 @@ export type Database = {
           },
         ]
       }
+      password_resets: {
+        Row: {
+          attempts: number
+          code_hash: string | null
+          created_at: string
+          id: string
+          issued_at: string | null
+          phone: string
+          status: string
+          used_at: string | null
+          user_id: string
+        }
+        Insert: {
+          attempts?: number
+          code_hash?: string | null
+          created_at?: string
+          id?: string
+          issued_at?: string | null
+          phone: string
+          status?: string
+          used_at?: string | null
+          user_id: string
+        }
+        Update: {
+          attempts?: number
+          code_hash?: string | null
+          created_at?: string
+          id?: string
+          issued_at?: string | null
+          phone?: string
+          status?: string
+          used_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
+          alternate_phone: string | null
           avatar_url: string | null
           balance: number
           created_at: string
@@ -260,6 +297,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          alternate_phone?: string | null
           avatar_url?: string | null
           balance?: number
           created_at?: string
@@ -272,6 +310,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          alternate_phone?: string | null
           avatar_url?: string | null
           balance?: number
           created_at?: string
@@ -479,12 +518,20 @@ export type Database = {
         Args: { _amount: number; _submission_id: string }
         Returns: undefined
       }
+      consume_password_reset: {
+        Args: { _code: string; _phone: string }
+        Returns: string
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
         Returns: boolean
+      }
+      issue_password_reset_code: {
+        Args: { _request_id: string }
+        Returns: string
       }
       mark_withdrawal_paid: {
         Args: { _withdrawal_id: string }
@@ -506,6 +553,7 @@ export type Database = {
         Args: { _reason: string; _withdrawal_id: string }
         Returns: undefined
       }
+      request_password_reset: { Args: { _phone: string }; Returns: undefined }
       request_withdrawal: {
         Args: { _amount: number; _destination?: string; _method?: string }
         Returns: string
