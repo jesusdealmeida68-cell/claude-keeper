@@ -9,7 +9,16 @@ export type Task = {
   estimated_minutes: number;
   slots: number;
   active: boolean;
+  category: string;
   created_at: string;
+};
+
+export const categoryLabel: Record<string, string> = {
+  "redes-sociais": "Redes sociais",
+  avaliacoes: "Avaliações e reviews",
+  downloads: "Downloads de app",
+  pesquisas: "Pesquisas e questionários",
+  outro: "Outro",
 };
 
 export type TaskSubmissionStatus = "pending" | "approved" | "rejected";

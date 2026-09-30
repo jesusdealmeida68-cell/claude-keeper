@@ -3,15 +3,19 @@ import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { AppShell } from "@/components/kyg/AppShell";
 import { cn } from "@/lib/utils";
-import { getActiveTasks, getMyTaskSubmissions, type TaskSubmission } from "@/lib/tasks";
+import {
+  categoryLabel,
+  getActiveTasks,
+  getMyTaskSubmissions,
+  type TaskSubmission,
+} from "@/lib/tasks";
 import {
   Briefcase,
   CheckCircle2,
-  ChevronRight,
   Clock,
   Coins,
   Search,
-  Smartphone,
+  Sparkles,
   Timer,
   Users,
   XCircle,
@@ -192,30 +196,46 @@ function TrabalhosPage() {
             const submission = submissionByTask.get(task.id);
             const meta = submission ? statusMeta[submission.status] : null;
             const StatusIcon = meta?.icon;
+            const isNew =
+              Date.now() - new Date(task.created_at).getTime() < 3 * 24 * 60 * 60 * 1000;
             return (
               <Link
                 key={task.id}
                 to="/trabalhos/$id"
                 params={{ id: task.id }}
-                className="flex items-center gap-3 rounded-3xl bg-card p-4 shadow-card transition-transform active:scale-[0.99]"
+                className="block overflow-hidden rounded-2xl border-l-4 border-gold bg-card shadow-card transition-transform active:scale-[0.99]"
               >
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gold-soft text-gold-foreground">
-                  <Smartphone className="h-5 w-5" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-bold">{task.title}</p>
-                  <p className="mt-0.5 line-clamp-1 text-xs text-muted-foreground">
+                <div className="p-4">
+                  <div className="flex items-start justify-between gap-2">
+                    <p className="min-w-0 flex-1 text-sm font-bold leading-snug">{task.title}</p>
+                    {isNew ? (
+                      <span className="flex shrink-0 items-center gap-1 rounded-full bg-primary px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-primary-foreground">
+                        <Sparkles className="h-3 w-3" /> Nova
+                      </span>
+                    ) : (
+                      <span className="shrink-0 rounded-full bg-secondary px-2.5 py-1 text-[10px] font-semibold text-muted-foreground">
+                        {categoryLabel[task.category] ?? "Outro"}
+                      </span>
+                    )}
+                  </div>
+                  <p className="mt-1 line-clamp-1 text-xs text-muted-foreground">
                     {task.description}
                   </p>
-                  <div className="mt-2 flex flex-wrap items-center gap-1.5 text-[11px]">
-                    <span className="flex items-center gap-1 rounded-full bg-gold-soft px-2.5 py-1 font-bold text-gold-foreground">
-                      <Coins className="h-3 w-3" /> {task.reward.toLocaleString("pt-AO")} Kz
+
+                  <p className="mt-2.5 flex items-baseline gap-1 text-gold-foreground">
+                    <Coins className="h-4 w-4 self-center text-gold" />
+                    <span className="text-xl font-extrabold tracking-tight">
+                      {task.reward.toLocaleString("pt-AO")}
                     </span>
+                    <span className="text-xs font-semibold text-muted-foreground">Kz</span>
+                  </p>
+
+                  <div className="mt-2.5 flex flex-wrap items-center gap-1.5 text-[11px]">
                     <span className="flex items-center gap-1 rounded-full bg-secondary px-2.5 py-1 font-medium text-muted-foreground">
                       <Timer className="h-3 w-3" /> {task.estimated_minutes} min
                     </span>
                     <span className="flex items-center gap-1 rounded-full bg-secondary px-2.5 py-1 font-medium text-muted-foreground">
-                      <Users className="h-3 w-3" /> {task.slots}
+                      <Users className="h-3 w-3" /> {task.slots} vagas
                     </span>
                     {meta && StatusIcon ? (
                       <span
@@ -229,7 +249,6 @@ function TrabalhosPage() {
                     ) : null}
                   </div>
                 </div>
-                <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground/50" />
               </Link>
             );
           })

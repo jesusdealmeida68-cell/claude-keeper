@@ -6,16 +6,26 @@ import { AppShell } from "@/components/kyg/AppShell";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { getMyTaskSubmission, getTaskById, getTaskEvidenceUrl, submitTask } from "@/lib/tasks";
+import {
+  categoryLabel,
+  getMyTaskSubmission,
+  getTaskById,
+  getTaskEvidenceUrl,
+  submitTask,
+} from "@/lib/tasks";
 import {
   ArrowLeft,
   Camera,
   CheckCircle2,
   Clock,
   Coins,
+  EyeOff,
+  Flag,
+  Hash,
   ImageIcon,
   ListChecks,
   Loader2,
+  Tag,
   Timer,
   Users,
   X,
@@ -37,6 +47,14 @@ function TrabalhoDetalhePage() {
   const [sending, setSending] = useState(false);
   const [evidencePreviewUrl, setEvidencePreviewUrl] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  function handleReport() {
+    toast.success("Obrigado. A nossa equipa vai analisar esta tarefa.");
+  }
+
+  function handleHide() {
+    toast.success("Tarefa ocultada da tua lista.");
+  }
 
   const { data: task, isLoading: taskLoading } = useQuery({
     queryKey: ["task", id],
@@ -145,6 +163,63 @@ function TrabalhoDetalhePage() {
             </span>
           </div>
 
+          {!status ? (
+            <a
+              href="#enviar"
+              className="mt-4 flex items-center justify-between gap-3 rounded-2xl bg-success-soft px-4 py-3 text-success"
+            >
+              <span className="text-sm font-semibold">
+                Terminaste a tarefa? Envia o comprovativo!
+              </span>
+              <span className="shrink-0 text-xs font-bold underline underline-offset-2">
+                enviar agora
+              </span>
+            </a>
+          ) : null}
+
+          <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs">
+            <button
+              onClick={handleReport}
+              className="font-medium text-muted-foreground underline underline-offset-2"
+            >
+              Denunciar tarefa
+            </button>
+            <span className="text-muted-foreground/40">|</span>
+            <button
+              onClick={handleHide}
+              className="flex items-center gap-1 font-medium text-muted-foreground underline underline-offset-2"
+            >
+              <EyeOff className="h-3 w-3" /> Ocultar tarefa
+            </button>
+          </div>
+
+          <div className="mt-4 grid grid-cols-2 gap-3 rounded-2xl bg-secondary/50 p-4">
+            <div>
+              <p className="flex items-center gap-1 text-[11px] font-medium text-muted-foreground">
+                <Clock className="h-3 w-3" /> Tempo estimado
+              </p>
+              <p className="mt-0.5 text-sm font-bold">{task.estimated_minutes} min</p>
+            </div>
+            <div>
+              <p className="flex items-center gap-1 text-[11px] font-medium text-muted-foreground">
+                <Users className="h-3 w-3" /> Vagas
+              </p>
+              <p className="mt-0.5 text-sm font-bold">{task.slots}</p>
+            </div>
+            <div>
+              <p className="flex items-center gap-1 text-[11px] font-medium text-muted-foreground">
+                <Tag className="h-3 w-3" /> Categoria
+              </p>
+              <p className="mt-0.5 text-sm font-bold">{categoryLabel[task.category] ?? "Outro"}</p>
+            </div>
+            <div>
+              <p className="flex items-center gap-1 text-[11px] font-medium text-muted-foreground">
+                <Hash className="h-3 w-3" /> ID da tarefa
+              </p>
+              <p className="mt-0.5 text-sm font-bold uppercase">{task.id.slice(0, 8)}</p>
+            </div>
+          </div>
+
           <div className="mt-6">
             <p className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-muted-foreground">
               <ListChecks className="h-3.5 w-3.5" /> Instruções completas
@@ -212,7 +287,7 @@ function TrabalhoDetalhePage() {
             </div>
           ) : (
             <>
-              <div className="mt-6">
+              <div id="enviar" className="mt-6 scroll-mt-24">
                 <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
                   Evidência
                 </p>
