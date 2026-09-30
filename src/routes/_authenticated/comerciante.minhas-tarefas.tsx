@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import { toast } from "sonner";
 import { ComercianteShell } from "@/components/comerciante/ComercianteShell";
 import {
@@ -9,8 +10,22 @@ import {
   getMerchantWallet,
   getMyMerchantTasks,
   setTaskActive,
+  updateMerchantTask,
+  type MerchantTask,
 } from "@/lib/merchant";
-import { ListChecks, Pause, Play, PlusCircle } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { cn } from "@/lib/utils";
+import { FileImage, Link2, ListChecks, Loader2, Pause, Pencil, Play, PlusCircle, Type } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/comerciante/minhas-tarefas")({
   component: ComercianteMinhasTarefasPage,
@@ -22,9 +37,158 @@ const statusCls: Record<string, string> = {
   Concluída: "bg-slate-100 text-slate-500",
 };
 
+const proofTypes = [
+  { key: "imagem", label: "Imagem", icon: FileImage },
+  { key: "texto", label: "Texto", icon: Type },
+  { key: "link", label: "Link", icon: Link2 },
+] as const;
+
+function EditTaskDialog({
+  task,
+  userId,
+  onClose,
+}: {
+  task: MerchantTask | null;
+  userId: string;
+  onClose: () => void;
+}) {
+  const queryClient = useQueryClient();
+  const [name, setName] = useState(task?.title ?? "");
+  const [category, setCategory] = useState(task?.category ?? "outro");
+  const [description, setDescription] = useState(task?.description ?? "");
+  const [instructions, setInstructions] = useState((task?.instructions ?? []).join("\n"));
+  const [proof, setProof] = useState<string>(task?.proof_type ?? "imagem");
+  const [saving, setSaving] = useState(false);
+
+  async function handleSave() {
+    if (!task) return;
+    if (name.trim().length < 3) {
+      toast.error("O nome da tarefa deve ter pelo menos 3 letras.");
+      return;
+    }
+    if (description.trim().length < 5) {
+      toast.error("A descrição deve ter pelo menos 5 letras.");
+      return;
+    }
+    setSaving(true);
+    try {
+      await updateMerchantTask(task.id, {
+        title: name.trim(),
+        description: description.trim(),
+        instructions: instructions
+          .split("\n")
+          .map((l) => l.trim())
+          .filter(Boolean),
+        category,
+        proofType: proof,
+      });
+      await queryClient.invalidateQueries({ queryKey: ["merchant-tasks", userId] });
+      await queryClient.invalidateQueries({ queryKey: ["merchant-submissions", userId] });
+      toast.success("Tarefa atualizada.");
+      onClose();
+    } catch (e) {
+      toast.error(friendlyError(e));
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <Dialog open={!!task} onOpenChange={(open) => (!open ? onClose() : null)}>
+      <DialogContent className="max-h-[90vh] overflow-y-auto rounded-2xl bg-white">
+        <DialogHeader>
+          <DialogTitle className="text-slate-900">Editar tarefa</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4">
+          <div>
+            <Label className="text-slate-600">Nome da tarefa</Label>
+            <Input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="mt-1.5 rounded-xl border-slate-200"
+            />
+          </div>
+          <div>
+            <Label className="text-slate-600">Categoria</Label>
+            <Select value={category} onValueChange={setCategory}>
+              <SelectTrigger className="mt-1.5 rounded-xl border-slate-200">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="redes-sociais">Redes sociais</SelectItem>
+                <SelectItem value="avaliacoes">Avaliações e reviews</SelectItem>
+                <SelectItem value="downloads">Downloads de app</SelectItem>
+                <SelectItem value="pesquisas">Pesquisas e questionários</SelectItem>
+                <SelectItem value="outro">Outro</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label className="text-slate-600">Descrição</Label>
+            <Textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="mt-1.5 min-h-20 rounded-xl border-slate-200"
+            />
+          </div>
+          <div>
+            <Label className="text-slate-600">Instruções passo a passo</Label>
+            <Textarea
+              value={instructions}
+              onChange={(e) => setInstructions(e.target.value)}
+              className="mt-1.5 min-h-28 rounded-xl border-slate-200"
+            />
+            <p className="mt-1.5 text-xs text-slate-400">
+              Uma instrução por linha. Links (https://...) ficam clicáveis para os participantes.
+            </p>
+          </div>
+          <div>
+            <Label className="text-slate-600">Tipo de comprovativo</Label>
+            <div className="mt-1.5 grid grid-cols-3 gap-2">
+              {proofTypes.map((p) => {
+                const Icon = p.icon;
+                const active = proof === p.key;
+                return (
+                  <button
+                    key={p.key}
+                    type="button"
+                    onClick={() => setProof(p.key)}
+                    className={cn(
+                      "flex flex-col items-center gap-1.5 rounded-xl border py-3 text-xs font-semibold transition-colors",
+                      active
+                        ? "border-blue-500 bg-blue-50 text-blue-600"
+                        : "border-slate-200 text-slate-500 hover:border-slate-300",
+                    )}
+                  >
+                    <Icon className="h-4 w-4" />
+                    {p.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+          <p className="rounded-xl bg-slate-50 p-3 text-xs text-slate-500">
+            A recompensa e o número de participantes não podem ser alterados, porque o valor já foi
+            reservado da tua carteira.
+          </p>
+          <button
+            type="button"
+            disabled={saving}
+            onClick={handleSave}
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 py-3 text-sm font-bold text-white shadow-lg shadow-blue-600/25 hover:bg-blue-500 disabled:opacity-50"
+          >
+            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : "Guardar alterações"}
+          </button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 function ComercianteMinhasTarefasPage() {
   const { user } = Route.useRouteContext();
   const queryClient = useQueryClient();
+  const [editing, setEditing] = useState<MerchantTask | null>(null);
 
   const { data: wallet } = useQuery({
     queryKey: ["merchant-wallet", user.id],
@@ -125,19 +289,27 @@ function ComercianteMinhasTarefasPage() {
                       </span>
                     </td>
                     <td className="px-5 py-4 text-right">
-                      {t.status !== "Concluída" ? (
+                      <div className="flex items-center justify-end gap-4">
                         <button
-                          onClick={() => toggleActive(t.id, !t.active)}
+                          onClick={() => setEditing(t)}
                           className="inline-flex items-center gap-1 text-sm font-semibold text-blue-600 hover:underline"
                         >
-                          {t.active ? (
-                            <Pause className="h-3.5 w-3.5" />
-                          ) : (
-                            <Play className="h-3.5 w-3.5" />
-                          )}
-                          {t.active ? "Pausar" : "Reativar"}
+                          <Pencil className="h-3.5 w-3.5" /> Editar
                         </button>
-                      ) : null}
+                        {t.status !== "Concluída" ? (
+                          <button
+                            onClick={() => toggleActive(t.id, !t.active)}
+                            className="inline-flex items-center gap-1 text-sm font-semibold text-blue-600 hover:underline"
+                          >
+                            {t.active ? (
+                              <Pause className="h-3.5 w-3.5" />
+                            ) : (
+                              <Play className="h-3.5 w-3.5" />
+                            )}
+                            {t.active ? "Pausar" : "Reativar"}
+                          </button>
+                        ) : null}
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -175,20 +347,35 @@ function ComercianteMinhasTarefasPage() {
                     <p className="text-[10px] text-slate-500">Pendentes</p>
                   </div>
                 </div>
-                {t.status !== "Concluída" ? (
+                <div className="mt-3 flex gap-2">
                   <button
-                    onClick={() => toggleActive(t.id, !t.active)}
-                    className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-xl border border-slate-200 py-2.5 text-sm font-semibold text-slate-700"
+                    onClick={() => setEditing(t)}
+                    className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-slate-200 py-2.5 text-sm font-semibold text-slate-700"
                   >
-                    {t.active ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
-                    {t.active ? "Pausar tarefa" : "Reativar tarefa"}
+                    <Pencil className="h-4 w-4" /> Editar
                   </button>
-                ) : null}
+                  {t.status !== "Concluída" ? (
+                    <button
+                      onClick={() => toggleActive(t.id, !t.active)}
+                      className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-slate-200 py-2.5 text-sm font-semibold text-slate-700"
+                    >
+                      {t.active ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+                      {t.active ? "Pausar" : "Reativar"}
+                    </button>
+                  ) : null}
+                </div>
               </div>
             ))}
           </div>
         </>
       )}
+
+      <EditTaskDialog
+        key={editing?.id ?? "closed"}
+        task={editing}
+        userId={user.id}
+        onClose={() => setEditing(null)}
+      />
     </ComercianteShell>
   );
 }
