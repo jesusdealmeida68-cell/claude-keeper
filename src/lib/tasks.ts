@@ -1,5 +1,8 @@
 import { supabase } from "@/integrations/supabase/client";
 
+export type TaskComplexity = "basica" | "complexa";
+export type TaskCurrency = "KZ" | "USD";
+
 export type Task = {
   id: string;
   title: string;
@@ -10,8 +13,34 @@ export type Task = {
   slots: number;
   active: boolean;
   category: string;
+  complexity: TaskComplexity;
+  currency: TaskCurrency;
   created_at: string;
 };
+
+/** 1 USDT = 1000 Kz (taxa fixa usada em toda a plataforma). */
+export const KZ_PER_USDT = 1000;
+
+export const complexityLabel: Record<TaskComplexity, string> = {
+  basica: "Básica",
+  complexa: "Complexa",
+};
+
+/** Valor mínimo (em Kz) para publicar, conforme a complexidade. */
+export function minRewardKz(complexity: TaskComplexity) {
+  return complexity === "complexa" ? 60 : 30;
+}
+
+/** O valor é sempre guardado em Kz; isto só formata para a moeda escolhida de exibição. */
+export function formatTaskReward(task: Pick<Task, "reward" | "currency">) {
+  if (task.currency === "USD") {
+    return `${(task.reward / KZ_PER_USDT).toLocaleString("pt-AO", {
+      minimumFractionDigits: 3,
+      maximumFractionDigits: 3,
+    })} USDT`;
+  }
+  return `${task.reward.toLocaleString("pt-AO")} Kz`;
+}
 
 export const categoryLabel: Record<string, string> = {
   "redes-sociais": "Redes sociais",

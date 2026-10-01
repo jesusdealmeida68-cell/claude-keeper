@@ -25,6 +25,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { formatTaskReward } from "@/lib/tasks";
 import { FileImage, Link2, ListChecks, Loader2, Pause, Pencil, Play, PlusCircle, Type } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/comerciante/minhas-tarefas")({
@@ -81,6 +82,8 @@ function EditTaskDialog({
           .filter(Boolean),
         category,
         proofType: proof,
+        complexity: task.complexity,
+        currency: task.currency,
       });
       await queryClient.invalidateQueries({ queryKey: ["merchant-tasks", userId] });
       await queryClient.invalidateQueries({ queryKey: ["merchant-submissions", userId] });
@@ -277,7 +280,7 @@ function ComercianteMinhasTarefasPage() {
                 {rows.map((t) => (
                   <tr key={t.id} className="transition-colors hover:bg-slate-50/60">
                     <td className="px-5 py-4 font-semibold text-slate-900">{t.title}</td>
-                    <td className="px-5 py-4 text-slate-600">{formatKz(t.reward)}</td>
+                    <td className="px-5 py-4 text-slate-600">{formatTaskReward(t)}</td>
                     <td className="px-5 py-4 text-slate-600">{t.slots}</td>
                     <td className="px-5 py-4 text-slate-600">{t.concluidas}</td>
                     <td className="px-5 py-4 text-slate-600">{t.pendentes}</td>
@@ -332,7 +335,7 @@ function ComercianteMinhasTarefasPage() {
                     {t.status}
                   </span>
                 </div>
-                <p className="mt-1 text-xs text-slate-400">{formatKz(t.reward)} por participante</p>
+                <p className="mt-1 text-xs text-slate-400">{formatTaskReward(t)} por participante</p>
                 <div className="mt-3 grid grid-cols-3 gap-2 text-center">
                   <div className="rounded-xl bg-slate-50 py-2">
                     <p className="text-sm font-bold text-slate-900">{t.slots}</p>

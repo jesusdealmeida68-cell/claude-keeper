@@ -39,6 +39,8 @@ function ComercianteCriarTarefaPage() {
   const [instructions, setInstructions] = useState("");
   const [participants, setParticipants] = useState("");
   const [reward, setReward] = useState("");
+  const [complexity, setComplexity] = useState<"basica" | "complexa">("basica");
+  const [currency, setCurrency] = useState<"KZ" | "USD">("KZ");
   const [publishing, setPublishing] = useState(false);
 
   const { data: wallet } = useQuery({
@@ -46,7 +48,11 @@ function ComercianteCriarTarefaPage() {
     queryFn: () => getMerchantWallet(user.id),
   });
 
-  const total = Number(participants || 0) * Number(reward || 0);
+  // O valor é sempre guardado/reservado em Kz; a moeda só muda como se digita/mostra.
+  const minRewardKz = complexity === "complexa" ? 60 : 30;
+  const minRewardDisplay = currency === "USD" ? minRewardKz / 1000 : minRewardKz;
+  const rewardKz = currency === "USD" ? Number(reward || 0) * 1000 : Number(reward || 0);
+  const total = Number(participants || 0) * rewardKz;
   const merchantBalance = wallet?.merchant_balance ?? 0;
   const hasEnough = total > 0 && total <= merchantBalance;
 
@@ -59,8 +65,10 @@ function ComercianteCriarTarefaPage() {
       toast.error("Escreve uma descrição (pelo menos 5 letras).");
       return;
     }
-    if (!(Number(reward) >= 10)) {
-      toast.error("A recompensa mínima por tarefa é 10 Kz.");
+    if (!(rewardKz >= minRewardKz)) {
+      toast.error(
+        `Valor mínimo para tarefa ${complexity === "complexa" ? "complexa" : "básica"}: ${minRewardDisplay.toLocaleString("pt-AO", { maximumFractionDigits: 3 })} ${currency === "USD" ? "USDT" : "Kz"}.`,
+      );
       return;
     }
     if (!(Number(participants) >= 1)) {
@@ -80,10 +88,12 @@ function ComercianteCriarTarefaPage() {
           .split("\n")
           .map((l) => l.trim())
           .filter(Boolean),
-        reward: Number(reward),
+        reward: rewardKz,
         slots: Number(participants),
         category,
         proofType: proof,
+        complexity,
+        currency,
       });
       await queryClient.invalidateQueries({ queryKey: ["merchant-wallet", user.id] });
       await queryClient.invalidateQueries({ queryKey: ["merchant-tasks", user.id] });
@@ -156,6 +166,40 @@ function ComercianteCriarTarefaPage() {
           </section>
 
           <section className="rounded-2xl border border-slate-100 bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_8px_24px_-12px_rgba(15,23,42,0.08)] sm:p-6">
+            <h2 className="text-base font-bold text-slate-900">Complexidade da tarefa</h2>
+            <div className="mt-4 grid grid-cols-2 gap-2.5">
+              {(
+                [
+                  { key: "basica" as const, label: "Básica", hint: "min. 30 Kz" },
+                  { key: "complexa" as const, label: "Complexa", hint: "min. 60 Kz" },
+                ]
+              ).map((c) => {
+                const active = complexity === c.key;
+                return (
+                  <button
+                    key={c.key}
+                    type="button"
+                    onClick={() => setComplexity(c.key)}
+                    className={cn(
+                      "rounded-xl border py-3 text-center text-sm font-semibold transition-colors",
+                      active
+                        ? "border-blue-500 bg-blue-50 text-blue-600"
+                        : "border-slate-200 text-slate-500 hover:border-slate-300",
+                    )}
+                  >
+                    {c.label}
+                    <span className="block text-[11px] font-normal text-slate-400">{c.hint}</span>
+                  </button>
+                );
+              })}
+            </div>
+            <p className="mt-2.5 text-xs text-slate-400">
+              Tarefas complexas (ex.: testes, gravações, trabalho mais demorado) exigem um valor
+              mínimo mais alto.
+            </p>
+          </section>
+
+          <section className="rounded-2xl border border-slate-100 bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_8px_24px_-12px_rgba(15,23,42,0.08)] sm:p-6">
             <h2 className="text-base font-bold text-slate-900">Orçamento e participantes</h2>
             <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
@@ -169,12 +213,29 @@ function ComercianteCriarTarefaPage() {
                 />
               </div>
               <div>
-                <Label className="text-slate-600">Valor da recompensa por tarefa (Kz)</Label>
+                <Label className="text-slate-600">Moeda</Label>
+                <Select value={currency} onValueChange={(v) => setCurrency(v as "KZ" | "USD")}>
+                  <SelectTrigger className="mt-1.5 rounded-xl border-slate-200">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="KZ">Kwanza (Kz)</SelectItem>
+                    <SelectItem value="USD">USDT (dólar)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="sm:col-span-2">
+                <Label className="text-slate-600">
+                  Valor da recompensa por tarefa ({currency === "USD" ? "USDT" : "Kz"}) — mínimo{" "}
+                  {minRewardDisplay.toLocaleString("pt-AO", { maximumFractionDigits: 3 })}{" "}
+                  {currency === "USD" ? "USDT" : "Kz"}
+                </Label>
                 <Input
                   type="number"
+                  step={currency === "USD" ? "0.001" : "1"}
                   value={reward}
                   onChange={(e) => setReward(e.target.value)}
-                  placeholder="Ex.: 150"
+                  placeholder={currency === "USD" ? "Ex.: 0.030" : "Ex.: 150"}
                   className="mt-1.5 rounded-xl border-slate-200"
                 />
               </div>
@@ -219,7 +280,9 @@ function ComercianteCriarTarefaPage() {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-slate-500">Recompensa por tarefa</span>
-                <span className="font-semibold text-slate-900">{reward || 0} Kz</span>
+                <span className="font-semibold text-slate-900">
+                  {reward || 0} {currency === "USD" ? "USDT" : "Kz"}
+                </span>
               </div>
               <div className="h-px bg-slate-100" />
               <div className="flex items-center justify-between text-base">

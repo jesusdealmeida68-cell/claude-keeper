@@ -3,6 +3,9 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
 import { ComercianteShell } from "@/components/comerciante/ComercianteShell";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import {
   formatKz,
@@ -49,6 +52,8 @@ function ComercianteResultadosPage() {
   const queryClient = useQueryClient();
   const [filter, setFilter] = useState<(typeof filters)[number]>("Todos");
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [toReject, setToReject] = useState<MerchantSubmission | null>(null);
+  const [reason, setReason] = useState("");
 
   const { data: wallet } = useQuery({
     queryKey: ["merchant-wallet", user.id],
@@ -60,12 +65,32 @@ function ComercianteResultadosPage() {
     queryFn: () => getMerchantSubmissions(user.id),
   });
 
-  async function handleReview(id: string, approve: boolean) {
+  async function handleApprove(id: string) {
     setBusyId(id);
     try {
-      await reviewSubmission(id, approve);
+      await reviewSubmission(id, true);
       await queryClient.invalidateQueries({ queryKey: ["merchant-submissions", user.id] });
-      toast.success(approve ? "Envio aprovado. Recompensa paga." : "Envio rejeitado.");
+      toast.success("Envio aprovado. Recompensa paga.");
+    } catch (e) {
+      toast.error(friendlyError(e));
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+  async function confirmReject() {
+    if (!toReject) return;
+    if (!reason.trim()) {
+      toast.error("Escreve o motivo da rejeição.");
+      return;
+    }
+    setBusyId(toReject.id);
+    try {
+      await reviewSubmission(toReject.id, false, reason.trim());
+      await queryClient.invalidateQueries({ queryKey: ["merchant-submissions", user.id] });
+      toast.success("Envio rejeitado. O utilizador vai ver o motivo.");
+      setToReject(null);
+      setReason("");
     } catch (e) {
       toast.error(friendlyError(e));
     } finally {
@@ -151,7 +176,7 @@ function ComercianteResultadosPage() {
                 <div className="flex shrink-0 gap-2">
                   <button
                     disabled={busyId === s.id}
-                    onClick={() => handleReview(s.id, true)}
+                    onClick={() => handleApprove(s.id)}
                     className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-emerald-500 px-4 py-2.5 text-sm font-bold text-white hover:bg-emerald-400 disabled:opacity-50 sm:flex-none"
                   >
                     {busyId === s.id ? (
@@ -163,7 +188,7 @@ function ComercianteResultadosPage() {
                   </button>
                   <button
                     disabled={busyId === s.id}
-                    onClick={() => handleReview(s.id, false)}
+                    onClick={() => setToReject(s)}
                     className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-rose-200 px-4 py-2.5 text-sm font-bold text-rose-600 hover:bg-rose-50 disabled:opacity-50 sm:flex-none"
                   >
                     <X className="h-4 w-4" /> Rejeitar
@@ -174,6 +199,43 @@ function ComercianteResultadosPage() {
           ))
         )}
       </div>
+
+      <Dialog
+        open={!!toReject}
+        onOpenChange={(open) => {
+          if (!open) {
+            setToReject(null);
+            setReason("");
+          }
+        }}
+      >
+        <DialogContent className="rounded-3xl">
+          <DialogHeader>
+            <DialogTitle>Rejeitar envio</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-slate-500">
+            Explica a {toReject?.user_name ?? "o participante"} porquê o envio de "
+            {toReject?.task_title}" foi rejeitado. Ele vai ver este motivo na aplicação.
+          </p>
+          <Textarea
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+            placeholder="Ex.: A imagem não mostra o passo pedido."
+            className="min-h-24 rounded-xl"
+          />
+          <Button
+            disabled={busyId === toReject?.id}
+            onClick={confirmReject}
+            className="h-11 w-full rounded-xl bg-rose-500 font-semibold text-white hover:bg-rose-600"
+          >
+            {busyId === toReject?.id ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              "Rejeitar e enviar motivo"
+            )}
+          </Button>
+        </DialogContent>
+      </Dialog>
     </ComercianteShell>
   );
 }

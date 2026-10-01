@@ -19,6 +19,7 @@ import { getMyProfile, getMyRoles, uploadAvatar } from "@/lib/auth";
 import { useInstallPrompt } from "@/hooks/use-install-prompt";
 import { getMyWithdrawals, requestWithdrawal, type WithdrawalMethod } from "@/lib/wallet";
 import { downloadWithdrawalReceipt } from "@/lib/receipt";
+import { KZ_PER_USDT } from "@/lib/tasks";
 import {
   Briefcase,
   Camera,
@@ -240,6 +241,14 @@ function PerfilPage() {
           <p className="text-xs text-muted-foreground">Saldo disponível</p>
           <p className="truncate text-lg font-bold tracking-tight">
             {(profile?.balance ?? 0).toLocaleString("pt-AO", { minimumFractionDigits: 2 })} Kz
+          </p>
+          <p className="truncate text-xs font-medium text-muted-foreground">
+            ≈{" "}
+            {((profile?.balance ?? 0) / KZ_PER_USDT).toLocaleString("pt-AO", {
+              minimumFractionDigits: 3,
+              maximumFractionDigits: 3,
+            })}{" "}
+            USDT
           </p>
         </div>
         <Button

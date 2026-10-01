@@ -24,6 +24,7 @@ import { Route as AuthenticatedPerfilRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedTrabalhosRouteImport } from './routes/_authenticated/trabalhos'
 import { Route as AuthenticatedAdminIdRouteImport } from './routes/_authenticated/admin.$id'
 import { Route as AuthenticatedAdminAnunciosRouteImport } from './routes/_authenticated/admin.anuncios'
+import { Route as AuthenticatedAdminDepositosRouteImport } from './routes/_authenticated/admin.depositos'
 import { Route as AuthenticatedAdminIdentidadeRouteImport } from './routes/_authenticated/admin.identidade'
 import { Route as AuthenticatedAdminNotificacoesRouteImport } from './routes/_authenticated/admin.notificacoes'
 import { Route as AuthenticatedAdminRecuperarSenhaRouteImport } from './routes/_authenticated/admin.recuperar-senha'
@@ -116,6 +117,12 @@ const AuthenticatedAdminAnunciosRoute =
   AuthenticatedAdminAnunciosRouteImport.update({
     id: '/anuncios',
     path: '/anuncios',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminDepositosRoute =
+  AuthenticatedAdminDepositosRouteImport.update({
+    id: '/depositos',
+    path: '/depositos',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
 const AuthenticatedAdminIdentidadeRoute =
@@ -229,6 +236,7 @@ export interface FileRoutesByFullPath {
   '/trabalhos': typeof AuthenticatedTrabalhosRouteWithChildren
   '/admin/$id': typeof AuthenticatedAdminIdRoute
   '/admin/anuncios': typeof AuthenticatedAdminAnunciosRoute
+  '/admin/depositos': typeof AuthenticatedAdminDepositosRoute
   '/admin/identidade': typeof AuthenticatedAdminIdentidadeRoute
   '/admin/notificacoes': typeof AuthenticatedAdminNotificacoesRoute
   '/admin/recuperar-senha': typeof AuthenticatedAdminRecuperarSenhaRoute
@@ -261,6 +269,7 @@ export interface FileRoutesByTo {
   '/trabalhos': typeof AuthenticatedTrabalhosRouteWithChildren
   '/admin/$id': typeof AuthenticatedAdminIdRoute
   '/admin/anuncios': typeof AuthenticatedAdminAnunciosRoute
+  '/admin/depositos': typeof AuthenticatedAdminDepositosRoute
   '/admin/identidade': typeof AuthenticatedAdminIdentidadeRoute
   '/admin/notificacoes': typeof AuthenticatedAdminNotificacoesRoute
   '/admin/recuperar-senha': typeof AuthenticatedAdminRecuperarSenhaRoute
@@ -295,6 +304,7 @@ export interface FileRoutesById {
   '/_authenticated/trabalhos': typeof AuthenticatedTrabalhosRouteWithChildren
   '/_authenticated/admin/$id': typeof AuthenticatedAdminIdRoute
   '/_authenticated/admin/anuncios': typeof AuthenticatedAdminAnunciosRoute
+  '/_authenticated/admin/depositos': typeof AuthenticatedAdminDepositosRoute
   '/_authenticated/admin/identidade': typeof AuthenticatedAdminIdentidadeRoute
   '/_authenticated/admin/notificacoes': typeof AuthenticatedAdminNotificacoesRoute
   '/_authenticated/admin/recuperar-senha': typeof AuthenticatedAdminRecuperarSenhaRoute
@@ -329,6 +339,7 @@ export interface FileRouteTypes {
     | '/trabalhos'
     | '/admin/$id'
     | '/admin/anuncios'
+    | '/admin/depositos'
     | '/admin/identidade'
     | '/admin/notificacoes'
     | '/admin/recuperar-senha'
@@ -361,6 +372,7 @@ export interface FileRouteTypes {
     | '/trabalhos'
     | '/admin/$id'
     | '/admin/anuncios'
+    | '/admin/depositos'
     | '/admin/identidade'
     | '/admin/notificacoes'
     | '/admin/recuperar-senha'
@@ -394,6 +406,7 @@ export interface FileRouteTypes {
     | '/_authenticated/trabalhos'
     | '/_authenticated/admin/$id'
     | '/_authenticated/admin/anuncios'
+    | '/_authenticated/admin/depositos'
     | '/_authenticated/admin/identidade'
     | '/_authenticated/admin/notificacoes'
     | '/_authenticated/admin/recuperar-senha'
@@ -527,6 +540,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminAnunciosRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/depositos': {
+      id: '/_authenticated/admin/depositos'
+      path: '/depositos'
+      fullPath: '/admin/depositos'
+      preLoaderRoute: typeof AuthenticatedAdminDepositosRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/identidade': {
       id: '/_authenticated/admin/identidade'
       path: '/identidade'
@@ -645,6 +665,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminIdRoute: typeof AuthenticatedAdminIdRoute
   AuthenticatedAdminAnunciosRoute: typeof AuthenticatedAdminAnunciosRoute
+  AuthenticatedAdminDepositosRoute: typeof AuthenticatedAdminDepositosRoute
   AuthenticatedAdminIdentidadeRoute: typeof AuthenticatedAdminIdentidadeRoute
   AuthenticatedAdminNotificacoesRoute: typeof AuthenticatedAdminNotificacoesRoute
   AuthenticatedAdminRecuperarSenhaRoute: typeof AuthenticatedAdminRecuperarSenhaRoute
@@ -655,6 +676,7 @@ interface AuthenticatedAdminRouteChildren {
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminIdRoute: AuthenticatedAdminIdRoute,
   AuthenticatedAdminAnunciosRoute: AuthenticatedAdminAnunciosRoute,
+  AuthenticatedAdminDepositosRoute: AuthenticatedAdminDepositosRoute,
   AuthenticatedAdminIdentidadeRoute: AuthenticatedAdminIdentidadeRoute,
   AuthenticatedAdminNotificacoesRoute: AuthenticatedAdminNotificacoesRoute,
   AuthenticatedAdminRecuperarSenhaRoute: AuthenticatedAdminRecuperarSenhaRoute,

@@ -12,6 +12,8 @@ export type MerchantTask = {
   active: boolean;
   category: string;
   proof_type: string;
+  complexity: "basica" | "complexa";
+  currency: "KZ" | "USD";
   created_at: string;
 };
 
@@ -57,7 +59,10 @@ export function friendlyError(e: unknown): string {
   if (msg.includes("insufficient balance")) return "Saldo de utilizador insuficiente.";
   if (msg.includes("invalid title")) return "O nome da tarefa deve ter pelo menos 3 letras.";
   if (msg.includes("invalid description")) return "A descrição deve ter pelo menos 5 letras.";
-  if (msg.includes("invalid reward")) return "A recompensa mínima é 10 Kz.";
+  if (msg.includes("invalid reward"))
+    return "Valor abaixo do mínimo: 30 Kz (0.030 USDT) para tarefas básicas, 60 Kz (0.060 USDT) para complexas.";
+  if (msg.includes("invalid complexity")) return "Complexidade inválida.";
+  if (msg.includes("invalid currency")) return "Moeda inválida.";
   if (msg.includes("invalid slots")) return "Indica uma quantidade de participantes válida.";
   if (msg.includes("invalid amount")) return "Valor inválido.";
   if (msg.includes("invalid proof")) return "Tipo de comprovativo inválido.";
@@ -99,6 +104,8 @@ export async function publishTask(input: {
   slots: number;
   category: string;
   proofType: string;
+  complexity: "basica" | "complexa";
+  currency: "KZ" | "USD";
 }) {
   const { data, error } = await supabase.rpc("publish_merchant_task", {
     _title: input.title,
@@ -108,6 +115,8 @@ export async function publishTask(input: {
     _slots: input.slots,
     _category: input.category,
     _proof_type: input.proofType,
+    _complexity: input.complexity,
+    _currency: input.currency,
   });
   if (error) throw error;
   return data;
@@ -121,6 +130,8 @@ export async function updateMerchantTask(
     instructions: string[];
     category: string;
     proofType: string;
+    complexity: "basica" | "complexa";
+    currency: "KZ" | "USD";
   },
 ) {
   const { error } = await supabase.rpc("update_merchant_task", {
@@ -130,6 +141,8 @@ export async function updateMerchantTask(
     _instructions: input.instructions,
     _category: input.category,
     _proof_type: input.proofType,
+    _complexity: input.complexity,
+    _currency: input.currency,
   });
   if (error) throw error;
 }

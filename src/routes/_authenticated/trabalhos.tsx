@@ -5,6 +5,8 @@ import { AppShell } from "@/components/kyg/AppShell";
 import { cn } from "@/lib/utils";
 import {
   categoryLabel,
+  complexityLabel,
+  formatTaskReward,
   getActiveTasks,
   getMyTaskSubmissions,
   getTaskSlotsTaken,
@@ -237,12 +239,16 @@ function TrabalhosPage() {
                   <p className="mt-2.5 flex items-baseline gap-1 text-gold-foreground">
                     <Coins className="h-4 w-4 self-center text-gold" />
                     <span className="text-xl font-extrabold tracking-tight">
-                      {task.reward.toLocaleString("pt-AO")}
+                      {formatTaskReward(task)}
                     </span>
-                    <span className="text-xs font-semibold text-muted-foreground">Kz</span>
                   </p>
 
                   <div className="mt-2.5 flex flex-wrap items-center gap-1.5 text-[11px]">
+                    {task.complexity === "complexa" ? (
+                      <span className="flex items-center gap-1 rounded-full bg-gold-soft px-2.5 py-1 font-semibold text-gold-foreground">
+                        {complexityLabel[task.complexity]}
+                      </span>
+                    ) : null}
                     <span className="flex items-center gap-1 rounded-full bg-secondary px-2.5 py-1 font-medium text-muted-foreground">
                       <Timer className="h-3 w-3" /> {task.estimated_minutes} min
                     </span>

@@ -414,7 +414,9 @@ export type Database = {
         Row: {
           active: boolean
           category: string
+          complexity: string
           created_at: string
+          currency: string
           description: string
           estimated_minutes: number
           id: string
@@ -428,7 +430,9 @@ export type Database = {
         Insert: {
           active?: boolean
           category?: string
+          complexity?: string
           created_at?: string
+          currency?: string
           description: string
           estimated_minutes?: number
           id?: string
@@ -442,7 +446,9 @@ export type Database = {
         Update: {
           active?: boolean
           category?: string
+          complexity?: string
           created_at?: string
+          currency?: string
           description?: string
           estimated_minutes?: number
           id?: string
@@ -540,6 +546,8 @@ export type Database = {
       publish_merchant_task: {
         Args: {
           _category: string
+          _complexity?: string
+          _currency?: string
           _description: string
           _instructions: string[]
           _proof_type: string
@@ -548,6 +556,19 @@ export type Database = {
           _title: string
         }
         Returns: string
+      }
+      update_merchant_task: {
+        Args: {
+          _category: string
+          _complexity?: string
+          _currency?: string
+          _description: string
+          _instructions: string[]
+          _proof_type: string
+          _task_id: string
+          _title: string
+        }
+        Returns: undefined
       }
       reject_withdrawal: {
         Args: { _reason: string; _withdrawal_id: string }

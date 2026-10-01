@@ -15,6 +15,7 @@ import {
   getTaskSlotsTaken,
   slotsLeft,
   submitTask,
+  formatTaskReward,
 } from "@/lib/tasks";
 import {
   ArrowLeft,
@@ -171,8 +172,13 @@ function TrabalhoDetalhePage() {
 
           <div className="mt-4 flex flex-wrap gap-2 text-xs">
             <span className="flex items-center gap-1 rounded-full bg-gold-soft px-3 py-1.5 font-bold text-gold-foreground">
-              <Coins className="h-3.5 w-3.5" /> {task.reward.toLocaleString("pt-AO")} Kz
+              <Coins className="h-3.5 w-3.5" /> {formatTaskReward(task)}
             </span>
+            {task.complexity === "complexa" ? (
+              <span className="flex items-center rounded-full bg-primary/10 px-3 py-1.5 font-bold text-primary">
+                Complexa
+              </span>
+            ) : null}
             <span className="flex items-center gap-1 rounded-full bg-secondary px-3 py-1.5 font-medium text-muted-foreground">
               <Timer className="h-3.5 w-3.5" /> {task.estimated_minutes} min
             </span>
@@ -259,7 +265,7 @@ function TrabalhoDetalhePage() {
           {status === "approved" ? (
             <div className="mt-6 rounded-2xl bg-success-soft p-4 text-center">
               <p className="text-2xl font-extrabold text-success">
-                +{task.reward.toLocaleString("pt-AO")} Kz
+                +{formatTaskReward(task)}
               </p>
               <p className="mt-1 text-sm font-medium text-success">
                 Recompensa adicionada ao saldo.
